@@ -10,7 +10,7 @@ public class Printer {
   /**
    * Prints welcome message to a user at the start of the program.
    */
-  public void printWelcome() {
+  public static void printWelcome() {
     System.out.println("Hello, welcome to the Room Manager program!");
     System.out.println("In this program you can create, delete, compare different type of rooms");
   }
@@ -18,7 +18,7 @@ public class Printer {
   /**
    * Prints the main menu of the program to a user.
    */
-  public void printMenu() {
+  public static void printMenu() {
     System.out.println("");
     System.out.println("Choose what you want to do:");
     System.out.println("1. Create a room");
@@ -32,7 +32,7 @@ public class Printer {
   /**
    * Prints create room menu of the program to a user.
    */
-  public void printCreateRoomMenu() {
+  public static void printCreateRoomMenu() {
     System.out.println("");
     System.out.println("Choose what type of a room you want to create:");
     System.out.println("1. Create a room");
@@ -48,7 +48,7 @@ public class Printer {
    * Uses toString() method to display information. Also displays hash code of rooms.
    * @param roomsList ArrayList of rooms to be printed.
    */
-  public void printRoomsList(ArrayList<Room> roomsList) {
+  public static void printRoomsList(ArrayList<Room> roomsList) {
     if (roomsList.size() < 1) {
       System.out.println("\nNo rooms in the list!");
       return;

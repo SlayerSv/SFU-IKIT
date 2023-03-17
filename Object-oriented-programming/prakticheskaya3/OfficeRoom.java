@@ -5,8 +5,8 @@ package prakticheskaya3;
  * has overrided methods of equals, toString and hash code.
  */
 public class OfficeRoom extends Room {
-  static final int MINIMUM_NUMBER_OF_WORKERS = 1;
-  static final int MAXIMUM_NUMBER_OF_WORKERS = 200;
+  static final int MINIMUM_WORKERS = 1;
+  static final int MAXIMUM_WORKERS = 200;
 
   private String department;
   private int numberOfWorkers;
@@ -18,7 +18,7 @@ public class OfficeRoom extends Room {
   public OfficeRoom() {
     super();
     department = "Unknown department";
-    numberOfWorkers = MINIMUM_NUMBER_OF_WORKERS;
+    numberOfWorkers = MINIMUM_WORKERS;
   }
 
   /**
@@ -36,12 +36,12 @@ public class OfficeRoom extends Room {
                     int numberOfWorkers) {
     super(adress, area);
     this.department = department;
-    if (numberOfWorkers < MINIMUM_NUMBER_OF_WORKERS
-        || numberOfWorkers > MAXIMUM_NUMBER_OF_WORKERS) {
+    if (numberOfWorkers < MINIMUM_WORKERS
+        || numberOfWorkers > MAXIMUM_WORKERS) {
       System.out.println("Number of workers must be between "
-          + MINIMUM_NUMBER_OF_WORKERS + " and " + MAXIMUM_NUMBER_OF_WORKERS
-          + ". Number of workers is set to " + MINIMUM_NUMBER_OF_WORKERS);
-      this.numberOfWorkers = MINIMUM_NUMBER_OF_WORKERS;
+          + MINIMUM_WORKERS + " and " + MAXIMUM_WORKERS
+          + ". Number of workers is set to " + MINIMUM_WORKERS);
+      this.numberOfWorkers = MINIMUM_WORKERS;
     } else {
       this.numberOfWorkers = numberOfWorkers;
     }                
@@ -65,12 +65,12 @@ public class OfficeRoom extends Room {
    * @param numberOfWorkers Number of workers that can work in this office room.
    */
   public void setNumberOfWorkers(int numberOfWorkers) {
-    if (numberOfWorkers < MINIMUM_NUMBER_OF_WORKERS
-        || numberOfWorkers > MAXIMUM_NUMBER_OF_WORKERS) {
+    if (numberOfWorkers < MINIMUM_WORKERS
+        || numberOfWorkers > MAXIMUM_WORKERS) {
       System.out.println("Number of workers must be between "
-          + MINIMUM_NUMBER_OF_WORKERS + " and " + MAXIMUM_NUMBER_OF_WORKERS
-          + ". Number of workers is set to " + MINIMUM_NUMBER_OF_WORKERS);
-      this.numberOfWorkers = MINIMUM_NUMBER_OF_WORKERS;
+          + MINIMUM_WORKERS + " and " + MAXIMUM_WORKERS
+          + ". Number of workers is set to " + MINIMUM_WORKERS);
+      this.numberOfWorkers = MINIMUM_WORKERS;
     } else {
       this.numberOfWorkers = numberOfWorkers;
     }

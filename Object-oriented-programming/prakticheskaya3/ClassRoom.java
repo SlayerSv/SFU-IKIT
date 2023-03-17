@@ -5,8 +5,8 @@ package prakticheskaya3;
  * has overrided methods of equals, toString and hash code.
  */
 public class ClassRoom extends Room {
-  static final int MINIMUM_NUMBER_OF_STUDENTS = 1;
-  static final int MAXIMUM_NUMBER_OF_STUDENTS = 120;
+  static final int MINIMUM_STUDENTS = 1;
+  static final int MAXIMUM_STUDENTS = 120;
 
   private String subject;
   private int numberOfStudents;
@@ -18,7 +18,7 @@ public class ClassRoom extends Room {
   public ClassRoom() {
     super();
     subject = "Unknown subject";
-    numberOfStudents = MINIMUM_NUMBER_OF_STUDENTS;
+    numberOfStudents = MINIMUM_STUDENTS;
   }
 
   /**
@@ -33,12 +33,12 @@ public class ClassRoom extends Room {
   public ClassRoom(String adress, int area, String subject, int numberOfStudents) {
     super(adress, area);
     this.subject = subject;
-    if (numberOfStudents < MINIMUM_NUMBER_OF_STUDENTS
-        || numberOfStudents > MAXIMUM_NUMBER_OF_STUDENTS) {
+    if (numberOfStudents < MINIMUM_STUDENTS
+        || numberOfStudents > MAXIMUM_STUDENTS) {
       System.out.println("Number of students must be between "
-          + MINIMUM_NUMBER_OF_STUDENTS + " and " + MAXIMUM_NUMBER_OF_STUDENTS
-          + ". Number of students is set to " + MINIMUM_NUMBER_OF_STUDENTS);
-      this.numberOfStudents = MINIMUM_NUMBER_OF_STUDENTS;
+          + MINIMUM_STUDENTS + " and " + MAXIMUM_STUDENTS
+          + ". Number of students is set to " + MINIMUM_STUDENTS);
+      this.numberOfStudents = MINIMUM_STUDENTS;
     } else {
       this.numberOfStudents = numberOfStudents;
     }
@@ -62,12 +62,12 @@ public class ClassRoom extends Room {
    * @param numberOfStudents Number of students that can study in this classroom.
    */
   public void setNumberOfStudents(int numberOfStudents) {
-    if (numberOfStudents < MINIMUM_NUMBER_OF_STUDENTS
-        || numberOfStudents > MAXIMUM_NUMBER_OF_STUDENTS) {
+    if (numberOfStudents < MINIMUM_STUDENTS
+        || numberOfStudents > MAXIMUM_STUDENTS) {
       System.out.println("Number of students must be between "
-          + MINIMUM_NUMBER_OF_STUDENTS + " and " + MAXIMUM_NUMBER_OF_STUDENTS
-          + ". Number of students is set to " + MINIMUM_NUMBER_OF_STUDENTS);
-      this.numberOfStudents = MINIMUM_NUMBER_OF_STUDENTS;
+          + MINIMUM_STUDENTS + " and " + MAXIMUM_STUDENTS
+          + ". Number of students is set to " + MINIMUM_STUDENTS);
+      this.numberOfStudents = MINIMUM_STUDENTS;
     } else {
       this.numberOfStudents = numberOfStudents;
     }

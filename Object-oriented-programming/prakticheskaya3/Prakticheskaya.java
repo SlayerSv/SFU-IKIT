@@ -21,36 +21,33 @@ public class Prakticheskaya {
    */
   public static void main(String[] args) {
     ArrayList<Room> roomsList = new ArrayList<Room>();
-    ValueValidator validator = new ValueValidator();
-    RoomCreator creator = new RoomCreator();
-    Printer printer = new Printer();
-    RoomManager manager = new RoomManager();
     String message = "\nEnter the number of a menu option: ";
-    int input;
-    printer.printWelcome();
+    int userInput;
+
+    Printer.printWelcome();
     do {
-      printer.printMenu();
-      input = validator.validateNumber(EXIT, COMPARE_ROOMS, message);
-      switch (input) {
+      Printer.printMenu();
+      userInput = Validator.validateNumber(EXIT, COMPARE_ROOMS, message);
+      switch (userInput) {
         case EXIT:
           System.out.println("\nExiting program");
-          validator.closeScanner();
+          Validator.closeScanner();
           break;
         case CREATE_ROOM:
-          creator.chooseAndCreateRoom(roomsList);
+          RoomCreator.chooseAndCreateRoom(roomsList);
           break;
         case DELETE_ROOM:
-          manager.deleteRoom(roomsList);
+          RoomManager.deleteRoom(roomsList);
           break;
         case DISPLAY_ROOMS:
-          printer.printRoomsList(roomsList);
+          Printer.printRoomsList(roomsList);
           break;
         case COMPARE_ROOMS:
-          manager.compareRooms(roomsList);
+          RoomManager.compareRooms(roomsList);
           break;
         default:
           System.out.println("\nNo such option!");
       }
-    } while (input != EXIT);
+    } while (userInput != EXIT);
   } 
 }

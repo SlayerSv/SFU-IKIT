@@ -5,8 +5,8 @@ package prakticheskaya3;
  * has overrided methods of equals, toString and hash code.
  */
 public class GymRoom extends Room {
-  static final int MINIMUM_NUMBER_OF_TRAINEES = 1;
-  static final int MAXIMUM_NUMBER_OF_TRAINEES = 150;
+  static final int MINIMUM_TRAINEES = 1;
+  static final int MAXIMUM_TRAINEES = 150;
 
   private String sportName;
   private int numberOfTrainees;
@@ -18,7 +18,7 @@ public class GymRoom extends Room {
   public GymRoom() {
     super();
     sportName = "Unknown sport name";
-    numberOfTrainees = MINIMUM_NUMBER_OF_TRAINEES;
+    numberOfTrainees = MINIMUM_TRAINEES;
   }
 
   /**
@@ -33,12 +33,12 @@ public class GymRoom extends Room {
   public GymRoom(String adress, int area, String sportName, int numberOfTrainees) {
     super(adress, area);
     this.sportName = sportName;
-    if (numberOfTrainees < MINIMUM_NUMBER_OF_TRAINEES
-        || numberOfTrainees > MAXIMUM_NUMBER_OF_TRAINEES) {
+    if (numberOfTrainees < MINIMUM_TRAINEES
+        || numberOfTrainees > MAXIMUM_TRAINEES) {
       System.out.println("Number of Trainees must be between "
-          + MINIMUM_NUMBER_OF_TRAINEES + " and " + MAXIMUM_NUMBER_OF_TRAINEES
-          + ". Number of trainees is set to " + MINIMUM_NUMBER_OF_TRAINEES);
-      this.numberOfTrainees = MINIMUM_NUMBER_OF_TRAINEES;
+          + MINIMUM_TRAINEES + " and " + MAXIMUM_TRAINEES
+          + ". Number of trainees is set to " + MINIMUM_TRAINEES);
+      this.numberOfTrainees = MINIMUM_TRAINEES;
     } else {
       this.numberOfTrainees = numberOfTrainees;
     }
@@ -62,12 +62,12 @@ public class GymRoom extends Room {
    * @param numberOfTrainees Number of people that can exercise in this gym room.
    */
   public void setNumberOfTrainees(int numberOfTrainees) {
-    if (numberOfTrainees < MINIMUM_NUMBER_OF_TRAINEES
-        || numberOfTrainees > MAXIMUM_NUMBER_OF_TRAINEES) {
+    if (numberOfTrainees < MINIMUM_TRAINEES
+        || numberOfTrainees > MAXIMUM_TRAINEES) {
       System.out.println("Number of Trainees must be between "
-          + MINIMUM_NUMBER_OF_TRAINEES + " and " + MAXIMUM_NUMBER_OF_TRAINEES
-          + ". Number of trainees is set to " + MINIMUM_NUMBER_OF_TRAINEES);
-      this.numberOfTrainees = MINIMUM_NUMBER_OF_TRAINEES;
+          + MINIMUM_TRAINEES + " and " + MAXIMUM_TRAINEES
+          + ". Number of trainees is set to " + MINIMUM_TRAINEES);
+      this.numberOfTrainees = MINIMUM_TRAINEES;
     } else {
       this.numberOfTrainees = numberOfTrainees;
     }
