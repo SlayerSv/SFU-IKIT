@@ -5,22 +5,32 @@ import csv
 def main():
     # my_sort('datas.txt', 'file_e.txt', False)
     # csv_run()
-    file = open('csv.csv')
-    next = ' '
-    while next != '':
-        next = file.readline()
-        print(next)
+    src = ['data_floats.txt']
+    output = 'file_output.txt'
+    external_natural_merge_sort(src, output, False)
 
 
-def my_sort(src: str, output: str = None, reverse: bool = False, key=None,
-            data_type='i'):
-    is_sorting_finished = initial_split(src, reverse)
-    if output is None:
-        output = 'file_c.txt'
-    while is_sorting_finished is not True:
-        merge_and_sort(output, reverse)
-        is_sorting_finished = split(output)
-    print('done sorting')
+def external_natural_merge_sort(src: list, output: str = "",
+                                reverse: bool = False, key="",
+                                type_data='i'):
+    if output != "" and len(src) > 1:
+        merge_and_sort(output, reverse, src)
+        is_sorting_finished = initial_split(output, reverse)
+        while is_sorting_finished is not True:
+            merge_and_sort(output, reverse)
+            is_sorting_finished = split(output)
+        print('done sorting')
+    else:
+        for file in src:
+            is_sorting_finished = initial_split(file, reverse)
+            if output == "":
+                output_sort = file
+            else:
+                output_sort = output
+            while is_sorting_finished is not True:
+                merge_and_sort(output_sort, reverse)
+                is_sorting_finished = split(output_sort)
+            print('done sorting' + file)
 
 
 def initial_split(file_path, reverse: bool):
@@ -60,51 +70,70 @@ def initial_split(file_path, reverse: bool):
         prev_number = next_number
 
 
-def merge_and_sort(output, reverse: bool):
-    file_a = open('file_a.txt', 'r')
-    file_b = open('file_b.txt', 'r')
-    file_c = open(output, 'w')
+def merge_and_sort(output: str = 'file_output.txt',
+                   reverse: bool = False,
+                   src: list = ['file_a.txt', 'file_b.txt']):
+    print(src)
+    file_a = open(src[0], 'r')
+    file_b = open(src[1], 'r')
+    file_output = open(output, 'w')
     number_a = file_a.readline()
     number_b = file_b.readline()
-    print(number_a)
-    print(number_b)
     while True:
-        if number_a == '' or number_a == '\n':
+        if number_a == '':
             while True:
-                if number_a == '' and number_b == '':
-                    file_c.close()
+                if number_b == '':
+                    file_output.close()
                     file_a.close()
                     file_b.close()
                     return
-                if number_b == '\n':
-                    file_c.write('\n')
-                    number_b = file_b.readline()
-                    number_a = file_a.readline()
-                    break
-                file_c.write(number_b)
+                file_output.write(number_b)
                 number_b = file_b.readline()
-        elif number_b == '' or number_b == '\n':
+        elif number_a == '\n':
             while True:
-                if number_a == '' and number_b == '':
-                    return
-                if number_a == '\n':
-                    file_c.write('\n')
+                if number_b == '\n':
+                    file_output.write('\n')
                     number_b = file_b.readline()
                     number_a = file_a.readline()
                     break
-                file_c.write(number_a)
-                number_a = file_a.readline()
-        else:
-            try:
-                a_is_less = float(number_a) < float(number_b)
-            except ValueError:
-                a_is_less = number_a < number_b
-            if a_is_less is not reverse:
-                file_c.write(number_a)
-                number_a = file_a.readline()
-            else:
-                file_c.write(number_b)
+                if number_b == '':
+                    number_a = file_a.readline()
+                    file_output.write('\n')
+                    break
+                file_output.write(number_b)
                 number_b = file_b.readline()
+        if number_b == '':
+            while True:
+                if number_a == '':
+                    file_output.close()
+                    file_a.close()
+                    file_b.close()
+                    return
+                file_output.write(number_a)
+                number_a = file_a.readline()
+        elif number_b == '\n':
+            while True:
+                if number_a == '\n':
+                    file_output.write('\n')
+                    number_b = file_b.readline()
+                    number_a = file_a.readline()
+                    break
+                if number_a == '':
+                    number_b = file_b.readline()
+                    file_output.write('\n')
+                    break
+                file_output.write(number_a)
+                number_a = file_a.readline()
+        try:
+            a_is_less = float(number_a) < float(number_b)
+        except ValueError:
+            a_is_less = number_a < number_b
+        if a_is_less is not reverse:
+            file_output.write(number_a)
+            number_a = file_a.readline()
+        else:
+            file_output.write(number_b)
+            number_b = file_b.readline()
 
 
 def split(file_path):
