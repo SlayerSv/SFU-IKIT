@@ -61,11 +61,11 @@ public final class Validator {
         output = Integer.parseInt(input);
       } catch (NumberFormatException e) {
         System.out.println(e);
-        System.out.println("Input must be a number!");
+        System.out.println("Нужно ввести целое число!");
         continue;
       }
       if (output < minValue || output > maxValue) {
-        System.out.println("Value must be between " + minValue + " and " + maxValue + "!");
+        System.out.println("Число должно быть между " + minValue + " и " + maxValue + "!");
         continue;
       } else {
         return output;
