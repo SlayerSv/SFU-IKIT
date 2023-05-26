@@ -4,24 +4,21 @@ import csv
 
 def main():
     src = []
-    output = ''
+    output = ""
     reverse = False
     key = ""
-    # external_natural_merge_sort(src, output, reverse, key)
+    external_natural_merge_sort(src, output, reverse, key)
 
 
 def external_natural_merge_sort(src: list, output: str = "",
                                 reverse: bool = False, key="",
                                 type_data='i'):
+    if output != "" and len(src) > 1:
+        merge_files(src, output)
+        src = [output]
+        output = ""
     if key != "":
         csv_sort(src, output, reverse, key)
-    elif output != "" and len(src) > 1:
-        merge_and_sort(output, reverse, src)
-        is_sorting_finished = initial_split(output, reverse)
-        while is_sorting_finished is not True:
-            merge_and_sort(output, reverse)
-            is_sorting_finished = split(output)
-        print('done sorting')
     else:
         for file in src:
             is_sorting_finished = initial_split(file, reverse)
@@ -32,7 +29,7 @@ def external_natural_merge_sort(src: list, output: str = "",
             while is_sorting_finished is not True:
                 merge_and_sort(output_sort, reverse)
                 is_sorting_finished = split(output_sort)
-            print('done sorting' + file)
+            print('done sorting ' + file)
 
 
 def initial_split(file_path, reverse: bool):
@@ -75,7 +72,6 @@ def initial_split(file_path, reverse: bool):
 def merge_and_sort(output: str = 'file_output.txt',
                    reverse: bool = False,
                    src: list = ['file_a.txt', 'file_b.txt']):
-    print(src)
     file_a = open(src[0], 'r')
     file_b = open(src[1], 'r')
     file_output = open(output, 'w')
@@ -199,6 +195,18 @@ def csv_sort(src, output_path, reverse, key):
         file_source_copy.close
         file_numbers.close()
         file_output.close()
+
+
+def merge_files(files: list, output):
+    file_output = open(output, "w")
+    for file_path in files:
+        file = open(file_path, "r")
+        next_number = file.readline()
+        while next_number != "":
+            file_output.write(next_number)
+            next_number = file.readline()
+        file.close()
+    file_output.close()
 
 
 if __name__ == '__main__':
