@@ -3,17 +3,19 @@ import csv
 
 
 def main():
-    # my_sort('datas.txt', 'file_e.txt', False)
-    # csv_run()
-    src = ['data_floats.txt']
-    output = 'file_output.txt'
-    external_natural_merge_sort(src, output, False)
+    src = []
+    output = ''
+    reverse = False
+    key = ""
+    # external_natural_merge_sort(src, output, reverse, key)
 
 
 def external_natural_merge_sort(src: list, output: str = "",
                                 reverse: bool = False, key="",
                                 type_data='i'):
-    if output != "" and len(src) > 1:
+    if key != "":
+        csv_sort(src, output, reverse, key)
+    elif output != "" and len(src) > 1:
         merge_and_sort(output, reverse, src)
         is_sorting_finished = initial_split(output, reverse)
         while is_sorting_finished is not True:
@@ -163,28 +165,40 @@ def split(file_path):
             current_file.write(next_number)
 
 
-def csv_run():
-    TEST_NUMBER = [
-        [],
-        [1],
-        [1, 2, 3, 4, 5],
-        [0, 0, 0, 55, 55, 60],
-        [9, 8, 7, 6, 5, 4, 3, 2, 1, 0],
-        [8, 0, 42, 3, 4, 8, 0, 45, 50, 9999, 7],
-        [-5, 0, 9, -999, 874, 35, -4, -5, 0],
-        # [1, 1, 1],
-    ]
-    key = "sort"
-    for data in TEST_NUMBER:
-        file = open("csv.csv", "w", encoding="utf-8")
-        file.write("")
-        file.close()
-        ptr = open("csv.csv", "a", newline="", encoding="utf-8")
-        writer = csv.DictWriter(ptr, fieldnames=[key])
+def csv_sort(src, output_path, reverse, key):
+    for file_source_path in src:
+        if output_path == "":
+            output_path = file_source_path
+        file_source = open(file_source_path, "r", newline="")
+        reader = csv.DictReader(file_source, delimiter=";")
+        headers = reader.fieldnames
+        file_numbers = open("file_numbers.txt", "w")
+        file_source_copy = open("file_source_copy.csv", "w", newline="")
+        writer = csv.DictWriter(file_source_copy, fieldnames=headers,
+                                delimiter=";")
         writer.writeheader()
-        for i in data:
-            writer.writerow({key: int(i)})
-        ptr.close()
+        for row in reader:
+            file_numbers.write(row[key] + "\n")
+            writer.writerow(row)
+        file_numbers.close()
+        file_source.close()
+        file_source_copy.close()
+        external_natural_merge_sort(["file_numbers.txt"], "", reverse)
+        file_output = open(output_path, "w", newline="")
+        file_numbers = open("file_numbers.txt", "r")
+        file_source_copy = open("file_source_copy.csv", "r", newline="")
+        reader = csv.DictReader(file_source_copy, delimiter=";")
+        print(headers)
+        writer = csv.DictWriter(file_output, fieldnames=headers, delimiter=";")
+        writer.writeheader()
+        for row in reader:
+            next_number = file_numbers.readline().strip()
+            row[key] = next_number
+            writer.writerow(row)
+        file_source.close()
+        file_source_copy.close
+        file_numbers.close()
+        file_output.close()
 
 
 if __name__ == '__main__':
