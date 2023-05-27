@@ -1,8 +1,13 @@
-from pathlib import Path
+"""Модуль для работы с .csv файлами."""
 import csv
 
 
+
 def main():
+    """Main function запускается, когда модуль запущен как основной.
+    Служит для настройки и передачи параметров в функцию сортировки.
+    """
+
     src = []
     output = ""
     reverse = False
@@ -13,6 +18,13 @@ def main():
 def external_natural_merge_sort(src: list, output: str = "",
                                 reverse: bool = False, key="",
                                 type_data='i'):
+    """Основная функция для сортировки, принимает параметры сортировки и решает,
+    что делать дальше.
+    Если файлов для сортировки несколько, а выходной файл один, то сначала объединяет
+    файлы, а затем сортирует итоговый.
+    Для сортировки .csv файлов используется отдельная функция.
+    """
+
     if output != "" and len(src) > 1:
         merge_files(src, output)
         src = [output]
@@ -33,9 +45,17 @@ def external_natural_merge_sort(src: list, output: str = "",
 
 
 def initial_split(file_path, reverse: bool):
-    file_data = open(file_path)
-    file_a = open('file_a.txt', 'w')
-    file_b = open('file_b.txt', 'w')
+    """Функция для изначального разделения файла на блоки для последующей
+    сортировки.
+    
+    Использует алгоритм естественного слияния для разбиения файлы на 2 файла
+    с блоками по неубыванию или невозрастанию. Использует пустую строку для
+    разделения чисел на блоки. В дальнейшем эти блоки используются для сортировки.
+    """
+
+    file_data = open(file_path, encoding="utf-8")
+    file_a = open('file_a.txt', 'w', encoding="utf-8")
+    file_b = open('file_b.txt', 'w', encoding="utf-8")
     current_file = file_a
     has_switched = False
     is_string = False
@@ -54,7 +74,7 @@ def initial_split(file_path, reverse: bool):
             except ValueError:
                 is_string = True
         if 'prev_number' in locals():
-            if (prev_number > next_number) is not reverse:
+            if (prev_number > next_number) is not reverse: # pylint: disable=E0601
                 if current_file == file_a:
                     current_file = file_b
                 else:
@@ -70,11 +90,19 @@ def initial_split(file_path, reverse: bool):
 
 
 def merge_and_sort(output: str = 'file_output.txt',
-                   reverse: bool = False,
-                   src: list = ['file_a.txt', 'file_b.txt']):
-    file_a = open(src[0], 'r')
-    file_b = open(src[1], 'r')
-    file_output = open(output, 'w')
+                   reverse: bool = False):
+    """Объединяет 2 файла в один, сортируя соответствующие блоки.
+    
+    Объединяет 2 блока в двух файлах в один блок и записывает этот блок
+    в другой файл. По ходу объединения использует также сортировку чисел
+    в этих двух блоках, таким образом, что итоговый блок в новом файле
+    является отсортированным. Может работать как с целыми числами, так и с
+    вещественными, а также со стрингами.
+    """
+
+    file_a = open('file_a.txt', 'r', encoding="utf-8")
+    file_b = open('file_b.txt', 'r', encoding="utf-8")
+    file_output = open(output, 'w', encoding="utf-8")
     number_a = file_a.readline()
     number_b = file_b.readline()
     while True:
@@ -135,9 +163,16 @@ def merge_and_sort(output: str = 'file_output.txt',
 
 
 def split(file_path):
-    file_data = open(file_path)
-    file_a = open('file_a.txt', 'w')
-    file_b = open('file_b.txt', 'w')
+    """Функция для последующего разделения файла на блоки.
+    
+    После объединения двух файлов в один, функция опять проводит
+    разбиение файла на 2 разных файла, записывая в каждый последовательно
+    блоки сортированных чисел, разделяя их также новой строкой.
+    """
+
+    file_data = open(file_path, encoding="utf-8")
+    file_a = open('file_a.txt', 'w', encoding="utf-8")
+    file_b = open('file_b.txt', 'w', encoding="utf-8")
     current_file = file_a
     switch_files_count = 0
     has_switched = False
@@ -162,14 +197,21 @@ def split(file_path):
 
 
 def csv_sort(src, output_path, reverse, key):
+    """Функция для сортировки .csv файлов.
+    
+    Сортирует по заданному полю 'key', оставляя остальные нетронутыми.
+    Копирует исходный файл, чтобы иметь возможность считывать исходные данные
+    при перезаписи исходного файла.
+    """
+
     for file_source_path in src:
         if output_path == "":
             output_path = file_source_path
-        file_source = open(file_source_path, "r", newline="")
+        file_source = open(file_source_path, "r", newline="", encoding="utf-8")
         reader = csv.DictReader(file_source, delimiter=";")
         headers = reader.fieldnames
-        file_numbers = open("file_numbers.txt", "w")
-        file_source_copy = open("file_source_copy.csv", "w", newline="")
+        file_numbers = open("file_numbers.txt", "w", encoding="utf-8")
+        file_source_copy = open("file_source_copy.csv", "w", newline="", encoding="utf-8")
         writer = csv.DictWriter(file_source_copy, fieldnames=headers,
                                 delimiter=";")
         writer.writeheader()
@@ -180,9 +222,9 @@ def csv_sort(src, output_path, reverse, key):
         file_source.close()
         file_source_copy.close()
         external_natural_merge_sort(["file_numbers.txt"], "", reverse)
-        file_output = open(output_path, "w", newline="")
-        file_numbers = open("file_numbers.txt", "r")
-        file_source_copy = open("file_source_copy.csv", "r", newline="")
+        file_output = open(output_path, "w", newline="", encoding="utf-8")
+        file_numbers = open("file_numbers.txt", "r", encoding="utf-8")
+        file_source_copy = open("file_source_copy.csv", "r", newline="", encoding="utf-8")
         reader = csv.DictReader(file_source_copy, delimiter=";")
         print(headers)
         writer = csv.DictWriter(file_output, fieldnames=headers, delimiter=";")
@@ -192,15 +234,17 @@ def csv_sort(src, output_path, reverse, key):
             row[key] = next_number
             writer.writerow(row)
         file_source.close()
-        file_source_copy.close
+        file_source_copy.close()
         file_numbers.close()
         file_output.close()
 
 
 def merge_files(files: list, output):
-    file_output = open(output, "w")
+    """Функция для слияния файлов в один для дальнейшей сортировки."""
+
+    file_output = open(output, "w", encoding="utf-8")
     for file_path in files:
-        file = open(file_path, "r")
+        file = open(file_path, "r", encoding="utf-8")
         next_number = file.readline()
         while next_number != "":
             file_output.write(next_number)
