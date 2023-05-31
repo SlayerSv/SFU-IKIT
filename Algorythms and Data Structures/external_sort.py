@@ -1,6 +1,5 @@
-"""Модуль для работы с .csv файлами."""
-import csv
-
+"""Модуль для сортировки .csv файлов."""
+import csv_sort
 
 
 def main():
@@ -8,29 +7,31 @@ def main():
     Служит для настройки и передачи параметров в функцию сортировки.
     """
 
-    src = []
+    src = ["file_output.csv"]
     output = ""
-    reverse = False
-    key = ""
-    external_natural_merge_sort(src, output, reverse, key)
+    reverse = True
+    key = "sort"
+    csv_sort.sort_csv(src, output, reverse, key)
 
 
 def external_natural_merge_sort(src: list, output: str = "",
                                 reverse: bool = False, key="",
-                                type_data='i'):
-    """Основная функция для сортировки, принимает параметры сортировки и решает,
-    что делать дальше.
-    Если файлов для сортировки несколько, а выходной файл один, то сначала объединяет
-    файлы, а затем сортирует итоговый.
+                                type_data='i'):  # pylint: disable=W0613
+    """Основная функция для сортировки, принимает параметры сортировки
+    и решает, что делать дальше.
+
+    Если файлов для сортировки несколько, а выходной файл один, то сначала
+    объединяет файлы, а затем сортирует итоговый.
     Для сортировки .csv файлов используется отдельная функция.
     """
 
+    if key != "":
+        csv_sort.sort_csv(src, output, reverse, key)
+        return
     if output != "" and len(src) > 1:
         merge_files(src, output)
         src = [output]
         output = ""
-    if key != "":
-        csv_sort(src, output, reverse, key)
     else:
         for file in src:
             is_sorting_finished = initial_split(file, reverse)
@@ -47,10 +48,11 @@ def external_natural_merge_sort(src: list, output: str = "",
 def initial_split(file_path, reverse: bool):
     """Функция для изначального разделения файла на блоки для последующей
     сортировки.
-    
+
     Использует алгоритм естественного слияния для разбиения файлы на 2 файла
     с блоками по неубыванию или невозрастанию. Использует пустую строку для
-    разделения чисел на блоки. В дальнейшем эти блоки используются для сортировки.
+    разделения чисел на блоки. В дальнейшем эти блоки используются для
+    сортировки.
     """
 
     file_data = open(file_path, encoding="utf-8")
@@ -74,7 +76,7 @@ def initial_split(file_path, reverse: bool):
             except ValueError:
                 is_string = True
         if 'prev_number' in locals():
-            if (prev_number > next_number) is not reverse: # pylint: disable=E0601
+            if (prev_number > next_number) is not reverse:  # pylint: disable=E0601
                 if current_file == file_a:
                     current_file = file_b
                 else:
@@ -92,7 +94,7 @@ def initial_split(file_path, reverse: bool):
 def merge_and_sort(output: str = 'file_output.txt',
                    reverse: bool = False):
     """Объединяет 2 файла в один, сортируя соответствующие блоки.
-    
+
     Объединяет 2 блока в двух файлах в один блок и записывает этот блок
     в другой файл. По ходу объединения использует также сортировку чисел
     в этих двух блоках, таким образом, что итоговый блок в новом файле
@@ -164,7 +166,7 @@ def merge_and_sort(output: str = 'file_output.txt',
 
 def split(file_path):
     """Функция для последующего разделения файла на блоки.
-    
+
     После объединения двух файлов в один, функция опять проводит
     разбиение файла на 2 разных файла, записывая в каждый последовательно
     блоки сортированных чисел, разделяя их также новой строкой.
@@ -194,49 +196,6 @@ def split(file_path):
             switch_files_count += 1
         else:
             current_file.write(next_number)
-
-
-def csv_sort(src, output_path, reverse, key):
-    """Функция для сортировки .csv файлов.
-    
-    Сортирует по заданному полю 'key', оставляя остальные нетронутыми.
-    Копирует исходный файл, чтобы иметь возможность считывать исходные данные
-    при перезаписи исходного файла.
-    """
-
-    for file_source_path in src:
-        if output_path == "":
-            output_path = file_source_path
-        file_source = open(file_source_path, "r", newline="", encoding="utf-8")
-        reader = csv.DictReader(file_source, delimiter=";")
-        headers = reader.fieldnames
-        file_numbers = open("file_numbers.txt", "w", encoding="utf-8")
-        file_source_copy = open("file_source_copy.csv", "w", newline="", encoding="utf-8")
-        writer = csv.DictWriter(file_source_copy, fieldnames=headers,
-                                delimiter=";")
-        writer.writeheader()
-        for row in reader:
-            file_numbers.write(row[key] + "\n")
-            writer.writerow(row)
-        file_numbers.close()
-        file_source.close()
-        file_source_copy.close()
-        external_natural_merge_sort(["file_numbers.txt"], "", reverse)
-        file_output = open(output_path, "w", newline="", encoding="utf-8")
-        file_numbers = open("file_numbers.txt", "r", encoding="utf-8")
-        file_source_copy = open("file_source_copy.csv", "r", newline="", encoding="utf-8")
-        reader = csv.DictReader(file_source_copy, delimiter=";")
-        print(headers)
-        writer = csv.DictWriter(file_output, fieldnames=headers, delimiter=";")
-        writer.writeheader()
-        for row in reader:
-            next_number = file_numbers.readline().strip()
-            row[key] = next_number
-            writer.writerow(row)
-        file_source.close()
-        file_source_copy.close()
-        file_numbers.close()
-        file_output.close()
 
 
 def merge_files(files: list, output):
