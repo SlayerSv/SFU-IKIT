@@ -1,17 +1,6 @@
-"""Модуль для сортировки .csv файлов."""
+"""Модуль для удаления рабочих файлов."""
+import os
 import csv_sort
-
-
-def main():
-    """Main function запускается, когда модуль запущен как основной.
-    Служит для настройки и передачи параметров в функцию сортировки.
-    """
-
-    src = ["file_output.csv"]
-    output = ""
-    reverse = True
-    key = "sort"
-    csv_sort.sort_csv(src, output, reverse, key)
 
 
 def external_natural_merge_sort(src: list, output: str = "",
@@ -27,22 +16,25 @@ def external_natural_merge_sort(src: list, output: str = "",
 
     if key != "":
         csv_sort.sort_csv(src, output, reverse, key)
+        print("Sorting done!")
         return
     if output != "" and len(src) > 1:
         merge_files(src, output)
         src = [output]
         output = ""
-    else:
-        for file in src:
-            is_sorting_finished = initial_split(file, reverse)
-            if output == "":
-                output_sort = file
-            else:
-                output_sort = output
-            while is_sorting_finished is not True:
-                merge_and_sort(output_sort, reverse)
-                is_sorting_finished = split(output_sort)
-            print('done sorting ' + file)
+    for file in src:
+        is_sorting_finished = initial_split(file, reverse)
+        if output == "":
+            output_sort = file
+        else:
+            output_sort = output
+        while is_sorting_finished is not True:
+            merge_and_sort(output_sort, reverse)
+            is_sorting_finished = split(output_sort)
+        print('file sorted: ' + file)
+    print("Sorting done!")
+    os.remove("file_a.txt")
+    os.remove("file_b.txt")
 
 
 def initial_split(file_path, reverse: bool):
@@ -210,7 +202,3 @@ def merge_files(files: list, output):
             next_number = file.readline()
         file.close()
     file_output.close()
-
-
-if __name__ == '__main__':
-    main()

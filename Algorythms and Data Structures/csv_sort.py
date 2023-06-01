@@ -1,17 +1,28 @@
 """Модуль для работы с .csv файлами."""
 import csv
+import os
 
 
 def sort_csv(src: list, output, reverse: bool, key):
+    """Основная функция для сортировки csv файлов.
+
+    Может сортировать как на месте, так и с выбором выходного файла.
+    Может сортировать несколько файлов.
+    """
     if len(src) > 1 and output != "":
         merge_and_sort(src, output, reverse, key)
-    for path in src:
-        if output == "":
-            output_path = path
-        else:
-            output_path = output
-        files_for_sorting = initial_split(output_path, reverse, key)
-        merge_and_sort(files_for_sorting, output_path, reverse, key)
+        files_for_sorting = initial_split(output, reverse, key)
+        merge_and_sort(files_for_sorting, output, reverse, key)
+    else:
+        for path in src:
+            if output == "":
+                output_path = path
+            else:
+                output_path = output
+            files_for_sorting = initial_split(path, reverse, key)
+            merge_and_sort(files_for_sorting, output_path, reverse, key)
+    for file in files_for_sorting:
+        os.remove(file)
 
 
 def initial_split(file_path_source, reverse: bool, key=""):
@@ -38,17 +49,16 @@ def initial_split(file_path_source, reverse: bool, key=""):
         try:
             row = next(reader)
         except StopIteration:
+            paths_for_sorting.append(file_path_writing)
             file_writing.close()
             file_source.close()
             break
         next_value = get_value(row, key)
         if 'prev_value' in locals():
             if reverse is True:
-                is_next_value_less = next_value <= prev_value  # pylint: disable=E0601
+                is_next_value_less = next_value > prev_value  # pylint: disable=E0601
             else:
                 is_next_value_less = next_value < prev_value
-            if reverse is True:
-                is_next_value_less = not is_next_value_less
             if is_next_value_less:
                 file_writing.close()
                 next_file_index += 1
@@ -61,11 +71,17 @@ def initial_split(file_path_source, reverse: bool, key=""):
                 writer.writeheader()
         writer.writerow(row)
         prev_value = next_value
-    print(paths_for_sorting)
     return paths_for_sorting
 
 
 def merge_and_sort(paths: list, output, reverse, key):
+    """Объединяет и сортирует файлы.
+
+    Считывает последовательно все файлы, сливая их в один. Сначала
+    копирует последний файл из списка, удаляет его из списка, затем
+    проходится по списку с начала и каждый раз объединяет следующий файл
+    из списка с итоговым файлом.
+    """
     if len(paths) == 0:
         print("Empty list")
         return
@@ -92,10 +108,10 @@ def merge_and_sort(paths: list, output, reverse, key):
             is_done = False
             number_a = get_value(row_a, key)
             number_merged = get_value(row_merged, key)
-            number_a_is_less = number_a < number_merged
+            is_number_a_less = number_a < number_merged
             if reverse is True:
-                number_a_is_less = not number_a_is_less
-            if number_a_is_less:
+                is_number_a_less = not is_number_a_less
+            if is_number_a_less:
                 writer.writerow(row_a)
                 try:
                     row_a = next(reader_a)
@@ -127,6 +143,7 @@ def merge_and_sort(paths: list, output, reverse, key):
 
 
 def copy_file(path_source, path_copy):
+    """Создает копию файла."""
     file_source = open(path_source, "r", newline="", encoding='utf-8')
     reader = csv.DictReader(file_source, delimiter=";")
     fieldnames = reader.fieldnames
@@ -140,6 +157,7 @@ def copy_file(path_source, path_copy):
 
 
 def get_value(row: dict, key: str | int):
+    """Извлекает значение из строки по ключу."""
     try:
         value = int(row[key])
     except ValueError:
