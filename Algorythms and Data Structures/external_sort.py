@@ -1,11 +1,32 @@
 """Модуль для удаления рабочих файлов."""
 import os
 import csv_sort
+import argparse
+
+parser = argparse.ArgumentParser(description="Program for sorting external "
+                                 + "files.")
+parser.add_argument('src', type=str, help="Path to files for sorting. "
+                    + "At least one path is required, others are optional",
+                    nargs="+")
+parser.add_argument('-output', type=str, help="Path to the sorted outcome file"
+                    + ". If none is given then files will be sorted in-place.",
+                    nargs="?", default="")
+parser.add_argument('-reverse', help="Default is ascending order. Write "
+                    + "'-reverse' if you want to sort in descending order.",
+                    action="store_true")
+parser.add_argument('-key', type=str, help="Name of the table for sorting "
+                    + "in csv files.", nargs="?", default="")
+args = parser.parse_args()
+print(args)
+src = args.src
+output = args.output
+reverse = args.reverse
+key = args.key
+print(src, output, reverse, key)
 
 
 def external_natural_merge_sort(src: list, output: str = "",
-                                reverse: bool = False, key="",
-                                type_data='i'):  # pylint: disable=W0613
+                                reverse: bool = False, key=""):
     """Основная функция для сортировки, принимает параметры сортировки
     и решает, что делать дальше.
 
@@ -202,3 +223,7 @@ def merge_files(files: list, output):
             next_number = file.readline()
         file.close()
     file_output.close()
+
+
+if __name__ == "__main__":
+    external_natural_merge_sort(src, output, reverse, key)
