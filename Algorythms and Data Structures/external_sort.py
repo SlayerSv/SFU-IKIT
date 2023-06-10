@@ -17,12 +17,10 @@ parser.add_argument('-reverse', help="Default is ascending order. Write "
 parser.add_argument('-key', type=str, help="Name of the table for sorting "
                     + "in csv files.", nargs="?", default="")
 args = parser.parse_args()
-print(args)
 src = args.src
 output = args.output
 reverse = args.reverse
 key = args.key
-print(src, output, reverse, key)
 
 
 def external_natural_merge_sort(src: list, output: str = "",
