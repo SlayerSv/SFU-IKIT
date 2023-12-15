@@ -1,0 +1,48 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: 'Lato', sans-serif;
+  font-size: 22px;
+  color: aliceblue;
+  background-color: black;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(/prakticheskaya2/Background\ Image.jpg);
+  background-size: cover;
+}
+
+body {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+a {
+  text-decoration: none;
+  color: deepskyblue;
+}
+
+a:visited {
+  color: blueviolet;
+}
+
+li {
+  margin: 12px 32px;
+}
+
+nav li {
+  list-style: circle;
+}
+
+footer li {
+  list-style: square;
+}
+
+.title {
+  text-align: center;
+  margin: 1em 0;
+}
+
+hr {
+  margin-top: 30px;
+}
