@@ -1,0 +1,116 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: 'Lato', sans-serif;
+  font-size: 22px;
+  color: aliceblue;
+  background-color: black;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('./Background\ Image.jpg');
+  background-size: cover;
+  scroll-behavior: smooth;
+}
+
+body {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px;
+}
+
+a {
+  text-decoration: none;
+  color: deepskyblue;
+  transition: all 0.3s;
+}
+
+.animation-container {
+  width: 50px;
+  height: 50px;
+  background-image: url("./star-explosion.jpg");
+  background-size: 350px;
+  background-position: 0px 0px;
+}
+
+nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+nav a:visited {
+  color: deepskyblue;
+}
+
+a:visited {
+  color: blueviolet;
+}
+
+a:hover {
+  color: aqua;
+}
+
+nav a:hover {
+  color: aqua;
+}
+
+li {
+  margin: 12px 32px;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  background: rgb(7, 1, 12);
+}
+
+nav ul {
+  display: flex;
+  justify-content: center;
+}
+
+nav li {
+  list-style: none;
+}
+
+footer li {
+  list-style: square;
+}
+
+.title {
+  text-align: center;
+  margin: 1em 0;
+}
+
+header .title {
+  margin: 0;
+}
+
+hr {
+  margin-top: 30px;
+}
+
+header hr {
+  margin-top: 0;
+}
+
+input, textarea {
+  color: white;
+  
+  background-color: transparent;
+}
+
+form {
+  max-width: 600px;
+}
+
+.form-group {
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group .form-control-sm {
+  border-color: dodgerblue;
+}
