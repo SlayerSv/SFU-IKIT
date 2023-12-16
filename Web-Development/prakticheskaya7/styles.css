@@ -8,7 +8,7 @@ html {
   font-size: 22px;
   color: aliceblue;
   background-color: black;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('./Background\ Image.jpg');
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('./background-image.jpg');
   background-size: cover;
   scroll-behavior: smooth;
 }
