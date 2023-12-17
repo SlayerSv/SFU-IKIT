@@ -131,30 +131,34 @@ form {
 }
 
 .question {
+  position: relative;
   background-color: aliceblue;
   color: black;
-  border-radius: 10px;
-  padding: 5px 15px;
+  border-radius: 5px;
+  padding: 5px 35px;
   cursor: pointer;
 }
 
 .question.closed::before {
+  position: absolute;
+  left: 7px;
   content: "+";
-  padding-right: 10px;
 }
 
 .question.opened::before {
-  content: "-";
-  padding-right: 10px;
+  position: absolute;
+  left: 7px;
+  content: "\2014";
+  
 }
 
 .answer {
   background-color: midnightblue;
   color: aliceblue;
-  border-radius: 10px;
+  border-radius: 5px;
   padding: 10px 20px;
   line-height: 1.3;
-  transition: all 0.5s;
+  transition: all 0.3s;
 }
 
 .hidden {
