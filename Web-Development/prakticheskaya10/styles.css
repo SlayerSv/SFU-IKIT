@@ -153,14 +153,14 @@ form {
 }
 
 .answer {
-  max-height: 100px;
+  max-height: 400px;
   overflow: hidden;
   background-color: transparent;
   color: aliceblue;
   border-radius: 5px;
   padding: 10px 20px;
   line-height: 1.4;
-  transition: all 1s;
+  transition: all 1s ease;
 }
 
 .hidden {
