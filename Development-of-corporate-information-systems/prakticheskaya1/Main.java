@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * Can create, add to the list, delete from the list, show and compare different
  * type of rooms.
  */
-public class _Main {
+public class Main {
     static final int EXIT = 0;
     static final int CREATE_ROOM = 1;
     static final int DELETE_ROOM = 2;
