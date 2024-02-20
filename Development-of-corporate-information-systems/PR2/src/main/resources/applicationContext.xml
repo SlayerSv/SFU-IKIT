@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:context="http://www.springframework.org/schema/context"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans
+ http://www.springframework.org/schema/beans/spring-beans.xsd
+ http://www.springframework.org/schema/context
+ http://www.springframework.org/schema/context/spring-context.xsd">
+ 
+ 	<context:property-placeholder location = "classpath:Engine.properties"/>
+ 	
+	<bean id="steamTrain"
+	class="PR1.Train">
+	<constructor-arg index="0" ref="steamEngine"/>
+	<constructor-arg index="1" value="45"/>
+	</bean>
+	
+	<bean id="electricTrain"
+	class="PR1.Train">
+	<constructor-arg index="0" ref="electricEngine"/>
+	<constructor-arg index="1" value="60"/>
+	</bean>
+	
+	<bean id="dieselTrain"
+	class="PR1.Train">
+	<constructor-arg index="0" ref="dieselEngine"/>
+	<constructor-arg index="1" value="50"/>
+	</bean>
+	
+	<bean id="steamEngine"
+	class="PR1.SteamEngine">
+	<property name="fuelType" value="${SteamEngine.fuelType}"></property>
+	</bean>
+	
+	<bean id="dieselEngine"
+	class="PR1.DieselEngine">
+	<property name="power" value="${DieselEngine.power}"></property>
+	</bean>
+	
+	<bean id="electricEngine"
+	class="PR1.ElectricEngine">
+	<property name="voltage" value="${ElectricEngine.voltage}"></property>
+	</bean>
+</beans>
