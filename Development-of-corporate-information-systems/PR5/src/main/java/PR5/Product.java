@@ -3,6 +3,11 @@ package PR5;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.Size;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -12,11 +17,29 @@ import org.springframework.stereotype.Component;
 @Component("product")
 @Scope("prototype")
 public class Product {
+	
 	private int id;
+	
+	@NotNull(message = "this field cannot be empty")
+	@Size(min=2, max=30, message= "length must be 2-30 characters")
 	private String item;
+	
+	@NotNull(message = "this field cannot be empty")
+	@Size(min=2, message= "minimum length is 2")
+	@Size(max=30, message= "maximum length is 30")
 	private String type;
+	
+	@NotNull(message = "this field cannot be empty")
+	@Size(min=2, message= "minimum length is 2")
+	@Size(max=30, message= "maximum length is 30")
 	private String producer;
+	
+	@NotNull(message = "this field cannot be empty")
+	@PositiveOrZero(message = "price cannot be negative")
 	private double price;
+	
+	@NotNull(message = "this field cannot be empty")
+	@Positive(message = "weight must be a positive number")
 	private int weight;
 	
 	public Product() {}

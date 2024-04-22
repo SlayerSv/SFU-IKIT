@@ -5,6 +5,11 @@
     <meta charset="UTF-8">
     <title>Product Database</title>
     <style>
+	    * {
+    		margin: 0;
+    		padding: 0;
+    	}
+    	
 	    body {
 	    	font-size: 24px;
 	    	max-width: 900px;
@@ -17,6 +22,7 @@
 	    	display: flex;
 	    	justify-content: center;
 	    	align-items: center;
+	    	margin: 20px 0;
 	    }
 	    
 	    ul {
@@ -67,6 +73,7 @@
 	    p {
 	    	font-size: 28px;
 	    	text-align: center;
+	    	margin: 40px 0;
 	    }
 	    
 	    a {
@@ -97,7 +104,7 @@
 </ul>
 </nav>
 <p>Enter information to edit a product</p>
-<form th:method="PATCH" th:action="@{/products/edit" th:object="${product}">
+<form th:method="POST" th:action="@{/products/edit/{id}(id=${product.getId()})}" th:object="${product}">
 <div>
 	<label>Item</label>
 	<input type="text" id="item" name="item" th:field="*{item}">

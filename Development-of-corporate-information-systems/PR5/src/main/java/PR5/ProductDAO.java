@@ -53,7 +53,7 @@ public class ProductDAO {
 			String query = "SELECT * FROM \"products\" where id = ?";
 			PreparedStatement statement = c.prepareStatement(query);
 			statement.setInt(1, id);
-			return statement.executeQuery(query);
+			return statement.executeQuery();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("\nError getting product");
@@ -89,8 +89,8 @@ public class ProductDAO {
 	public ResultSet edit(Product product) {
 		try {
 			String query = "UPDATE \"products\" SET (item, type, producer, price, weight) = (?,?,?,?,?)"
-					+ "where id = ?"
-					+ "RETURNING *;";
+					+ " where id = ?"
+					+ " RETURNING *;";
 			PreparedStatement statement = c.prepareStatement(query);
 			statement.setString(1, product.getItem());
 			statement.setString(2, product.getType());
@@ -98,6 +98,7 @@ public class ProductDAO {
 			statement.setDouble(4, product.getPrice());
 			statement.setInt(5, product.getWeight());
 			statement.setInt(6, product.getId());
+			System.out.println(statement);
 			return statement.executeQuery();
 		} catch(SQLException e) {
 			e.printStackTrace();
@@ -105,6 +106,20 @@ public class ProductDAO {
 		}
 	}
 	
+	public ResultSet filterByPrice(PriceRange priceRange) {
+		try {
+			String query = "SELECT * FROM \"products\" where price >= ? and price <= ? order by price";
+			PreparedStatement statement = c.prepareStatement(query);
+			statement.setDouble(1, priceRange.getMinPrice());
+			statement.setDouble(2, priceRange.getMaxPrice());
+			return statement.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("\nError filtering products");
+			return null;
+		}
+	}
+
 	/*
 	 * Deletes a product from a database by provided ID and
 	 * returns number of affected database rows.
