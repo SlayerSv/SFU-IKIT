@@ -100,7 +100,14 @@
 	    
 	    div {
 	    	display: flex;
+	    	flex-direction: column;
 	    	justify-content: center;
+	    	align-items: center;
+	    }
+	    
+	    .found {
+	    	font-size: 20px;
+	    	font-style: italic;
 	    }
 	    
     </style>
@@ -122,6 +129,7 @@
  </p>
 <div>
 	<ul class="productsList">
+		<li th:text="'Products found: ' + ${products.size()}" class="found"></li>
 		<li th:each="product : ${products}" class="productItem">
 			<span th:text="'ID: ' + ${product.getId()}"></span>
 			<span th:text="'Item: ' + ${product.getItem()}"></span>

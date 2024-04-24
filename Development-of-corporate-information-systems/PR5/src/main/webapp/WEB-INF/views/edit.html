@@ -89,6 +89,11 @@
 	    	border-bottom: 2px solid;
 	    	color: aliceblue;
 	    }
+	    
+	    .error {
+	    	color: red;
+	    }
+	    
     </style>
 </head>
 
@@ -106,27 +111,32 @@
 <p>Enter information to edit a product</p>
 <form th:method="POST" th:action="@{/products/edit/{id}(id=${product.getId()})}" th:object="${product}">
 <div>
-	<label>Item</label>
+	<label for="item">Item</label>
 	<input type="text" id="item" name="item" th:field="*{item}">
+	<span th:if="${#fields.hasErrors('item')}" th:errors="*{item}" class="error"></span>
 </div>
 <div>
-	<label>Type</label>
+	<label for="type">Type</label>
 	<input type="text" id="type" name="type" th:field="*{type}">
+	<span th:if="${#fields.hasErrors('type')}" th:errors="*{type}" class="error"></span>
 </div>
 <div>
-	<label>Producer</label>
+	<label for="producer">Producer</label>
 	<input type="text" id="producer" name="producer" th:field="*{producer}">
+	<span th:if="${#fields.hasErrors('producer')}" th:errors="*{producer}" class="error"></span>
 </div>
 <div>
-	<label>Price</label>
-	<input type="text" id="price" name="price" th:field="*{price}">
+	<label for="price">Price</label>
+	<input type="number" id="price" name="price" th:field="*{price}">
+	<span th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="error"></span>
 </div>
 <div>
-	<label>Weight</label>
-	<input type="text" id="weight" name="weight" th:field="*{weight}">
+	<label for="weight">Weight</label>
+	<input type="number" id="weight" name="weight" th:field="*{weight}">
+	<span th:if="${#fields.hasErrors('weight')}" th:errors="*{weight}" class="error"></span>
 </div>
 <div>
-	<button>Add product</button>
+	<button>Edit product</button>
 </div>
 
 </form>

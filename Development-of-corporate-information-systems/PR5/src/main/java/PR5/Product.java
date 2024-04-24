@@ -18,27 +18,24 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class Product {
 	
+	@Positive(message = "ID must be a positive number")
 	private int id;
 	
 	@NotNull(message = "this field cannot be empty")
-	@Size(min=2, max=30, message= "length must be 2-30 characters")
+	@Size(min=2, max=30, message= "length must be 2-30 characters long")
 	private String item;
 	
 	@NotNull(message = "this field cannot be empty")
-	@Size(min=2, message= "minimum length is 2")
-	@Size(max=30, message= "maximum length is 30")
+	@Size(min=2, max=30, message= "length must be 2-30 characters long")
 	private String type;
 	
 	@NotNull(message = "this field cannot be empty")
-	@Size(min=2, message= "minimum length is 2")
-	@Size(max=30, message= "maximum length is 30")
+	@Size(min=2, max=30, message= "length must be 2-30 characters long")
 	private String producer;
 	
-	@NotNull(message = "this field cannot be empty")
 	@PositiveOrZero(message = "price cannot be negative")
 	private double price;
 	
-	@NotNull(message = "this field cannot be empty")
 	@Positive(message = "weight must be a positive number")
 	private int weight;
 	

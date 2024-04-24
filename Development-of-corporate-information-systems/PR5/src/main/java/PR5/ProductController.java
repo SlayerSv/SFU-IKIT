@@ -4,9 +4,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import javax.validation.Valid;
+
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,7 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-public class MainController {
+public class ProductController {
 	private static ArrayList<Product> products = new ArrayList<Product>();
 	public static AnnotationConfigApplicationContext context = 
 			new AnnotationConfigApplicationContext(SpringConfig.class);
@@ -47,6 +50,15 @@ public class MainController {
     	Product product = context.getBean("product", Product.class);
     	model.addAttribute("product", product);
         return "add";
+    }
+    
+    @PostMapping("/products/add")
+    public String addProduct(@ModelAttribute("product") @Valid Product product, BindingResult br) {
+    	if (br.hasErrors()) {
+    		return "add";
+    	}
+    	db.create(product);
+    	return "redirect:/products/all";
     }
     
     @GetMapping("/products/edit")
@@ -89,10 +101,11 @@ public class MainController {
 		}
     }
     
-    
-    
     @PostMapping("/products/edit/{id}")
-    public String editProduct(@ModelAttribute("product") Product product) {
+    public String editProduct(@ModelAttribute("product") @Valid Product product, BindingResult br) {
+    	if (br.hasErrors()) {
+    		return "edit";
+    	}
     	db.edit(product);
     	return "redirect:/products/all";
     }
@@ -121,7 +134,10 @@ public class MainController {
     }
     
     @PostMapping("/products/filter")
-    public String filterPrice(@ModelAttribute("range") PriceRange range) {
+    public String filterPrice(@ModelAttribute("priceRange") @Valid PriceRange range, BindingResult br) {
+    	if (br.hasErrors()) {
+    		return "filter";
+    	}
         return String.format("redirect:/products/filterPrice?min=%s&max=%s",
         		range.getMinPriceF(), range.getMaxPriceF());
     }
@@ -148,11 +164,5 @@ public class MainController {
     	model.addAttribute("products", products);
     	model.addAttribute("priceRange", priceRange);
         return "filteredPrice";
-    }
-
-    @PostMapping("/products/add")
-    public String addProduct(@ModelAttribute("product") Product product) {
-    	db.create(product);
-    	return "redirect:/products/all";
     }
 }
