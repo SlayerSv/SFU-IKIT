@@ -11,12 +11,14 @@ import org.springframework.stereotype.Component;
 
 /*
  * Database Access Object to interact with a database.
+ * Makes different kind of requests to a database and
+ * returns ResultSet as a response.
  */
 @Component("DB")
 public class ProductDAO {
 	private static final String URL = "jdbc:postgresql://localhost:5432/products";
 	private static final String user = "postgres";
-	private static final String pass = "svetaz";
+	private static final String pass = "postgres";
 	private static Connection c;
 	
 	static {
@@ -98,7 +100,6 @@ public class ProductDAO {
 			statement.setDouble(4, product.getPrice());
 			statement.setInt(5, product.getWeight());
 			statement.setInt(6, product.getId());
-			System.out.println(statement);
 			return statement.executeQuery();
 		} catch(SQLException e) {
 			e.printStackTrace();

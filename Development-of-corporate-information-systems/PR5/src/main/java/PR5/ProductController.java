@@ -16,6 +16,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+/*
+ * Product controller responsible for interacting between
+ * a database and a view. Accepts GET and POST HTTP methods,
+ * validates form data, makes requests to database,
+ * returns appropriate views.
+ */
 @Controller
 public class ProductController {
 	private static ArrayList<Product> products = new ArrayList<Product>();
@@ -145,8 +151,6 @@ public class ProductController {
     @GetMapping("/products/filterPrice")
     public String filteredProducts(@RequestParam("min") double min,
     		@RequestParam("max") double max, Model model) {
-    	System.out.println(min);
-    	System.out.println(max);
     	PriceRange priceRange = context.getBean("priceRange", PriceRange.class);
     	priceRange.setMinPrice(min);
     	priceRange.setMaxPrice(max);

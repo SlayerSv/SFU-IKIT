@@ -13,12 +13,13 @@ import org.springframework.stereotype.Component;
 
 /*
  * Class representing food product.
+ * Fields must have certain restrictions to avoid
+ * certain errors when saving product to a database.
  */
 @Component("product")
 @Scope("prototype")
 public class Product {
 	
-	@Positive(message = "ID must be a positive number")
 	private int id;
 	
 	@NotNull(message = "this field cannot be empty")
