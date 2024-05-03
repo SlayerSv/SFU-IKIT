@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Product Database</title>
+    <link rel="stylesheet" href="styles.css"></link>
+</head>
+
+<body>
+<nav>
+<ul>
+<li><a href="/products/">Home</a></li>
+<li><a href="/products/all" class="active">Show all products</a></li>
+<li><a href="/products/add">Add new Product</a></li>
+<li><a href="/products/edit">Edit product</a></li>
+<li><a href="/products/delete">Delete product</a></li>
+<li><a href="/products/filter">Filter products by price</a></li>
+</ul>
+</nav>
+	<h1>List of all products in the database</h1>
+	<div class="container">
+	<ul class="productsList">
+		<li th:text="'Products found: ' + ${products.size()}" class="found"></li>
+		<li th:each="product : ${products}" class="productItem">
+			<span th:text="'ID: ' + ${product.getId()}"></span>
+			<span th:text="'Item: ' + ${product.getItem()}"></span>
+			<span th:text="'Type: ' + ${product.getType()}"></span>
+			<span th:text="'Producer: ' + ${product.getProducer()}"></span>
+			<span th:text="'Price: ' + ${product.getFormattedPrice()}"></span>
+			<span th:text="'Weight: ' + ${product.getWeight()} + ' gramm'"></span>
+		</li>
+	</ul>
+	</div>
+</body>
+
+</html>
