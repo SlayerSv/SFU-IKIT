@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Product Database</title>
+    <link rel="stylesheet" href="styles.css"></link>
+</head>
+
+<body>
+<nav>
+<ul>
+<li><a href="/products/">Home</a></li>
+<li><a href="/products/all">Show all products</a></li>
+<li><a href="/products/add">Add new Product</a></li>
+<li><a href="/products/edit">Edit product</a></li>
+<li><a href="/products/delete">Delete product</a></li>
+<li><a href="/products/filter">Filter products by price</a></li>
+</ul>
+</nav>
+<h1>Enter Your credentials</h1>
+<form th:method="POST" th:action="@{/products/signup}" th:object="${user}">
+	<div>
+		<label for="name">Name</label>
+		<input type="text" id="name" name="name" th:field="*{name}">
+	</div>
+  <div>
+		<label for="password">Password</label>
+		<input type="password" id="password" name="password" th:field="*{password}">
+	</div>
+	<div>
+		<button>Signup</button>
+	</div>
+</form>
+</body>
+
+</html>
