@@ -1,7 +1,6 @@
 package PR6;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,26 +13,11 @@ import org.springframework.stereotype.Component;
  * Makes different kind of requests to a database and
  * returns ResultSet as a response.
  */
-@Component("DB")
+@Component("productDB")
 public class ProductDAO {
-	private static final String URL = "jdbc:postgresql://localhost:5432/products";
-	private static final String user = "postgres";
-	private static final String pass = "postgres";
-	private static Connection c;
-	
-	static {
-		try {
-			Class.forName("org.postgresql.Driver");
-		} catch (ClassNotFoundException c) {
-			c.printStackTrace();
-		}
-		try {
-			c = DriverManager.getConnection(URL, user, pass);
-		} catch (SQLException e){
-			e.printStackTrace();
-		} 
-	}
-	
+
+	Connection c = DBConnection.getConnection();
+
 	/*
 	 * Requests all products data from a database and
 	 * returns ResultSet with that data.
@@ -70,8 +54,8 @@ public class ProductDAO {
 	public ResultSet create(Product product) {
 		try {
 			String query = "INSERT INTO \"products\"(item, type, producer, price, weight)"
-					+ "VALUES (?, ?, ?, ?, ?)"
-					+ "RETURNING *;";
+					+ " VALUES (?, ?, ?, ?, ?)"
+					+ " RETURNING *;";
 			PreparedStatement statement = c.prepareStatement(query);
 			statement.setString(1, product.getItem());
 			statement.setString(2, product.getItem());
