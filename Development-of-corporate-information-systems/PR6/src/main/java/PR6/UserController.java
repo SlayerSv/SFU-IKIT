@@ -17,9 +17,9 @@ import jakarta.validation.Valid;
 @Controller
 public class UserController {
 
-    public static AnnotationConfigApplicationContext context = 
+    private static AnnotationConfigApplicationContext context = 
 			new AnnotationConfigApplicationContext(Main.class);
-	UserDAO db = context.getBean("userDB", UserDAO.class);
+    private static UserDAO db = context.getBean("userDB", UserDAO.class);
 
     @GetMapping("/users/signup")
     public String signup(Model model) {
@@ -67,6 +67,6 @@ public class UserController {
     }
 
     public void authenticate(User user) {
-
+        System.out.println("authenticated user: " + user.toString());
     }
 }

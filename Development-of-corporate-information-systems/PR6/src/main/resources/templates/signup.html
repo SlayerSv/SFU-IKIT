@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Product Database</title>
-    <link rel="stylesheet" href="styles.css"></link>
+    <link rel="stylesheet" th:href="@{~/styles.css}"></link>
 </head>
 
 <body>
@@ -19,7 +19,7 @@
 </ul>
 </nav>
 <h1>Enter Your credentials</h1>
-<form th:method="POST" th:action="@{/products/signup}" th:object="${user}">
+<form th:method="POST" th:action="@{/users/signup}" th:object="${user}">
 	<div>
 		<label for="name">Name</label>
 		<input type="text" id="name" name="name" th:field="*{name}">

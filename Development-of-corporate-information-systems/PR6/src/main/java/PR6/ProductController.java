@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class ProductController {
 	private static ArrayList<Product> products = new ArrayList<Product>();
-	public static AnnotationConfigApplicationContext context = 
+	private static AnnotationConfigApplicationContext context = 
 			new AnnotationConfigApplicationContext(Main.class);
     private static ProductDAO db = context.getBean("productDB", ProductDAO.class);
     

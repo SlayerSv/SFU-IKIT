@@ -43,12 +43,24 @@ public class User {
         return this.name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getPassword() {
         return this.password;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getRole() {
         return this.role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public void setValues (ResultSet res) {
@@ -63,5 +75,10 @@ public class User {
 			System.out.print("\nDB Error, product object was not changed\n");
 			e.printStackTrace();
 		}
+	}
+
+    @Override
+	public String toString() {
+		return "\nName: " + this.name + "\nRole: " + this.role;
 	}
 }

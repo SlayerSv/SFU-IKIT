@@ -9,22 +9,31 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import jakarta.servlet.DispatcherType;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf(AbstractHttpConfigurer::disable)
+        return http
+            //.csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/products/").permitAll()
-            .requestMatchers("/products/login").permitAll()
-            .requestMatchers("/products/all").hasAnyRole("admin", "user")
-            .requestMatchers("/products/filter").hasAnyRole("admin", "user")
-            .requestMatchers("/products/filterPrice").hasAnyRole("admin", "user")
-            .requestMatchers("/products/add").hasRole("admin")
-            .requestMatchers("/products/edit").hasRole("admin")
-            .requestMatchers("/products/delete").hasRole("admin")
-            )
+            //.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
+            .anyRequest().permitAll()
+            // .requestMatchers("/products/login").permitAll()
+            // .requestMatchers("/products/all").hasAnyRole("admin", "user")
+            // .requestMatchers("/products/filter").hasAnyRole("admin", "user")
+            // .requestMatchers("/products/filterPrice").hasAnyRole("admin", "user")
+            // .requestMatchers("/products/add").hasRole("admin")
+            // .requestMatchers("/products/edit").hasRole("admin")
+            // .requestMatchers("/products/delete").hasRole("admin")
+            //)
+            //.formLogin((form) -> form
+            //.loginPage("/login")
+            //.permitAll()
+        )
+        //.logout((logout) -> logout.permitAll())
             .build();
     }
 
