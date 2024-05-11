@@ -18,17 +18,23 @@
 <li><a href="/products/filter">Filter products by price</a></li>
 </ul>
 </nav>
-<h1>Enter Your credentials</h1>
-<form th:method="POST" th:action="@{/users/login}" th:object="${user}">
+<h1>Login</h1>
+<div th:if="${param.created}" class="success">    
+	Account has been created. You can now login.
+</div>
+<form th:method="POST" th:action="@{/users/login}" >
 	<div>
 		<label for="name">Name</label>
-		<input type="text" id="name" name="name" th:field="*{name}">
-		<span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error"></span>
+		<input type="text" id="username" name="username" >
+		<span   class="error"></span>
 	</div>
   <div>
 		<label for="password">Password</label>
-		<input type="password" id="password" name="password" th:field="*{password}">
-		<span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error"></span>
+		<input type="password" id="password" name="password" >
+		<span   class="error"></span>
+	</div>
+	<div th:if="${param.error}" class="error">    
+		Invalid username or password.
 	</div>
 	<div>
 		<button>Login</button>

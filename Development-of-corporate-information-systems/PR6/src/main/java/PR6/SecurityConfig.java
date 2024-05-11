@@ -2,6 +2,7 @@ package PR6;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -20,8 +21,15 @@ public class SecurityConfig {
             //.csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
             //.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
-            .anyRequest().permitAll()
-            // .requestMatchers("/products/login").permitAll()
+            .requestMatchers("/styles.css").permitAll()
+            .requestMatchers("/users/signup").permitAll()
+            .requestMatchers("/users/login").permitAll()
+            .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+            .loginPage("/users/login").permitAll()
+            .loginProcessingUrl("/users/login")
+            )
             // .requestMatchers("/products/all").hasAnyRole("admin", "user")
             // .requestMatchers("/products/filter").hasAnyRole("admin", "user")
             // .requestMatchers("/products/filterPrice").hasAnyRole("admin", "user")
@@ -29,10 +37,7 @@ public class SecurityConfig {
             // .requestMatchers("/products/edit").hasRole("admin")
             // .requestMatchers("/products/delete").hasRole("admin")
             //)
-            //.formLogin((form) -> form
-            //.loginPage("/login")
-            //.permitAll()
-        )
+        
         //.logout((logout) -> logout.permitAll())
             .build();
     }

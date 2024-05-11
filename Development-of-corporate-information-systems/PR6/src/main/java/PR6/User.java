@@ -14,7 +14,7 @@ import jakarta.validation.constraints.Size;
 public class User {
 
     @NotNull
-    @Size(min = 2, max = 30, message = "length must be 2-30 characters long")
+    @Size(min = 2, max = 20, message = "length must be 2-20 characters long")
     private String name;
 
     @NotNull

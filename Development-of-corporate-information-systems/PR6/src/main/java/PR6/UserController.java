@@ -3,7 +3,9 @@ package PR6;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,8 +19,12 @@ import jakarta.validation.Valid;
 @Controller
 public class UserController {
 
+    @Autowired
+    private PasswordEncoder encoder;
+
     private static AnnotationConfigApplicationContext context = 
 			new AnnotationConfigApplicationContext(Main.class);
+
     private static UserDAO db = context.getBean("userDB", UserDAO.class);
 
     @GetMapping("/users/signup")
@@ -33,40 +39,22 @@ public class UserController {
         if (br.hasErrors()) {
     		return "signup";
     	}
-        db.create(user);
-        authenticate(user);
-        return "home";
-    }
-    
-    @GetMapping("/users/login")
-    public String login(Model model) {
-        User user = context.getBean("user", User.class);
-    	model.addAttribute("user", user);
-        return "login";
-    }
-
-    @PostMapping("/users/login")
-    public String login(@ModelAttribute("user") @Valid User user, BindingResult br) {
-        if (br.hasErrors()) {
-    		return "login";
-    	}
         ResultSet rs = db.get(user.getName());
         try {
             if (rs.next()) {
-                user.setValues(rs);
-                authenticate(user);
-            } else {
-                return "notfound";
+                return "redirect:/users/signup?exists";
             }
         } catch(SQLException e) {
 			e.printStackTrace();
-			return "home";
+			return "redirect:/users/signup?error";
 		}
-        
-        return "home";
+        user.setPassword(encoder.encode(user.getPassword()));
+        db.create(user);
+        return "redirect:/users/login?created";
     }
-
-    public void authenticate(User user) {
-        System.out.println("authenticated user: " + user.toString());
+    
+    @GetMapping("/users/login")
+    public String login() {
+        return "login";
     }
 }
