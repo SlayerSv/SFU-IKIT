@@ -114,3 +114,10 @@ p {
 .error {
   color: red;
 }
+
+.success {
+  color: springgreen;
+  text-align: center;
+  width: 100%;
+  margin: 20px 0;
+}
