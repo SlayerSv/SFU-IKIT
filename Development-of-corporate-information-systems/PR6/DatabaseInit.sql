@@ -25,13 +25,13 @@ create index price on products(price);
 
 drop table if exists users;
 create table users (
-    name varchar(30) primary key,
-    password varchar(30) not null,
+    name varchar(20) primary key,
+    password varchar(60) not null,
     role varchar(10) not null,
     check(role in ('admin', 'user'))
 );
 
 insert into users
 values
-    ('admin', 'admin', 'admin'),
-    ('user', 'user', 'user');
+    ('admin', '$2a$10$4/SAuC6UzsGbuce.Q0pXXeuYMhqMznsJaKCL6yXhuKwCbf/WGeRY2', 'admin'),
+    ('user', '$2a$10$fW6qFLbiG4cccqvx/QTQCe0aJu9oOpFVen6YGw8gyOCeK4PbSL3kC', 'user');
