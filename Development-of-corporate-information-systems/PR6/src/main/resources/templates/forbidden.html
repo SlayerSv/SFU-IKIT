@@ -17,17 +17,10 @@
 <li><a href="/products/delete">Delete product</a></li>
 <li><a href="/products/filter">Filter products by price</a></li>
 <li sec:authorize="isAnonymous()"><a href="/users/signup">Signup</a></li>
-<li sec:authorize="isAuthenticated()"><a href="/users/logout" class="active">Logout</a></li>
+<li sec:authorize="isAuthenticated()"><a href="/users/logout">Logout</a></li>
 </ul>
 </nav>
-<h1 sec:authorize="isAnonymous()" class="error">You are not logged in</h1>
-<h1 sec:authorize="isAuthenticated()">You are logged in as a <span sec:authentication="name"></span></h1>
-<p>Are you sure you want to logout?</p>
-<form sec:authorize="isAuthenticated()" th:method="POST" th:action="@{/users/logout}" >
-	<div>
-		<button style="align-self: center;">Logout</button>
-	</div>
-</form>
+<h1 class="error">Sorry, but you do not have rights to view this page</h1>
 </body>
 
 </html>

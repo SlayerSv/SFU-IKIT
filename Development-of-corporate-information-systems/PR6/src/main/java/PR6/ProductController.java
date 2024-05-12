@@ -174,4 +174,9 @@ public class ProductController {
     	model.addAttribute("priceRange", priceRange);
         return "filteredPrice";
     }
+
+	@GetMapping("/products/forbidden")
+	public String forbidden() {
+		return "forbidden";
+	}
 }
