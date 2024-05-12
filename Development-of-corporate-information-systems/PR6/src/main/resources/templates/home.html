@@ -16,11 +16,16 @@
 <li><a href="/products/edit">Edit product</a></li>
 <li><a href="/products/delete">Delete product</a></li>
 <li><a href="/products/filter">Filter products by price</a></li>
+<li sec:authorize="isAnonymous()"><a href="/users/signup">Signup</a></li>
+<li sec:authorize="isAuthenticated()"><a href="/users/logout">Logout</a></li>
 </ul>
 </nav>
-<h1>Hello, welcome to the Product database manager app!</h1>
-<p>Here you can create, edit, delete products from database,</p>
- <p>view all available products and filter them by price.</p>
+<h1 sec:authorize="isAuthenticated()">Hello, <span sec:authentication="name"></span></h1>
+<h1>Welcome to the Product database manager app!</h1>
+<p>Here you can view all available products and filter them by price.</p>
+<p>Administrators can create, edit, delete products from database.</p>
+<p sec:authorize="isAnonymous()">You need to <a href="/users/login">log in</a> to view the products</p>
+<p sec:authorize="isAnonymous()">Don't have an account? You can <a href="/users/signup">signup</a></p>
 </body>
 
 </html>

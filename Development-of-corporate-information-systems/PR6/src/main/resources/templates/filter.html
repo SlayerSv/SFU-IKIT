@@ -16,6 +16,8 @@
 <li><a href="/products/edit">Edit product</a></li>
 <li><a href="/products/delete">Delete product</a></li>
 <li><a href="/products/filter" class="active">Filter products by price</a></li>
+<li sec:authorize="isAnonymous()"><a href="/users/signup">Signup</a></li>
+<li sec:authorize="isAuthenticated()"><a href="/users/logout">Logout</a></li>
 </ul>
 </nav>
 

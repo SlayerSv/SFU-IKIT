@@ -16,6 +16,8 @@
 <li><a href="/products/edit">Edit product</a></li>
 <li><a href="/products/delete">Delete product</a></li>
 <li><a href="/products/filter">Filter products by price</a></li>
+<li sec:authorize="isAnonymous()"><a href="/users/signup" class="active">Signup</a></li>
+<li sec:authorize="isAuthenticated()"><a href="/users/logout">Logout</a></li>
 </ul>
 </nav>
 <h1>Create new account</h1>
@@ -38,6 +40,7 @@
 		<button>Signup</button>
 	</div>
 </form>
+<p class="info">Already have an account? You can <a href="/users/login">login</a> instead<p></p>
 </body>
 
 </html>

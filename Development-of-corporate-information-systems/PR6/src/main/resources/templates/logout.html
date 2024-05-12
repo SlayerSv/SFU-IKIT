@@ -13,23 +13,20 @@
 <li><a href="/products/">Home</a></li>
 <li><a href="/products/all">Show all products</a></li>
 <li><a href="/products/add">Add new Product</a></li>
-<li><a href="/products/edit" class="active">Edit product</a></li>
+<li><a href="/products/edit">Edit product</a></li>
 <li><a href="/products/delete">Delete product</a></li>
 <li><a href="/products/filter">Filter products by price</a></li>
 <li sec:authorize="isAnonymous()"><a href="/users/signup">Signup</a></li>
-<li sec:authorize="isAuthenticated()"><a href="/users/logout">Logout</a></li>
+<li sec:authorize="isAuthenticated()"><a href="/users/logout" class="active">Logout</a></li>
 </ul>
 </nav>
-<h1>Enter ID of a product you want to edit</h1>
-<form th:method="POST" th:action="@{/products/edit}" th:object="${product}">
+<h1 sec:authorize="isAnonymous()" class="error">You are not logged in</h1>
+<h1 sec:authorize="isAuthenticated()">You are logged in as a <span sec:authentication="name"></span></h1>
+<h1>Are you sure you want to logout?</h1>
+<form sec:authorize="isAuthenticated()" th:method="POST" th:action="@{/users/logout}" >
 	<div>
-		<label for="id">ID</label>
-		<input type="number" id="id" name="id" th:field="*{id}">
+		<button>Logout</button>
 	</div>
-	<div>
-		<button>Find</button>
-	</div>
-	
 </form>
 </body>
 

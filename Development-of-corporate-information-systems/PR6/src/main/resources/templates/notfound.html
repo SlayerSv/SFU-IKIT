@@ -16,9 +16,11 @@
 <li><a href="/products/edit">Edit product</a></li>
 <li><a href="/products/delete">Delete product</a></li>
 <li><a href="/products/filter">Filter products by price</a></li>
+<li sec:authorize="isAnonymous()"><a href="/users/signup">Signup</a></li>
+<li sec:authorize="isAuthenticated()"><a href="/users/logout">Logout</a></li>
 </ul>
 </nav>
-<h1>Sorry, but the requested data does not exist</h1>
+<h1>Sorry, but the product with such ID does not exist</h1>
 </body>
 
 </html>

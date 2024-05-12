@@ -33,6 +33,11 @@ public class ProductController {
     public String home() {
         return "home";
     }
+
+	@GetMapping("/")
+    public String redirectHome() {
+        return "redirect:/products/";
+    }
     
     @GetMapping("products/all")
     public String all(Model model) {

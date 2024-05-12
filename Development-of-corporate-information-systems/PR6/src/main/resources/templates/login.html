@@ -16,22 +16,26 @@
 <li><a href="/products/edit">Edit product</a></li>
 <li><a href="/products/delete">Delete product</a></li>
 <li><a href="/products/filter">Filter products by price</a></li>
+<li sec:authorize="isAnonymous()"><a href="/users/login" class="active">Login</a></li>
+<li sec:authorize="isAuthenticated()"><a href="/users/logout">Logout</a></li>
 </ul>
 </nav>
 <h1>Login</h1>
+<p sec:authorize="isAuthenticated()" class="error">You are already logged in as <span sec:authentication="name"></span>. <a href="/users/logout">Logout</a> first.</p>
 <div th:if="${param.created}" class="success">    
 	Account has been created. You can now login.
 </div>
-<form th:method="POST" th:action="@{/users/login}" >
+<div th:if="${param.logout}" class="success">    
+	You have been successfully logged out.
+</div>
+<form sec:authorize="isAnonymous()" th:method="POST" th:action="@{/users/login}" >
 	<div>
 		<label for="name">Name</label>
 		<input type="text" id="username" name="username" >
-		<span   class="error"></span>
 	</div>
   <div>
 		<label for="password">Password</label>
 		<input type="password" id="password" name="password" >
-		<span   class="error"></span>
 	</div>
 	<div th:if="${param.error}" class="error">    
 		Invalid username or password.
@@ -40,6 +44,7 @@
 		<button>Login</button>
 	</div>
 </form>
+<p sec:authorize="isAnonymous()" class="info">Don't have an account? You can <a href="/users/signup">signup</a> instead<p>
 </body>
 
 </html>
