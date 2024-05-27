@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class ProductDAO {
 	private static final String URL = "jdbc:postgresql://localhost:5432/products";
 	private static final String user = "postgres";
-	private static final String pass = "postgres";
+	private static final String pass = "svetaz";
 	private static Connection c;
 	
 	static {

@@ -1,8 +1,7 @@
 package PR7;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import jakarta.validation.Valid;
 
@@ -15,6 +14,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 /*
  * Product controller responsible for interacting between
@@ -24,10 +26,11 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 public class ProductController {
-	private static ArrayList<Product> products = new ArrayList<Product>();
 	public static AnnotationConfigApplicationContext context = 
 			new AnnotationConfigApplicationContext(Main.class);
     private static ProductDAO db = context.getBean("DB", ProductDAO.class);
+	private static String URLprefix = "http://localhost:8080/api/products";
+	private static RestTemplate restTemplate = new RestTemplate();
     
     @GetMapping("/products/")
     public String home() {
@@ -36,18 +39,8 @@ public class ProductController {
     
     @GetMapping("products/all")
     public String all(Model model) {
-    	ResultSet res = db.getAll();
-    	products.clear();
-		try {
-			while (res.next()) {
-				Product product = context.getBean("product", Product.class);
-				product.setValues(res);
-				products.add(product);
-			}
-		} catch(SQLException e) {
-			e.printStackTrace();
-		}
-    	model.addAttribute("products", products);
+		Product[] products = restTemplate.getForObject(URLprefix + "/all", Product[].class);
+    	model.addAttribute("products", Arrays.asList(products));
         return "all";
     }
     
@@ -63,7 +56,7 @@ public class ProductController {
     	if (br.hasErrors()) {
     		return "add";
     	}
-    	db.create(product);
+    	restTemplate.postForObject(URLprefix, product, Product.class);
     	return "redirect:/products/all";
     }
     
@@ -76,43 +69,32 @@ public class ProductController {
     
     @PostMapping("/products/edit")
     public String find(@ModelAttribute("product") Product product) {
-    	ResultSet res = db.get(product.getId());
-    	try {
-			if (res.next()) {
-				return "redirect:/products/edit/" + product.getId();
-			} else {
-				return "notfound";
-			}
-		} catch(SQLException e) {
-			e.printStackTrace();
-			return "/products";
+		try {
+    		Product pr = restTemplate.getForObject(URLprefix + "/" + product.getId(),
+					Product.class, product.getId());
+			return "redirect:/products/edit/" + pr.getId();
+		} catch (HttpClientErrorException e) {
+			return "notfound";
 		}
     }
     
     @GetMapping("/products/edit/{id}")
     public String edit(@PathVariable("id") int id, Model model) {
-    	ResultSet res = db.get(id);
-    	try {
-			if (res.next()) {
-				Product product = context.getBean("product", Product.class);
-				product.setValues(res);
+    	Product product = restTemplate.getForObject(URLprefix + "/{id}", Product.class, id);
+			if (product != null) {
 				model.addAttribute("product", product);
 				return "edit";
 			} else {
 				return "notfound";
 			}
-		} catch(SQLException e) {
-			e.printStackTrace();
-			return "redirect:/products";
 		}
-    }
     
     @PostMapping("/products/edit/{id}")
     public String editProduct(@ModelAttribute("product") @Valid Product product, BindingResult br) {
     	if (br.hasErrors()) {
     		return "edit";
     	}
-    	db.edit(product);
+		restTemplate.put(URLprefix, product, product.getId());
     	return "redirect:/products/all";
     }
     
@@ -125,11 +107,14 @@ public class ProductController {
     
     @PostMapping("/products/delete")
     public String deleteProduct(@ModelAttribute("product") Product product) {
-    	int rows = db.delete(product.getId());
-    	if (rows == 0) {
-    		return "notfound";
-    	}
-        return "redirect:/products/all";
+		try {
+			restTemplate.delete(URLprefix + "/" + product.getId());
+			return "redirect:/products/all";
+		} catch (HttpClientErrorException e) {
+			return "notfound";
+		}
+    	
+        
     }
     
     @GetMapping("/products/filter")
@@ -145,26 +130,17 @@ public class ProductController {
     		return "filter";
     	}
         return String.format("redirect:/products/filterPrice?min=%s&max=%s",
-        		range.getMinPriceF(), range.getMaxPriceF());
+        		range.getMinPrice(), range.getMaxPrice());
     }
     
     @GetMapping("/products/filterPrice")
     public String filteredProducts(@RequestParam("min") double min,
     		@RequestParam("max") double max, Model model) {
+
     	PriceRange priceRange = context.getBean("priceRange", PriceRange.class);
     	priceRange.setMinPrice(min);
     	priceRange.setMaxPrice(max);
-    	ResultSet res = db.filterByPrice(priceRange);
-    	products.clear();
-		try {
-			while (res.next()) {
-				Product product = context.getBean("product", Product.class);
-				product.setValues(res);
-				products.add(product);
-			}
-		} catch(SQLException e) {
-			e.printStackTrace();
-		}
+    	ArrayList<Product> products = db.filterByPrice(priceRange);
     	model.addAttribute("products", products);
     	model.addAttribute("priceRange", priceRange);
         return "filteredPrice";

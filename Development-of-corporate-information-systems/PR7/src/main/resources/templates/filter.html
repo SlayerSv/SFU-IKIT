@@ -24,12 +24,12 @@
 <form th:method="POST" th:action="@{/products/filter}" th:object="${priceRange}">
 <div>
 	<label for="minPrice">Minimum price</label>
-	<input type="number" id="minPrice" name="minPrice">
+	<input type="number" step="0.01" id="minPrice" name="minPrice">
 	<span th:if="${#fields.hasErrors('minPrice')}" th:errors="*{minPrice}" class="error"></span>
 </div>
 <div>
 	<label for="maxPrice">Maximum price</label>
-	<input type="number" id="maxPrice" name="maxPrice">
+	<input type="number" step="0.01" id="maxPrice" name="maxPrice">
 	<span th:if="${#fields.hasErrors('maxPrice')}" th:errors="*{maxPrice}" class="error"></span>
 </div>
 <div>

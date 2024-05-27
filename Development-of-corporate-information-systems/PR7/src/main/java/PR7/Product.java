@@ -87,7 +87,7 @@ public class Product {
 	}
 	
 	public String getFormattedPrice() {
-		return String.format("%.02f", this.price);
+		return String.format("%.02f", this.price).replace(",", ".");
 	}
 	
 	public void setPrice(double price) {

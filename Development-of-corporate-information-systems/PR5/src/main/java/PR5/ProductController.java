@@ -145,7 +145,7 @@ public class ProductController {
     		return "filter";
     	}
         return String.format("redirect:/products/filterPrice?min=%s&max=%s",
-        		range.getMinPriceF(), range.getMaxPriceF());
+        		range.getMinPrice(), range.getMaxPrice());
     }
     
     @GetMapping("/products/filterPrice")
