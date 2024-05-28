@@ -16,20 +16,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.server.ResponseStatusException;
 
 /*
  * Product controller responsible for interacting between
- * a database and a view. Accepts GET and POST HTTP methods,
- * validates form data, makes requests to database,
+ * a rest controller and a  view. Accepts GET and POST HTTP methods,
+ * validates form data, makes requests to products API using RestTemplate,
  * returns appropriate views.
  */
 @Controller
+
 public class ProductController {
+
+	private static String URLprefix = "http://localhost:9090/api/products";
+
 	public static AnnotationConfigApplicationContext context = 
 			new AnnotationConfigApplicationContext(Main.class);
     private static ProductDAO db = context.getBean("DB", ProductDAO.class);
-	private static String URLprefix = "http://localhost:8080/api/products";
 	private static RestTemplate restTemplate = new RestTemplate();
     
     @GetMapping("/products/")
@@ -113,8 +115,6 @@ public class ProductController {
 		} catch (HttpClientErrorException e) {
 			return "notfound";
 		}
-    	
-        
     }
     
     @GetMapping("/products/filter")

@@ -1,0 +1,38 @@
+GET http://localhost:9090/api/products/all
+
+###
+
+GET http://localhost:9090/api/products/1
+
+###
+
+POST http://localhost:9090/api/products
+content-type: application/json
+
+{
+    "item": "item",
+    "type": "type",
+    "producer": "producer",
+    "price": 200,
+    "weight": 100
+}
+
+###
+
+PUT http://localhost:9090/api/products
+content-type: application/json
+
+{
+    "id": 9,
+    "item": "modifieditem",
+    "type": "modifiedtype",
+    "producer": "modifiedproducer",
+    "price": 300,
+    "weight": 200
+}
+
+###
+DELETE http://localhost:9090/api/products/9
+
+###
+

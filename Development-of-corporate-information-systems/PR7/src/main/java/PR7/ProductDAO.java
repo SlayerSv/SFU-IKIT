@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 
 /*
  * Database Access Object to interact with a database.
- * Makes different kind of requests to a database and
- * returns ResultSet as a response.
+ * Makes different kind of requests to a database, converts them
+ * to java objects and returns them.
  */
 @Component("DB")
 public class ProductDAO {
@@ -39,8 +39,7 @@ public class ProductDAO {
 	}
 	
 	/*
-	 * Requests all products data from a database and
-	 * returns ResultSet with that data.
+	 * Requests all products data from a database.
 	 */
 	public ArrayList<Product> getAll() {
 		try {
@@ -60,12 +59,7 @@ public class ProductDAO {
 			PreparedStatement statement = c.prepareStatement(query);
 			statement.setInt(1, id);
 			ResultSet rs = statement.executeQuery();
-			ArrayList<Product> products = extract(rs);
-			if (products.size() > 0) {
-				return products.get(0);
-			} else {
-				return null;
-			}
+			return extractOne(rs);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("\nError getting product");
@@ -75,7 +69,7 @@ public class ProductDAO {
 	
 	/*
 	 * Creates a new product in a database with a database returning
-	 * data about created product, then returns ResultSet with that data.
+	 * data about created product.
 	 */
 	public Product create(Product product) {
 		try {
@@ -89,12 +83,7 @@ public class ProductDAO {
 			statement.setDouble(4, product.getPrice());
 			statement.setInt(5, product.getWeight());
 			ResultSet rs = statement.executeQuery();
-			ArrayList<Product> products = extract(rs);
-			if (products.isEmpty()) {
-				return null;
-			} else {
-				return products.get(0);
-			}
+			return extractOne(rs);
 		} catch(SQLException e) {
 			e.printStackTrace();
 			return null;
@@ -102,7 +91,7 @@ public class ProductDAO {
 	}
 	/*
 	 * Edits a product in a database and
-	 * returns ResultSet with modified data.
+	 * returns object with modified data.
 	 */
 	public Product edit(Product product) {
 		try {
@@ -153,6 +142,9 @@ public class ProductDAO {
 		}
 	}
 
+	/*
+	 * Extracts objects from ResultSet.
+	 */
 	public ArrayList<Product> extract(ResultSet rs) {
 		ArrayList<Product> products = new ArrayList<>();
 		try {
@@ -168,6 +160,9 @@ public class ProductDAO {
 		return products;
 	}
 
+	/*
+	 * Extracts a single object from ResultSet.
+	 */
 	public Product extractOne(ResultSet rs) {
 		ArrayList<Product> products = extract(rs);
 		if (!products.isEmpty()) {
