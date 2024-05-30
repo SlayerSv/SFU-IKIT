@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Product Database</title>
+    <link rel="stylesheet" th:href="@{~/styles.css}"></link>
+</head>
+
+<body>
+<nav>
+<ul>
+<li><a href="/products/">Home</a></li>
+<li><a href="/products/all">Show all products</a></li>
+<li sec:authorize="hasAuthority('admin')"><a href="/products/add">Add new Product</a></li>
+<li sec:authorize="hasAuthority('admin')"><a href="/products/edit" class="active">Edit product</a></li>
+<li sec:authorize="hasAuthority('admin')"><a href="/products/delete">Delete product</a></li>
+<li><a href="/products/filter">Filter products by price</a></li>
+<li sec:authorize="isAnonymous()"><a href="/users/signup">Signup</a></li>
+<li sec:authorize="isAuthenticated()"><a href="/users/logout">Logout</a></li>
+</ul>
+</nav>
+<h1>Enter ID of a product you want to edit</h1>
+<form th:method="POST" th:action="@{/products/edit}" th:object="${product}">
+	<div>
+		<label for="id">ID</label>
+		<input type="number" id="id" name="id" th:field="*{id}">
+	</div>
+	<div>
+		<button>Find</button>
+	</div>
+	
+</form>
+</body>
+
+</html>

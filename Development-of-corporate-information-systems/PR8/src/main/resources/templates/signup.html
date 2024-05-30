@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Product Database</title>
+    <link rel="stylesheet" th:href="@{~/styles.css}"></link>
+</head>
+
+<body>
+<nav>
+<ul>
+<li><a href="/products/">Home</a></li>
+<li><a href="/products/all">Show all products</a></li>
+<li sec:authorize="hasAuthority('admin')"><a href="/products/add">Add new Product</a></li>
+<li sec:authorize="hasAuthority('admin')"><a href="/products/edit">Edit product</a></li>
+<li sec:authorize="hasAuthority('admin')"><a href="/products/delete">Delete product</a></li>
+<li><a href="/products/filter">Filter products by price</a></li>
+<li sec:authorize="isAnonymous()"><a href="/users/signup" class="active">Signup</a></li>
+<li sec:authorize="isAuthenticated()"><a href="/users/logout">Logout</a></li>
+</ul>
+</nav>
+<h1>Create new account</h1>
+<form th:method="POST" th:action="@{/users/signup}" th:object="${user}">
+	<div>
+		<label for="name">Name</label>
+		<input type="text" id="name" name="name" th:field="*{name}">
+	</div>
+	<div th:if="${param.exists}" class="error">    
+		User with this name already exists.
+	</div>
+  <div>
+		<label for="password">Password</label>
+		<input type="password" id="password" name="password" th:field="*{password}">
+	</div>
+	<div th:if="${param.error}" class="error">    
+		Error while creating user.
+	</div>
+	<div>
+		<button>Signup</button>
+	</div>
+</form>
+<p class="info">Already have an account? You can <a href="/users/login">login</a> instead<p></p>
+</body>
+
+</html>
