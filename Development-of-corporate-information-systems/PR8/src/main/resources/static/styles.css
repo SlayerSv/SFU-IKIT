@@ -99,6 +99,7 @@ p {
   width: fit-content;
   margin: 0;
   padding: 0;
+  gap: 40px;
 }
 
 .productItem {
@@ -126,4 +127,14 @@ p {
 .info {
   font-size: 20px;
   margin: 20px 0;
+}
+
+.buy {
+  margin-top: 5px;
+  font-size: 16px;
+  padding: 3px 7px;
+}
+
+.buyForm {
+  width: 100%;
 }

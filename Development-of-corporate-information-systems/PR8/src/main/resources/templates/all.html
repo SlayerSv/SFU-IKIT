@@ -16,12 +16,16 @@
 <li sec:authorize="hasAuthority('admin')"><a href="/products/edit">Edit product</a></li>
 <li sec:authorize="hasAuthority('admin')"><a href="/products/delete">Delete product</a></li>
 <li><a href="/products/filter">Filter products by price</a></li>
+<li sec:authorize="hasAuthority('admin')"><a href="/messages">Messages</a></li>
 <li sec:authorize="isAnonymous()"><a href="/users/signup">Signup</a></li>
 <li sec:authorize="isAuthenticated()"><a href="/users/logout">Logout</a></li>
 </ul>
 </nav>
 	<h1>List of all products in the database</h1>
 	<div class="container">
+		<div th:if="${param.bought}" class="success">    
+			Product has been purchased!.
+		</div>
 	<ul class="productsList">
 		<li th:text="'Products found: ' + ${products.size()}" class="found"></li>
 		<li th:each="product : ${products}" class="productItem">
@@ -31,6 +35,9 @@
 			<span th:text="'Producer: ' + ${product.getProducer()}"></span>
 			<span th:text="'Price: ' + ${product.getFormattedPrice()}"></span>
 			<span th:text="'Weight: ' + ${product.getWeight()} + ' gramm'"></span>
+			<form class="buyForm" th:method="POST" th:action="@{/products/buy/} + ${product.getId()}">
+				<button class="buy">Buy</button>
+			</form>
 		</li>
 	</ul>
 	</div>

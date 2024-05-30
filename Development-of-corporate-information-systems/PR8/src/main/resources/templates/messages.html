@@ -10,23 +10,27 @@
 <body>
 <nav>
 <ul>
-<li><a href="/products/" class="active">Home</a></li>
+<li><a href="/products/">Home</a></li>
 <li><a href="/products/all">Show all products</a></li>
 <li sec:authorize="hasAuthority('admin')"><a href="/products/add">Add new Product</a></li>
 <li sec:authorize="hasAuthority('admin')"><a href="/products/edit">Edit product</a></li>
 <li sec:authorize="hasAuthority('admin')"><a href="/products/delete">Delete product</a></li>
 <li><a href="/products/filter">Filter products by price</a></li>
-<li sec:authorize="hasAuthority('admin')"><a href="/messages">Messages</a></li>
-<li sec:authorize="isAnonymous()"><a href="/users/signup">Signup</a></li>
+<li sec:authorize="hasAuthority('admin')"><a href="/messages" class="active">Messages</a></li>
+<li sec:authorize="isAnonymous()"><a href="/users/login" class="active">Login</a></li>
 <li sec:authorize="isAuthenticated()"><a href="/users/logout">Logout</a></li>
 </ul>
 </nav>
-<h1 sec:authorize="isAuthenticated()">Hello, <span sec:authentication="name"></span></h1>
-<h1>Welcome to the Product database manager app!</h1>
-<p>Here you can view all available products and filter them by price.</p>
-<p>Administrators can create, edit, delete products from database.</p>
-<p sec:authorize="isAnonymous()">You need to <a href="/users/login">log in</a> to view the products</p>
-<p sec:authorize="isAnonymous()">Don't have an account? You can <a href="/users/signup">signup</a></p>
+<h1>Messages</h1>
+<div class="container">
+	<ul class="productsList">
+		<li th:text="'Unread messages: ' + ${messages.size()}" class="found"></li>
+		<li th:each="message : ${messages}" class="productItem">
+			<span th:text="'To: ' + ${message.getTo()}"></span>
+			<span th:text="'Message: ' + ${message.getBody()}"></span>
+		</li>
+	</ul>
+	</div>
 </body>
 
 </html>

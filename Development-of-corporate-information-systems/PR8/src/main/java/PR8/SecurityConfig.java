@@ -23,6 +23,7 @@ public class SecurityConfig {
             .requestMatchers("/products/add").hasAuthority("admin")
             .requestMatchers("/products/edit").hasAuthority("admin")
             .requestMatchers("/products/delete").hasAuthority("admin")
+            .requestMatchers("/messages/all").hasAuthority("admin")
             .anyRequest().authenticated()
             )
             .formLogin(form -> form

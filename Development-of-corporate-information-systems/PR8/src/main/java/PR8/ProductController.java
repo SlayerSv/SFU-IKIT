@@ -6,7 +6,9 @@ import java.util.ArrayList;
 
 import jakarta.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,10 +26,14 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 public class ProductController {
+
 	private static ArrayList<Product> products = new ArrayList<Product>();
 	private static AnnotationConfigApplicationContext context = 
 			new AnnotationConfigApplicationContext(Main.class);
     private static ProductDAO db = context.getBean("productDB", ProductDAO.class);
+
+	@Autowired
+	private JmsTemplate jms;
     
     @GetMapping("/products/")
     public String home() {
@@ -178,5 +184,25 @@ public class ProductController {
 	@GetMapping("/products/forbidden")
 	public String forbidden() {
 		return "forbidden";
+	}
+
+	@PostMapping("/products/buy/{id}")
+	public String buy(@PathVariable("id") int id) {
+		ResultSet res = db.get(id);
+		try {
+			if (res.next()) {
+				Product product = context.getBean("product", Product.class);
+				product.setValues(res);
+				Message message = new Message("admin", "Product with ID " + product.getId() + " has been sold.");
+				jms.convertAndSend("soldProducts", message);
+				db.delete(id);
+				return "redirect:/products/all?bought";
+			} else {
+				return "notfound";
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+			return "redirect:/products/";
+		}
 	}
 }
