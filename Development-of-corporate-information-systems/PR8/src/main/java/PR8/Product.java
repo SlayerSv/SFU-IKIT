@@ -128,7 +128,7 @@ public class Product {
 
 	@Override
 	public String toString() {
-		return "\nID: " + this.id + "\nItem: " + this.item + "\nType: "
+		return "ID: " + this.id + "\nItem: " + this.item + "\nType: "
 				+ this.type + "\nProducer: " + this.producer + "\nPrice: "
 				+ this.price + "\nWeight: " + this.weight;
 	}

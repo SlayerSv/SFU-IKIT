@@ -14,6 +14,7 @@ import jakarta.annotation.PostConstruct;
 @Controller
 @RequestMapping("/messages")
 public class MessageController {
+    
 
     @Autowired
     private JmsTemplate jms;
@@ -26,10 +27,10 @@ public class MessageController {
     @GetMapping()
 	public String getAll(Model model) {
         ArrayList<Message> messages = new ArrayList<Message>();
-        Message message = (Message) jms.receiveAndConvert("soldProducts");
+        Message message = (Message) jms.receiveAndConvert("products");
         while (message != null) {
             messages.add(message);
-            message = (Message) jms.receiveAndConvert("soldProducts");
+            message = (Message) jms.receiveAndConvert("products");
         }
         model.addAttribute("messages", messages);
 		return "messages";

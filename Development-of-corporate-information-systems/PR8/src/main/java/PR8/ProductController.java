@@ -75,6 +75,8 @@ public class ProductController {
     		return "add";
     	}
     	db.create(product);
+		Message message = new Message("Product added", product.toString());
+		jms.convertAndSend("products", message);
     	return "redirect:/products/all";
     }
     
@@ -124,6 +126,8 @@ public class ProductController {
     		return "edit";
     	}
     	db.edit(product);
+		Message message = new Message("Product edited", product.toString());
+		jms.convertAndSend("products", message);
     	return "redirect:/products/all";
     }
     
@@ -140,6 +144,8 @@ public class ProductController {
     	if (rows == 0) {
     		return "notfound";
     	}
+		Message message = new Message("Product deleted", "Product ID: " + product.getId());
+		jms.convertAndSend("products", message);
         return "redirect:/products/all";
     }
     
@@ -193,8 +199,8 @@ public class ProductController {
 			if (res.next()) {
 				Product product = context.getBean("product", Product.class);
 				product.setValues(res);
-				Message message = new Message("admin", "Product with ID " + product.getId() + " has been sold.");
-				jms.convertAndSend("soldProducts", message);
+				Message message = new Message("Product sold", product.toString());
+				jms.convertAndSend("products", message);
 				db.delete(id);
 				return "redirect:/products/all?bought";
 			} else {

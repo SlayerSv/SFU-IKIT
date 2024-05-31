@@ -26,8 +26,8 @@
 	<ul class="productsList">
 		<li th:text="'Unread messages: ' + ${messages.size()}" class="found"></li>
 		<li th:each="message : ${messages}" class="productItem">
-			<span th:text="'To: ' + ${message.getTo()}"></span>
-			<span th:text="'Message: ' + ${message.getBody()}"></span>
+			<span th:text="'Action: ' + ${message.getAction()}" class="message-header"></span>
+			<span th:text="${message.getBody()}" class="message"></span>
 		</li>
 	</ul>
 	</div>

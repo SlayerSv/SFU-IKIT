@@ -2,27 +2,27 @@ package PR8;
 
 public class Message {
 
-    private String to;
+    private String action;
     private String body;
   
     public Message() {
     }
   
-    public Message(String to, String body) {
-      this.to = to;
+    public Message(String action, String body) {
+      this.action = action;
       this.body = body;
     }
   
-    public static Message newMessage(String to, String body) {
-        return new Message(to, body);
+    public static Message newMessage(String action, String body) {
+        return new Message(action, body);
     }
 
-    public String getTo() {
-      return this.to;
+    public String getAction() {
+      return this.action;
     }
   
-    public void setTo(String to) {
-      this.to = to;
+    public void setAction(String action) {
+      this.action = action;
     }
   
     public String getBody() {
@@ -35,7 +35,6 @@ public class Message {
   
     @Override
     public String toString() {
-      return String.format("Message{to=%s, body=%s}", getTo(), getBody());
+      return String.format("Message[Action=%s, body=%s]", getAction(), getBody());
     }
-  
   }

@@ -138,3 +138,11 @@ p {
 .buyForm {
   width: 100%;
 }
+
+.message {
+  white-space: pre-wrap;
+}
+
+.message-header {
+  font-size: 20px;
+}
