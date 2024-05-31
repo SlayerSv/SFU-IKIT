@@ -74,10 +74,18 @@ public class ProductController {
     	if (br.hasErrors()) {
     		return "add";
     	}
-    	db.create(product);
-		Message message = new Message("Product added", product.toString());
-		jms.convertAndSend("products", message);
-    	return "redirect:/products/all";
+    	ResultSet res = db.create(product);
+		try {
+			if (res.next()) {
+				product.setValues(res);
+				Message message = new Message("Product added", product.toString());
+				jms.convertAndSend("products", message);
+			}
+			return "redirect:/products/all";
+		} catch(SQLException e) {
+			e.printStackTrace();
+			return "redirect:/products/all";
+		}
     }
     
     @GetMapping("/products/edit")

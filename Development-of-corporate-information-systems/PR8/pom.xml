@@ -58,8 +58,7 @@
 	<dependency>
     <groupId>org.apache.activemq</groupId>
     <artifactId>artemis-jakarta-server</artifactId>
-    
-</dependency>
+	</dependency>
 
 	<dependency>
 			<groupId>org.springframework.boot</groupId>
