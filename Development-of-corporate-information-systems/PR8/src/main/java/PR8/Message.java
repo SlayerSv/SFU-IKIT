@@ -1,7 +1,10 @@
 package PR8;
-
+/*
+ * Class representing message to use in JMS.
+ * Action specificies what action caused sedning this message. 
+ * Body has additional information about what happened.
+ */
 public class Message {
-
     private String action;
     private String body;
   

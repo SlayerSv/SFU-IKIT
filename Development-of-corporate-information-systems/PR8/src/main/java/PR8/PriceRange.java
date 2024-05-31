@@ -4,6 +4,9 @@ import jakarta.validation.constraints.PositiveOrZero;
 
 import org.springframework.stereotype.Component;
 
+/*
+ * Price range to use when filtering products by price.
+ */
 @Component("priceRange")
 public class PriceRange {
 	

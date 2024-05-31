@@ -8,6 +8,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+/*
+ * Custom implementation of UserDetails to set user properties
+ * (name, password, role) Non-expired, enabled and other always return true.
+ */
 public class MyUserPrincipal implements UserDetails {
     private User user;
 
