@@ -15,36 +15,46 @@ def vote(results, t=-1):
     if t > (n - 1) // 2:
         raise ValueError("Number of versions with potentially wrong results cannot exceed (n-1)/2")
     mrc = t * 2 + 1 # начальное количество сравниваемых версий
-    left = n - mrc # количество оставшихся версий, которые не участвуют в сравнении
-    found_correct_answer = False
-    while(found_correct_answer is not True and left > 0):
-        output_versions = [] # версии, чьи результаты пойдут на выход.
-        for i in range(0, mrc-1, t + 1):
-            output_versions.append(i)
-        output_versions.append(mrc-1)
-        curr_same = 1
-        max_same = 1
-        start_index = -1
-        groups_count = {}
-        for i in range(0, mrc, 1):
-            if i == mrc - 1 or results[i][0] != results[i+1][0]:
-                if curr_same > max_same:
-                    start_index = i - (max(0, curr_same - 2))
-                groups_count[curr_same] += 1
-                curr_same = 1
-            else:
-                curr_same += 1
-                max_same = max(curr_same, max_same)
-                
-        if groups_count[max_same] > 1:
-            return results[mrc-1][0]
-        elif same_t_groups == 1:
-            for index in output_versions:
-                if index >= start_index:
-                    return results[index][0]
-        mrc += 1
-        left -= 1
-    raise ValueError("Cannot find correct result")
+
+    outputs = [] # результаты версий, которые пошли на выход.
+    for i in range(0, mrc-1, 2):
+        outputs.append(results[i])
+    outputs.append(results[mrc-1])
+
+    comparators = []
+    for i in range(0, mrc-2):
+        if results[i] != results[i+1]:
+            comparators.append(1)
+        else:
+            comparators.append(0)
+
+    curr_same = 1
+    max_same = 1
+    output_index = 0 # индекс версии на выход с корректным результатом
+    max_same_count = 1
+    length = len(comparators)
+    for i in range(0, length + 1):
+        if i == length or comparators[i] == 1:
+            if curr_same == max_same:
+                max_same_count += 1
+            if curr_same > max_same:
+                output_index = i // 2
+                max_same = curr_same
+                max_same_count = 1
+            curr_same = 1
+        else:
+            curr_same += 1
+
+    correct_result = 0.0
+    # если количество групп с максимальным количеством
+    #  версий больше одной, то возвращаем результат версии
+    #  не участвовавшей в сравнении.
+    if max_same_count > 1:
+        correct_result = outputs[-1]
+    else:
+        # иначе возвращаем результат версии подгруппы
+        correct_result = outputs[output_index]
+    return correct_result
 
 
 def get_experiment_data(number_of_versions, iterations):
