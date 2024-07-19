@@ -11,21 +11,38 @@ def main():
         curr_index = 0
         correct_results_count = 0
         cannot_find = 0
+        incorrect_entries = 0
+        t = (elements - 1) // 2
+
         for correct_result in correct_results:
             versions_results = []
+            incorrect_versions = 0
+
             for _ in range(0, elements):
                 version_result = results[curr_index][0]
                 versions_results.append(version_result)
                 curr_index += 1
+                if version_result != correct_result[0]:
+                    incorrect_versions += 1
+
+            if incorrect_versions > t:
+                incorrect_entries += 1
+                continue
+
             try:
-                result = vote(versions_results)
+                result = dpvote(versions_results, t)
                 if result == correct_result[0]:
                     correct_results_count += 1
             except ValueError:
                 cannot_find += 1
-        print("Elements:", elements, "Iterations:", iterations,
-              "Correct results:", correct_results_count,
-              "Cannot find:", cannot_find)
+
+        print("Versions:", elements,
+              "Iterations:", iterations - incorrect_entries,
+              "Correct:", correct_results_count,
+              "Incorrect:", iterations - correct_results_count
+              - cannot_find - incorrect_entries,
+              "Cannot find:", cannot_find,
+              "Incorrect entries:", incorrect_entries)
 
 
 def vote(results, t=-1):
@@ -83,15 +100,11 @@ def vote(results, t=-1):
         # ищем верный результат.
         correct_result = 0.0
         found = False
-        # если нашли группу с количеством элементов больше t, то возвращаем
-        # результат ее выходного элемента.
-        if max_same > t:
-            correct_result = outputs[output_index]
-            found = True
+
         # если групп 0, то возвращаем результат несравниваемого элемента,
         # т.к. такое возможно, только если количество неверных элементов
         # среди сравниваемых не меньше t.
-        elif groups_count == 0:
+        if groups_count == 0:
             correct_result = outputs[-1]
             found = True
         # если группа 1, и количество элементов в ней равно 2,
@@ -118,9 +131,9 @@ def vote(results, t=-1):
         elif max_same == t and max_same_count > 1:
             correct_result = outputs[-1]
             found = True
-        # else:
-        #     correct_result = outputs[output_index]
-        #     found = True
+        else:
+            correct_result = outputs[output_index]
+            found = True
         if found is True:
             return correct_result
         # если ни один случай не совпал, то определить верный результат
@@ -136,6 +149,12 @@ def vote(results, t=-1):
 
 
 def get_experiment_data(number_of_versions, iterations):
+    """
+    Получение результатов версий из базы данных.
+    number_of_versions - количество версий.
+    iterations - количество проведенных экспериментов
+    этими версиями.
+    """
     experiment_name = ""
     match number_of_versions:
         case 3:
@@ -187,70 +206,113 @@ def get_experiment_data(number_of_versions, iterations):
     return results, correct_answers
 
 
-def vote1(results):
+def dpvote(results, t=-1):
     n = len(results)
-    t = ((n - 1) / 2).__trunc__()
-    output_count = n - t
-    output_indexes_step = ((n - 1) / (output_count - 1)).__trunc__()
-    output_indexes = {i: results[i] for i in range(0, n - 1,
-                                                   output_indexes_step)}
-    output_indexes[n - 1] = results[n - 1]
+    t = (n-1) // 2
+    if t > (n - 1) // 2:
+        raise ValueError("Number of versions with potentially wrong results"
+                         " cannot exceed (n-1)/2")
+    mrc = t * 2 + 1  # начальное количество сравниваемых версий
+    while mrc <= n:
+        outputs = []  # результаты версий, которые пошли на выход.
+        for i in range(0, mrc-1, 2):
+            outputs.append(results[i])
+        outputs.append(results[mrc-1])
 
-    comparators = dict()
-    max_count_indexes = dict()
-    cur_start_index = -1
-    max_group_count = 0
-    cur_max_group_count = 0  
-    for i in range(n - 2):
-        if results[i] == results[i + 1]:
-            comparators[(i, i + 1)] = 0
-            if cur_max_group_count == 0:
-                cur_start_index = i
-                cur_max_group_count = 2
+        outputs = []  # результаты версий, которые пошли на выход.
+        for i in range(0, mrc-1, 2):
+            outputs.append(results[i])
+        outputs.append(results[mrc-1])
+        # заполняем массив компараторов сравнивая соседние элементы
+        # если результат одинаков, то компаратор = 0, иначе - 1.
+        comparators = []
+        for i in range(0, mrc-2):
+            if results[i] != results[i+1]:
+                comparators.append(1)
             else:
-                cur_max_group_count += 1
-        else:
-            comparators[(i, i + 1)] = 1
+                comparators.append(0)
+        length = len(comparators)
 
-            if cur_start_index != -1:
-                if cur_max_group_count not in max_count_indexes:
-                    max_count_indexes[cur_max_group_count] = \
-                        [(cur_start_index, i)]
-                else:
-                    max_count_indexes[cur_max_group_count] \
-                        .append((cur_start_index, i))
-
-            cur_start_index = -1
-            cur_max_group_count = 0
-
-        if cur_max_group_count > max_group_count:
-            max_group_count = cur_max_group_count
-
-    if cur_start_index != -1:
-        if cur_max_group_count not in max_count_indexes:
-            max_count_indexes[cur_max_group_count] = [(cur_start_index, n - 2)]
-        else:
-            max_count_indexes[cur_max_group_count] \
-                .append((cur_start_index, n - 2))
-
-    correct_result: float
-    if max_group_count >= t:
-        if len(max_count_indexes[max_group_count]) == 1:
-            for key, val in output_indexes.items():
-                if max_count_indexes[max_group_count][0][0] <= key \
-                        <= max_count_indexes[max_group_count][0][1]:
-                    correct_result = val
-                    break
+        # проходимся по компараторам и проверяем максимальное количество
+        # одинаковых элементов, число групп с таким максимальным количество
+        # элементов и индекс выходного элемента,
+        # который содержится в максимальной группе.
+        curr_same = 1
+        max_same = 1
+        output_index = 0  # индекс версии на выход с корректным результатом.
+        groups = []
+        for i in range(0, length + 1):
+            if i == length or comparators[i] == 1:
+                if curr_same > max_same:
+                    output_index = i // 2
+                    max_same = curr_same
+                groups.append(curr_same)
+                curr_same = 1
             else:
-                correct_result = \
-                    results[max_count_indexes[max_group_count][0][0]] \
-                    .version_answer
-        else:
-            correct_result = output_indexes[n - 1]
-    else:
-        correct_result = output_indexes[n - 1]
+                curr_same += 1
 
-    return correct_result
+        correct_result = 0.0
+        found = False
+
+        dp = []
+        for _ in groups:
+            dp.append([0, 0])
+        start = groups.index(max_same)
+        i = start
+        total = max_same
+        if i - 1 >= 0:
+            dp[i - 1][1] = groups[i - 1]
+        i -= 2
+        while (i >= 0):
+            dp[i][1] = min(dp[i + 1][0], dp[i + 1][1]) + groups[i]
+            dp[i][0] = dp[i + 1][1]
+            i -= 1
+        if start != 0:
+            total += min(dp[0][1], dp[0][0])
+        i = start + 1
+        if i < len(groups):
+            dp[i][1] = groups[i]
+        i += 1
+        while (i < len(groups)):
+            dp[i][1] = min(dp[i - 1][0], dp[i - 1][1]) + groups[i]
+            dp[i][0] = dp[i - 1][1]
+            i += 1
+        if start != len(groups) - 1:
+            total += min(dp[-1][0], dp[-1][1])
+        if total > t:
+            correct_result = outputs[output_index]
+            found = True
+        elif total == t:
+            i = 0
+            dp[i][1] = groups[i]
+            dp[i][0] = 0
+            i += 1
+            while (i < len(groups)):
+                dp[i][1] = min(dp[i - 1][0], dp[i - 1][1]) + groups[i]
+                dp[i][0] = dp[i - 1][1]
+                i += 1
+            if min(dp[-1][0], dp[-1][1]) == t:
+                correct_result = outputs[-1]
+                found = True
+            # else:
+            #     correct_result = outputs[output_index]
+            #     found = True
+        # else:
+        #     correct_result = outputs[output_index]
+        #     found = True
+
+        if found is True:
+            return correct_result
+        # если ни один случай не совпал, то определить верный результат
+        # невозможно. Потому проверяем, есть ли еще элементы, которые не
+        # участвовали в сравнении. Если да, то добавляем один из них к
+        # сравниваемым, перемешиваем массив с результатами
+        # и начинаем процесса с начала.
+        # Иначе завершаем работу аварийно.
+        if mrc == n:
+            raise ValueError("Cannot find correct result")
+        mrc += 1
+        random.shuffle(results)
 
 
 if __name__ == '__main__':
