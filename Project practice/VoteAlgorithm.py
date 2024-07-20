@@ -3,22 +3,22 @@ import random
 
 
 def main():
-    number_of_elements = [3, 5, 7, 9, 11]
+    number_of_versions = [3, 5, 7, 9, 11]
     iterations = 50000
 
-    for elements in number_of_elements:
-        results, correct_results = get_experiment_data(elements, iterations)
+    for versions in number_of_versions:
+        results, correct_results = get_experiment_data(versions, iterations)
         curr_index = 0
         correct_results_count = 0
         cannot_find = 0
         incorrect_entries = 0
-        t = (elements - 1) // 2
+        t = (versions - 1) // 2
 
         for correct_result in correct_results:
             versions_results = []
             incorrect_versions = 0
 
-            for _ in range(0, elements):
+            for _ in range(0, versions):
                 version_result = results[curr_index][0]
                 versions_results.append(version_result)
                 curr_index += 1
@@ -36,7 +36,7 @@ def main():
             except ValueError:
                 cannot_find += 1
 
-        print("Versions:", elements,
+        print("Versions:", versions,
               "Iterations:", iterations - incorrect_entries,
               "Correct:", correct_results_count,
               "Incorrect:", iterations - correct_results_count
