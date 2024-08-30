@@ -7,7 +7,6 @@
 #include "writer.h"
 
 unsigned long long next_writer_id = 0;
-unsigned int writer_write_time = 1;
 
 void writer_write(struct buffer* buffer, char* writer_id) {
     pthread_mutex_lock(&buffer->write_mutex);
@@ -21,9 +20,9 @@ void writer_write(struct buffer* buffer, char* writer_id) {
     pthread_mutex_lock(&buffer->mutex);
     sleep(writer_write_time);
     char message[50];
-    sprintf(message, "Message №%llu", ++buffer->next_id);
+    sprintf(message, "Message %llu", ++buffer->next_id);
     buffer_new_message(buffer, message);
-    printf("Writer №%s writing: %s\n", writer_id, message);
+    printf("Writer %s writing: %s\n", writer_id, message);
     sem_post(&buffer->records_count);
     pthread_mutex_unlock(&buffer->mutex);
     pthread_mutex_unlock(&buffer->write_mutex);

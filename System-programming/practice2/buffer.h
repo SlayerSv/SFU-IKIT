@@ -2,7 +2,8 @@
 # include <semaphore.h>
 #ifndef BUFFER_H
 #define BUFFER_H
-extern unsigned int max_buffer_size;
+
+int max_buffer_size;
 
 struct record {
     char text[40];

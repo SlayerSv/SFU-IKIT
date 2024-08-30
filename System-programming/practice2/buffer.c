@@ -3,26 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-//#include "buffer.h"
-
-unsigned int max_buffer_size = 1;
-
-struct record {
-    char text[40];
-    struct record* prev;
-    struct record* next;
-};
-
-struct buffer {
-    pthread_mutex_t mutex;
-    sem_t records_count;
-    pthread_cond_t buffer_full;
-    pthread_mutex_t write_mutex;
-    pthread_mutex_t cond_mutex;
-    unsigned long long next_id;
-    struct record* head;
-    struct record* tail;
-};
+#include "buffer.h"
 
 void buffer_push(struct buffer* buffer, struct record* new_record) {
     struct record* curr = buffer->tail->prev;

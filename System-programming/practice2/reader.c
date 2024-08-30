@@ -7,7 +7,6 @@
 #include "reader.h"
 
 unsigned long long next_reader_id = 0;
-unsigned int reader_read_time = 1;
 
 void reader_read(struct buffer* buffer, char* reader_id) {
     sem_wait(&buffer->records_count);
@@ -15,7 +14,7 @@ void reader_read(struct buffer* buffer, char* reader_id) {
     char message[100];
     buffer_next_message(buffer, message);
     sleep(reader_read_time);
-    printf("Reader №%s reading: %s\n", reader_id, message);
+    printf("Reader %s reading: %s\n", reader_id, message);
     pthread_cond_signal(&buffer->buffer_full);
     pthread_mutex_unlock(&buffer->mutex);
     sleep(rand() % 10);
