@@ -33,19 +33,16 @@ void buffer_new_message(struct buffer* buffer, char* message) {
 }   
 
 struct buffer* buffer_init() {
-    printf("%d\n", 1);
     struct buffer* buffer = (struct buffer*) malloc(sizeof(struct buffer));
     pthread_mutex_init(&buffer->mutex, NULL);
     pthread_mutex_init(&buffer->write_mutex, NULL);
     pthread_mutex_init(&buffer->cond_mutex, NULL);
     sem_init(&buffer->records_count, 0, 0);
     pthread_cond_init(&buffer->buffer_full, NULL);
-    printf("%d\n", 2);
     buffer->next_id = 0;
     buffer->head = (struct record*) malloc(sizeof(struct record));
     buffer->tail = (struct record*) malloc(sizeof(struct record));
     buffer->head->next = buffer->tail;
     buffer->tail->prev = buffer->head;
-    printf("%d\n", 3);
     return buffer;
 }

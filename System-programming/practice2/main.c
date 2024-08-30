@@ -29,17 +29,19 @@ int main() {
     scanf("%u", &writer_write_time);
     
     struct buffer* buffer = buffer_init();
-    printf("%s\n", "HELLO");
     srand(time(NULL));
+    pthread_t readers[number_of_readers];
     for (int i = 0; i < number_of_readers; i++) {
-        pthread_t reader;
-        pthread_create(&reader, NULL, reader_run, buffer);
-        //pthread_join(reader, NULL);
+        pthread_create(&readers[i], NULL, reader_run, buffer);
+    }
+    pthread_t writers[number_of_writers];
+    for (int i = 0; i < number_of_writers; i++) {
+        pthread_create(&writers[i], NULL, writer_run, buffer);
+    }
+    for (int i = 0; i < number_of_readers; i++) {
+        pthread_join(readers[i], NULL);
     }
     for (int i = 0; i < number_of_writers; i++) {
-        pthread_t writer;
-        pthread_create(&writer, NULL, writer_run, buffer);
-        //pthread_join(writer, NULL);
+        pthread_join(writers[i], NULL);
     }
-    sleep(20);
 }
