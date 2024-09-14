@@ -10,12 +10,13 @@ struct CNODE {
     struct Company* next;
 };
 
-struct CLIST* clist_init();
-void clist_add(struct CLIST* cl, struct Company* c);
-int clist_delete(struct CLIST* cl, int id);
+struct CLIST* clist_new();
+void clist_add(struct CLIST* cl);
+void clist_delete(struct CLIST* cl);
 void clist_most_employed(struct CLIST* cl);
 void clist_print_cities_count(struct CLIST* cl);
 void clist_print_all(struct CLIST* cl);
-int clist_print(struct CLIST* cl, int id);
+void clist_print(struct CLIST* cl);
+void clist_update(struct CLIST* cl);
 
 #endif
