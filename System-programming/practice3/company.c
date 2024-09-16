@@ -4,9 +4,6 @@
 
 #include "company.h"
 
-const int VALID = 1;
-const int INVALID = 0;
-
 int COMPANY_NEXT_ID = 0;
 
 struct Company* company_new(char* name, char* city, int employees) {
