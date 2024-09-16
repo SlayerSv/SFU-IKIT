@@ -5,7 +5,7 @@
 
 #include "input.h"
 
-void input_take_string(char* input, char* message) {
+void input_take_string(char input[], char* message) {
     int c;
     int valid = 1;
     while (1) {
@@ -21,27 +21,29 @@ void input_take_string(char* input, char* message) {
             printf("Min %d characters are needed.\n", MIN_STRING_SIZE);
             valid = 0;
         }
-        c = input[0];
+        int i = 0;
+        c = input[i];
         while (c != '\0') {
             if (!isalpha(c)) {
                 printf("Only characters [A-Z][a-z] are allowed.\n");
                 valid = 0;
                 break;
             }
+            c= input[++i];
         }
         while ((c = getchar()) != '\n' && c != EOF ) {}
         if (valid) break;
     }
 }
 
-void input_take_uint(unsigned int val, char* message) {
+void input_take_uint(unsigned int* val, char* message) {
     char input[10];
     int c;
     while (1) {
         printf("%s", message);
         scanf("%s", input);
         char* end;
-        val = strtoul(input, &end, 10);
+        *val = strtoul(input, &end, 10);
         while ((c = getchar()) != '\n' && c != EOF ) {}
         if (*end == '\0') {
             return;

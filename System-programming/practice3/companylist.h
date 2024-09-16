@@ -7,7 +7,7 @@ struct CLIST {
 
 struct CNODE {
     struct Company* company;
-    struct Company* next;
+    struct CNODE* next;
 };
 
 struct CLIST* clist_new();
@@ -18,5 +18,6 @@ void clist_print_cities_count(struct CLIST* cl);
 void clist_print_all(struct CLIST* cl);
 void clist_print(struct CLIST* cl);
 void clist_update(struct CLIST* cl);
+struct Company* clist_get(struct CLIST* cl, unsigned int id);
 
 #endif

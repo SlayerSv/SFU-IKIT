@@ -4,6 +4,11 @@
 
 #include "company.h"
 
+const int VALID = 1;
+const int INVALID = 0;
+
+int COMPANY_NEXT_ID = 0;
+
 struct Company* company_new(char* name, char* city, int employees) {
     struct Company* c = malloc(sizeof(struct Company));
     strcpy(c->name, name);
@@ -24,5 +29,5 @@ void company_delete(struct Company* c) {
 }
 
 void company_print(struct Company* c) {
-    printf("ID: %d\nName: %s\nCity: %s\nEmployees: %d\n", c->id, c->name, c->city, c->employees);
+    printf("\nID: %d\nName: %s\nCity: %s\nEmployees: %d\n", c->id, c->name, c->city, c->employees);
 }

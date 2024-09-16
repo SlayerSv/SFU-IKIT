@@ -3,11 +3,6 @@
 
 #include "input.h"
 
-const int VALID = 1;
-const int INVALID = 0;
-
-int COMPANY_NEXT_ID = 0;
-
 struct Company {
     int id;
     char name[MAX_STRING_SIZE + 1];

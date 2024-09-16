@@ -1,8 +1,8 @@
-#include <company.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "company.h"
 #include "companylist.h"
 #include "input.h"
 
@@ -26,7 +26,7 @@ void clist_add(struct CLIST* cl) {
     cnode->company = c;
     cnode->next = cl->head->next;
     cl->head->next = cnode;
-    printf("Company added to the list.\n");
+    printf("\nCompany added to the list.\n");
 }
 
 void clist_update(struct CLIST* cl) {
@@ -35,7 +35,7 @@ void clist_update(struct CLIST* cl) {
     if (id == 0) return;
     struct Company* c = clist_get(cl, id);
     if (!c) {
-        printf("Company wtih ID %d does not exist.\n", id);
+        printf("\nCompany wtih ID %d does not exist.\n", id);
         return;
     }
     char name[MAX_STRING_SIZE + 1];
@@ -47,7 +47,7 @@ void clist_update(struct CLIST* cl) {
     strcpy(c->name, name);
     strcpy(c->city, city);
     c->employees = employees;
-    printf("Company has been updated.\n");
+    printf("\nCompany has been updated.\n");
 }
 
 struct Company* clist_get(struct CLIST* cl, unsigned int id) {
@@ -72,20 +72,19 @@ void clist_delete(struct CLIST* cl) {
             company_delete(tmp->company);
             free(tmp);
             found = 1;
-            printf("Company with ID %d has been deleted.\n", id);
+            printf("\nCompany with ID %d has been deleted.\n", id);
             break;
         }
         prev = tmp;
         tmp = tmp->next;
     }
     if (!found) {
-        printf("Company with ID %d does not exist.\n", id);
+        printf("\nCompany with ID %d does not exist.\n", id);
     }
 }
 
 void clist_most_employed(struct CLIST* cl) {
     struct CNODE* tmp = cl->head->next;
-    struct CNODE* c = tmp;
     int max = 0;
     while (tmp) {
         if (tmp->company->employees > max) {
@@ -94,7 +93,7 @@ void clist_most_employed(struct CLIST* cl) {
         tmp = tmp->next;
     }
     tmp = cl->head->next;
-    printf("Companies with most employees:\n");
+    printf("\nCompanies with most employees:\n");
     while (tmp) {
         if (tmp->company->employees == max) {
             company_print(tmp->company);
@@ -112,7 +111,8 @@ void clist_print_cities_count(struct CLIST* cl) {
         found = 0;
         tmp2 = cl->head->next;
         while(tmp2) {
-            if (tmp1 != tmp2 && strcasecmp(tmp1->company->city, tmp2->company->city) == 0) {
+            if (tmp1 == tmp2) break;
+            if (strcasecmp(tmp1->company->city, tmp2->company->city) == 0) {
                 found = 1;
                 break;
             }
@@ -121,7 +121,7 @@ void clist_print_cities_count(struct CLIST* cl) {
         if (!found) count++;
         tmp1 = tmp1->next;
     }
-    printf("Companies are in %d different cities.\n");
+    printf("\nCompanies are in %d different cities.\n", count);
 }
 
 void clist_print_all(struct CLIST* cl) {
@@ -132,7 +132,7 @@ void clist_print_all(struct CLIST* cl) {
         tmp = tmp->next;
         count++;
     }
-    printf("Found companies: %d\n", count);
+    printf("\nFound companies: %d\n", count);
 }
 
 void clist_print(struct CLIST* cl) {
@@ -150,6 +150,6 @@ void clist_print(struct CLIST* cl) {
         tmp = tmp->next;
     }
     if (!found) {
-        printf("Company with ID %d does not exist.\n", id);
+        printf("\nCompany with ID %d does not exist.\n", id);
     }
 }
