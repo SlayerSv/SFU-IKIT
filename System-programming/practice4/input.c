@@ -46,13 +46,26 @@ int input_check_string(char* input) {
     }
     int i = 0;
     c = input[i];
+    if (c == ' ') {
+        printf("Leading space is not allowed.\n");
+        valid = -1;
+    }
     while (c != '\0') {
-        if (!isalpha(c)) {
-            printf("Only characters [A-Z][a-z] are allowed.\n");
+        if (!isalpha(c) && c != ' ') {
+            printf("Only characters [A-Z], [a-z], [ ] are allowed.\n");
             valid = -1;
             break;
         }
-        c= input[++i];
+        if (c == ' ' && i > 0 && input[i - 1] == ' ') {
+            printf("Only one consecutive space is allowed.\n");
+            valid = -1;
+            break;
+        }
+        c = input[++i];
+    }
+    if (i > 1 && input[i - 1] == ' ') {
+        printf("Trailing space is not allowed.\n");
+        valid = -1;
     }
     return valid;
 }
