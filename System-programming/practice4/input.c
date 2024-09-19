@@ -5,33 +5,6 @@
 
 #include "input.h"
 
-void input_take_string(char* input, char* message) {
-    int c;
-    int valid = 1;
-    while (1) {
-        printf("%s", message);
-        scanf("%s", input);
-        while ((c = getchar()) != '\n' && c != EOF ) {}
-        if (VALID == input_check_string(input)) break;
-    }
-}
-
-void input_take_uint(unsigned int* val, char* message) {
-    char input[10];
-    int c;
-    while (1) {
-        printf("%s", message);
-        scanf("%s", input);
-        char* end;
-        *val = strtoul(input, &end, 10);
-        while ((c = getchar()) != '\n' && c != EOF ) {}
-        if (*end == '\0') {
-            return;
-        }
-        printf("Must provide a positive integer.\n");
-    }
-}
-
 int input_check_string(char* input) {
     int valid, c;
     size_t size = strlen(input);

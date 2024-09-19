@@ -7,8 +7,6 @@
 #define MIN_STRING_SIZE 2
 #define VALID 0
 
-void input_take_string(char* input, char* message);
-void input_take_uint(unsigned int* val, char* message);
 int input_check_string(char* input);
 
 #endif
