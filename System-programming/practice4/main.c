@@ -4,7 +4,6 @@
 
 #include "input.h"
 #include "companyfile.h"
-#include "company.h"
 
 void usage() {
     printf("Usage:\n\
@@ -78,9 +77,11 @@ int main(int argc, char* argv[]) {
             return 0;
         }
         if (strcasecmp(argv[2], "employees") == 0) {
+            file_print_most_employed();
             return 0;
         }
         if (strcasecmp(argv[2], "cities") == 0) {
+            file_print_cities_count();
             return 0;
         }
         unsigned int id = strtoul(argv[2], &end, 10);
