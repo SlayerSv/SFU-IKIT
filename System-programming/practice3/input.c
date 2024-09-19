@@ -10,22 +10,24 @@ void input_take_string(char* input, char* message) {
     int valid = 1;
     while (1) {
         printf("%s", message);
-        scanf("%s", input);
-        while ((c = getchar()) != '\n' && c != EOF ) {}
+        gets(input);
         if (VALID == input_check_string(input)) break;
     }
 }
 
-void input_take_uint(unsigned int* val, char* message) {
-    char input[10];
+void input_take_uint(int* val, char* message) {
+    char input[1000];
     int c;
     while (1) {
         printf("%s", message);
-        scanf("%s", input);
+        gets(input);
+        if (strlen(input) > 9) {
+            printf("Input too long.\n");
+            continue;
+        }
         char* end;
-        *val = strtoul(input, &end, 10);
-        while ((c = getchar()) != '\n' && c != EOF ) {}
-        if (*end == '\0') {
+        *val = strtol(input, &end, 10);
+        if (*end == '\0' && *val >= 0) {
             return;
         }
         printf("Must provide a positive integer.\n");
@@ -46,13 +48,26 @@ int input_check_string(char* input) {
     }
     int i = 0;
     c = input[i];
+    if (c == ' ') {
+        printf("Leading space is not allowed.\n");
+        valid = -1;
+    }
     while (c != '\0') {
-        if (!isalpha(c)) {
-            printf("Only characters [A-Z][a-z] are allowed.\n");
+        if (!isalpha(c) && c != ' ') {
+            printf("Only characters [A-Z], [a-z], [ ] are allowed.\n");
             valid = -1;
             break;
         }
-        c= input[++i];
+        if (c == ' ' && i > 0 && input[i - 1] == ' ') {
+            printf("Only one consecutive space is allowed.\n");
+            valid = -1;
+            break;
+        }
+        c = input[++i];
+    }
+    if (i > 1 && input[i - 1] == ' ') {
+        printf("Trailing space is not allowed.\n");
+        valid = -1;
     }
     return valid;
 }

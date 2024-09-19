@@ -19,7 +19,7 @@ void clist_add(struct CLIST* cl) {
     input_take_string(name, "Enter company's name: ");
     char city[MAX_STRING_SIZE + 1];
     input_take_string(city, "Enter company's city: ");
-    unsigned int employees;
+    int employees;
     input_take_uint(&employees, "Enter company's number of employees: ");
     struct Company* c = company_new(name, city, employees);
     struct CNODE* cnode = malloc(sizeof(struct CNODE));
@@ -30,7 +30,7 @@ void clist_add(struct CLIST* cl) {
 }
 
 void clist_update(struct CLIST* cl) {
-    unsigned int id;
+    int id;
     input_take_uint(&id, "Enter company's ID (0 for cancel): ");
     if (id == 0) return;
     struct Company* c = clist_get(cl, id);
@@ -42,7 +42,7 @@ void clist_update(struct CLIST* cl) {
     input_take_string(name, "Enter new company's name: ");
     char city[MAX_STRING_SIZE + 1];
     input_take_string(city, "Enter new company's city: ");
-    unsigned int employees;
+    int employees;
     input_take_uint(&employees, "Enter new company's number of employees: ");
     strcpy(c->name, name);
     strcpy(c->city, city);
@@ -50,7 +50,7 @@ void clist_update(struct CLIST* cl) {
     printf("\nCompany has been updated.\n");
 }
 
-struct Company* clist_get(struct CLIST* cl, unsigned int id) {
+struct Company* clist_get(struct CLIST* cl, int id) {
     struct CNODE* tmp = cl->head->next;
     while (tmp) {
         if (tmp->company->id == id) return tmp->company;
@@ -60,7 +60,7 @@ struct Company* clist_get(struct CLIST* cl, unsigned int id) {
 }
 
 void clist_delete(struct CLIST* cl) {
-    unsigned int id;
+    int id;
     input_take_uint(&id, "Enter company's ID for deletion (0 for cancel): ");
     if (id == 0) return;
     struct CNODE* prev = cl->head;
@@ -136,7 +136,7 @@ void clist_print_all(struct CLIST* cl) {
 }
 
 void clist_print(struct CLIST* cl) {
-    unsigned int id;
+    int id;
     input_take_uint(&id, "Enter company's ID (0 for cancel): ");
     if (id == 0) return;
     struct CNODE* tmp = cl->head->next;

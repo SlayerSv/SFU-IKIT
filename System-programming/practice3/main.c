@@ -7,8 +7,8 @@
 
 int main() {
     printf("Welcome to companies manager app!\n");
-    char input[MAX_STRING_SIZE+1];
-    unsigned int option;
+    char input[1000];
+    int option;
     struct CLIST* clist = clist_new();
     while (1) {
         printf("\n1 Print all companies\n2 Create new company\n3 Update company\n\
