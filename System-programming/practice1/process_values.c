@@ -26,38 +26,10 @@ void processValues(char* input1, char* input2) {
     printf("Concatinated string is %s\n", output);
 }
 
-int main() {
-    printf("Enter first value: ");
-    char input1[100];
-    scanf("%s", input1);
-    printf("Enter second value: ");
-    char input2[100];
-    scanf("%s", input2);
-    processValues(input1, input2);
-}
-
-int isInteger(char* value) {
-    int i = 0;
-    if (value[0] == '+' || value[0] == '-') {
-        i++;
+int main(int argc, char* argv[]) {
+    if (argc != 3) {
+        printf("Must be exactly 3 arguments. Provided: %d\n", argc);
+        return 1;
     }
-    if (value[0] == '\0') {
-        return 0;
-    }
-    while (value[i] != '\0') {
-        if (value[i] < '0' || value[i] > '9') {
-            return 0;
-        }
-    }
-    return 1;
-}
-
-int isDecimal(char* value) {
-    int i = 0;
-    if (value[0] == '+' || value[0] == '-') {
-        i++;
-    }
-    if (value[0] == '\0') {
-        return 0;
-    }
+    processValues(argv[1], argv[2]);
 }
