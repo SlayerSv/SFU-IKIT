@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "process_values.h"
 
 int main(int argc, char* argv[]) {

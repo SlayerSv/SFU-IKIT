@@ -19,10 +19,7 @@ int main() {
         printf("failed to run process\n");
         return 1;
     } else {
-        printf("Parent process. Child id is %d\n", childPid);
-        int child;
-        int id = wait(&child);
-        printf("Done waiting %d status %d\n", id, child);
+        wait(NULL);
     }
 
 }

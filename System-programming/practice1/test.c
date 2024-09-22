@@ -1,4 +1,3 @@
-#include <stdlib.h>
 #include <CUnit/Basic.h>
 #include "process_values.h"
 
