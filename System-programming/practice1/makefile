@@ -2,12 +2,14 @@ CC = gcc
 
 build: child.out parent.out
 
-run:
+run: child.out parent.out
 	./parent.out
 
-tests: test.o process_values.o
+test: test.out
+	./test.out
+
+test.out: test.o process_values.o
 	$(CC) -o $@ $^ -lcunit
-	./tests
 
 child.out: child.o process_values.o
 	$(CC) -o $@ $^
