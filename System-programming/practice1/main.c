@@ -4,6 +4,7 @@
 
 #include "constants.h"
 
+/// \breaf Accepts input and passes it to a child process.
 int main() {
     printf("Enter first value: ");
     char input1[DEFAULT_BUFF_SIZE];
