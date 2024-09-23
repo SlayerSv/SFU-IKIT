@@ -1,9 +1,9 @@
 CC = gcc
 
-build: child.out parent.out
-
 run: child.out parent.out
 	./parent.out
+
+build: child.out parent.out
 
 test: test.out
 	./test.out

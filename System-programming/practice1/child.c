@@ -1,11 +1,18 @@
 #include "process_values.h"
+#include "constants.h"
 
 int main(int argc, char* argv[]) {
     if (argc != 3) {
         printf("Must be exactly 2 arguments. Provided: %d\n", argc - 1);
         return 1;
     }
-    char output[200];
-    processValues(output, argv[1], argv[2]);
+    int buffsize = DEFAULT_BUFF_SIZE;
+    int len1 = strlen(argv[1]);
+    int len2 = strlen(argv[2]);
+    if (len1 + len2 + 1 > buffsize) {
+        buffsize = len1 + len2 + 1;
+    };
+    char output[buffsize];
+    processValues(output, argv[1], len1, argv[2], len2);
     printf("%s\n", output);
 }

@@ -1,17 +1,18 @@
 #include <CUnit/Basic.h>
 #include "process_values.h"
+#include "constants.h"
 
 void test_double(void) {
-    char output[20];
-    char input1[4] = "0.1";
-    char input2[4] = "0.2";
+    char output[DEFAULT_BUFF_SIZE];
+    char input1[] = "0.1";
+    char input2[] = "0.2";
     double expected = 0.3;
     processValues(output, input1, input2);
     double ans = strtod(output, NULL);
     CU_ASSERT_EQUAL(ans, expected);
 
-    char input3[4] = "-.2";
-    char input4[4] = "+.1";
+    char input3[] = "-.2";
+    char input4[] = "+.1";
     expected = -0.1;
     processValues(output, input3, input4);
     ans = strtod(output, NULL);
@@ -26,16 +27,16 @@ void test_double(void) {
 }
 
 void test_integers(void) {
-    char output[20];
-    char input1[2] = "1";
-    char input2[2] = "2";
+    char output[DEFAULT_BUFF_SIZE];
+    char input1[] = "1";
+    char input2[] = "2";
     long long expected = 1;
     processValues(output, input1, input2);
     long long ans = strtoll(output, NULL, 10);
     CU_ASSERT_EQUAL(ans, expected);
 
-    char input3[3] = "-5";
-    char input4[3] = "+7";
+    char input3[] = "-5";
+    char input4[] = "+7";
     expected = -5;
     processValues(output, input3, input4);
     ans = strtoll(output, NULL, 10);
@@ -50,7 +51,7 @@ void test_integers(void) {
 }
 
 void test_strings(void) {
-    char output[20];
+    char output[DEFAULT_BUFF_SIZE];
     char input1[] = "--1";
     char input2[] = "++2";
     char expected1[] ="--1++2";

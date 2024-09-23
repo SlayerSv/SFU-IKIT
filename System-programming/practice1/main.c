@@ -2,12 +2,14 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
+#include "constants.h"
+
 int main() {
     printf("Enter first value: ");
-    char input1[100];
+    char input1[DEFAULT_BUFF_SIZE];
     scanf("%s", input1);
     printf("Enter second value: ");
-    char input2[100];
+    char input2[DEFAULT_BUFF_SIZE];
     scanf("%s", input2);
 
     pid_t childPid;
@@ -21,5 +23,4 @@ int main() {
     } else {
         wait(NULL);
     }
-
 }
