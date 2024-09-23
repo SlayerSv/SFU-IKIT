@@ -1,34 +1,27 @@
-#include <pthread.h>
-#include <semaphore.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
-#include <unistd.h>
-//#include <windows.h>
+
 #include "buffer.h"
 #include "reader.h"
 #include "writer.h"
+#include "input.h"
 
 int main() {
-    printf("Enter max buffer size: ");
-    scanf("%u", &max_buffer_size);
+    extern int max_buffer_size;
+    input_take_uint(&max_buffer_size, "Enter max buffer size: ");
 
-    unsigned int number_of_readers = 1;
-    printf("Enter number of readers: ");
-    scanf("%u", &number_of_readers);
+    int number_of_readers = 0;
+    input_take_uint(&number_of_readers, "Enter number of readers: ");
 
-    unsigned int number_of_writers = 1;
-    printf("Enter number of writers: ");
-    scanf("%u", &number_of_writers);
+    int number_of_writers = 0;
+    input_take_uint(&number_of_writers, "Enter number of writers: ");
 
-    printf("Enter read time: ");
-    scanf("%u", &reader_read_time);
+    extern int reader_read_time;
+    input_take_uint(&reader_read_time, "Enter read time: ");
 
-    printf("Enter write time: ");
-    scanf("%u", &writer_write_time);
+    extern int writer_write_time;
+    input_take_uint(&writer_write_time, "Enter write time: ");
     
-    struct buffer* buffer = buffer_init();
+    struct buffer* buffer = buffer_new();
     srand(time(NULL));
     pthread_t readers[number_of_readers];
     for (int i = 0; i < number_of_readers; i++) {

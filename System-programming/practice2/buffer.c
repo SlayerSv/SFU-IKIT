@@ -1,9 +1,6 @@
-#include <pthread.h>
-#include <semaphore.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include "buffer.h"
+
+int max_buffer_size = 0;
 
 void buffer_push(struct buffer* buffer, struct record* new_record) {
     struct record* curr = buffer->tail->prev;
@@ -32,7 +29,7 @@ void buffer_new_message(struct buffer* buffer, char* message) {
     buffer_push(buffer, new_record);
 }   
 
-struct buffer* buffer_init() {
+struct buffer* buffer_new() {
     struct buffer* buffer = (struct buffer*) malloc(sizeof(struct buffer));
     pthread_mutex_init(&buffer->mutex, NULL);
     pthread_mutex_init(&buffer->write_mutex, NULL);

@@ -1,12 +1,15 @@
-# include <pthread.h>
-# include <semaphore.h>
 #ifndef BUFFER_H
 #define BUFFER_H
 
-int max_buffer_size;
+#include <pthread.h>
+#include <semaphore.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include "constants.h"
 
 struct record {
-    char text[40];
+    char text[DEFAULT_BUFF_SIZE];
     struct record* prev;
     struct record* next;
 };
@@ -24,7 +27,8 @@ struct buffer {
 
 struct record* buffer_pop(struct buffer* buffer);
 void buffer_push(struct buffer* buffer, struct record* new_record);
-struct buffer* buffer_init();
+struct buffer* buffer_new();
 void buffer_next_message(struct buffer* buffer, char* message);
 void buffer_new_message(struct buffer* buffer, char* message);
+
 #endif
