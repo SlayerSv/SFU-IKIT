@@ -1,27 +1,19 @@
-#include "buffer.h"
 #include "reader.h"
-#include "constants.h"
+#include "buffer.h"
 
-unsigned long long next_reader_id = 0;
-int reader_read_time = 0;
+int next_reader_id = 0;
 
-void reader_read(struct buffer* buffer, char* reader_id) {
-    sem_wait(&buffer->records_count);
-    pthread_mutex_lock(&buffer->mutex);
-    char message[DEFAULT_BUFF_SIZE];
-    buffer_next_message(buffer, message);
-    printf("Reader %s reading: %s\n", reader_id, message);
-    sleep(reader_read_time);
-    pthread_cond_signal(&buffer->buffer_full);
-    pthread_mutex_unlock(&buffer->mutex);
-    sleep(rand() % MAX_SLEEP_TIME);
+struct Reader* reader_new(int read_time) {
+    struct Reader* reader = malloc(sizeof(struct Reader));
+    reader->id = ++next_reader_id;
+    reader->read_time = read_time;
+    return reader;
 }
 
 void* reader_run(void* arg) {
-    struct buffer* buffer = (struct buffer*) arg;
-    char reader_id[DEFAULT_BUFF_SIZE];
-    sprintf(reader_id, "%llu", ++next_reader_id);
+    struct Reader_arg* rarg = (struct Reader_arg*) arg;
     while (1) {
-        reader_read(buffer, reader_id);
+        record_buffer_read(rarg->rb, rarg->reader);
+        sleep(rand() % MAX_SLEEP_TIME);
     }
 }

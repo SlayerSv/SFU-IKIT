@@ -1,13 +1,17 @@
 #ifndef WRITER_H
 #define WRITER_H
 
-#include <pthread.h>
-#include <semaphore.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
+struct Writer {
+    int id;
+    int write_time;
+};
 
-void writer_write(struct buffer* buffer, char* writer_id);
+struct Writer_arg {
+    struct Writer* writer;
+    struct Record_buffer* rb;
+};
+
+struct Writer* writer_new(int write_time);
 void* writer_run(void* arg);
 
 #endif

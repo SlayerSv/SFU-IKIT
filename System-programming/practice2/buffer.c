@@ -1,45 +1,63 @@
 #include "buffer.h"
 
-int max_buffer_size = 0;
-
-void buffer_push(struct buffer* buffer, struct record* new_record) {
-    struct record* curr = buffer->tail->prev;
+void record_buffer_push(struct Record_buffer* rb, struct Record* new_record) {
+    struct Record* curr = rb->tail->prev;
     curr->next = new_record;
     new_record->prev = curr;
-    new_record->next = buffer->tail;
-    buffer->tail->prev = new_record;
+    new_record->next = rb->tail;
+    rb->tail->prev = new_record;
+    rb->size++;
 }
 
-struct record* buffer_pop(struct buffer* buffer) {
-    struct record* curr = buffer->head->next;
-    buffer->head->next = curr->next;
-    curr->next->prev = buffer->head;
+struct Record* record_buffer_pop(struct Record_buffer* rb) {
+    struct Record* curr = rb->head->next;
+    rb->head->next = curr->next;
+    curr->next->prev = rb->head;
+    rb->size--;
     return curr;
 }
 
-void buffer_next_message(struct buffer* buffer, char* message) {
-    struct record* record = buffer_pop(buffer);
-    strcpy(message, record->text);
-    free(record);
+void record_buffer_read(struct Record_buffer* rb, struct Reader* reader) {
+    sem_wait(&rb->sem_size);
+    pthread_mutex_lock(&rb->mutex);
+    sleep(reader->read_time);
+    struct Record* record = record_buffer_pop(rb);
+    printf("%d Reader %d reads record %d %s\n", rb->size, reader->id, record->id, record->text);
+    record_delete(record);
+    pthread_cond_signal(&rb->has_space);
+    pthread_mutex_unlock(&rb->mutex);
 }
 
-void buffer_new_message(struct buffer* buffer, char* message) {
-    struct record* new_record = (struct record*) malloc(sizeof(struct record));
-    strcpy(new_record->text, message);
-    buffer_push(buffer, new_record);
+void record_buffer_write(struct Record_buffer* rb, struct Writer* writer) {
+    pthread_mutex_lock(&rb->mutex);
+    while (rb->size >= rb->max_size) {
+        pthread_cond_wait(&rb->has_space, &rb->mutex);
+    }
+    sleep(writer->write_time);
+    char record_text[DEFAULT_BUFFER_SIZE];
+    sprintf(record_text, "written by writer %d", writer->id);
+    struct Record* record = record_new(record_text);
+    record_buffer_push(rb, record);
+    printf("%d Writer %d writes record %d\n", rb->size, writer->id, record->id);
+    sem_post(&rb->sem_size);
+    pthread_mutex_unlock(&rb->mutex);
 }   
 
-struct buffer* buffer_new() {
-    struct buffer* buffer = (struct buffer*) malloc(sizeof(struct buffer));
-    pthread_mutex_init(&buffer->mutex, NULL);
-    pthread_mutex_init(&buffer->write_mutex, NULL);
-    pthread_mutex_init(&buffer->cond_mutex, NULL);
-    sem_init(&buffer->records_count, 0, 0);
-    pthread_cond_init(&buffer->buffer_full, NULL);
-    buffer->next_id = 0;
-    buffer->head = (struct record*) malloc(sizeof(struct record));
-    buffer->tail = (struct record*) malloc(sizeof(struct record));
-    buffer->head->next = buffer->tail;
-    buffer->tail->prev = buffer->head;
-    return buffer;
+struct Record_buffer* record_buffer_new(int max_size) {
+    struct Record_buffer* rb = malloc(sizeof(struct Record_buffer));
+
+    pthread_mutex_init(&rb->mutex, NULL);
+    sem_init(&rb->sem_size, 0, 0);
+    pthread_cond_init(&rb->has_space, NULL);
+
+    rb->max_size = max_size;
+    rb->next_record_id = 0;
+    rb->size = 0;
+
+    rb->head = malloc(sizeof(struct Record));
+    rb->tail = malloc(sizeof(struct Record));
+    rb->head->next = rb->tail;
+    rb->tail->prev = rb->head;
+
+    return rb;
 }

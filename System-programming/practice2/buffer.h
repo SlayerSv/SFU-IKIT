@@ -6,29 +6,28 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 #include "constants.h"
+#include "record.h"
+#include "reader.h"
+#include "writer.h"
 
-struct record {
-    char text[DEFAULT_BUFF_SIZE];
-    struct record* prev;
-    struct record* next;
-};
-
-struct buffer {
+struct Record_buffer {
+    int max_size;
+    int size;
     pthread_mutex_t mutex;
-    sem_t records_count;
-    pthread_cond_t buffer_full;
-    pthread_mutex_t write_mutex;
-    pthread_mutex_t cond_mutex;
-    unsigned long long next_id;
-    struct record* head;
-    struct record* tail;
+    sem_t sem_size;
+    pthread_cond_t has_space;
+
+    int next_record_id;
+    struct Record* head;
+    struct Record* tail;
 };
 
-struct record* buffer_pop(struct buffer* buffer);
-void buffer_push(struct buffer* buffer, struct record* new_record);
-struct buffer* buffer_new();
-void buffer_next_message(struct buffer* buffer, char* message);
-void buffer_new_message(struct buffer* buffer, char* message);
+struct Record* record_buffer_pop(struct Record_buffer* rb);
+void record_buffer_push(struct Record_buffer* rb, struct Record* new_record);
+struct Record_buffer* record_buffer_new(int max_size);
+void record_buffer_read(struct Record_buffer* rb, struct Reader* reader);
+void record_buffer_write(struct Record_buffer* rb, struct Writer* writer);
 
 #endif

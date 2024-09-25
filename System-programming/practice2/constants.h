@@ -1,8 +1,8 @@
 #ifndef CONSTANTS
 #define CONSTANTS
 
-#define DEFAULT_BUFF_SIZE 128
-#define MAX_INT_SIZE 9
+#define DEFAULT_BUFFER_SIZE 64
+#define MAX_INT_SIZE 11
 #define MAX_SLEEP_TIME 10
 
 #endif
