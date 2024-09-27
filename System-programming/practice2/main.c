@@ -24,6 +24,7 @@ int main() {
     struct Record_buffer* rb = record_buffer_new(max_record_buffer_size);
     srand(time(NULL));
 
+    /// create and run entered number of readers as concurrent threads.
     pthread_t readers[number_of_readers];
     struct Reader_arg reader_args[number_of_readers];
     for (int i = 0; i < number_of_readers; i++) {
@@ -32,6 +33,7 @@ int main() {
         pthread_create(&readers[i], NULL, reader_run, &reader_args[i]);
     }
 
+    /// create and run entered number of writers as concurrent threads.
     pthread_t writers[number_of_writers];
     struct Writer_arg writer_args[number_of_writers];
     for (int i = 0; i < number_of_writers; i++) {
@@ -40,6 +42,7 @@ int main() {
         pthread_create(&writers[i], NULL, writer_run, &writer_args[i]);
     }
 
+    /// wait for threads to finish.
     for (int i = 0; i < number_of_readers; i++) {
         pthread_join(readers[i], NULL);
     }
