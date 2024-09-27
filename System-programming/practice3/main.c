@@ -1,13 +1,17 @@
-#include <stdio.h>
-#include <string.h>
+#include "controller.h"
 
-#include "input.h"
-#include "company.h"
-#include "companylist.h"
+#define EXIT 0
+#define PRINT_ALL 1
+#define ADD 2
+#define UPDATE 3
+#define DELETE 4
+#define PRINT 5
+#define MOST_EMPLOYED 6
+#define CITIES_COUNT 7
 
 int main() {
     printf("Welcome to companies manager app!\n");
-    char input[1000];
+    char input[DEFAULT_BUFFER_SIZE];
     int option;
     struct CLIST* clist = clist_new();
     while (1) {
@@ -16,34 +20,34 @@ int main() {
 7 Count number of cities\n\n0 Exit\n\n");
         input_take_uint(&option, "Choose an option: ");
         switch (option) {
-            case 0:
+            case EXIT:
+                clist_clear(clist);
                 printf("Exiting program.");
                 return 0;
-            case 1:
-                clist_print_all(clist);
+            case PRINT_ALL:
+                print_all_companies(clist);
                 break;
-            case 2:
-                clist_add(clist);
+            case ADD:
+                create_and_add_new_company(clist);
                 break;
-            case 3:
-                clist_update(clist);
+            case UPDATE:
+                update_company(clist);
                 break;
-            case 4:
-                clist_delete(clist);
+            case DELETE:
+                delete_company(clist);
                 break;
-            case 5:
-                clist_print(clist);
+            case PRINT:
+                print_company(clist);
                 break;
-            case 6:
-                clist_most_employed(clist);
+            case MOST_EMPLOYED:
+                print_most_employed(clist);
                 break;
-            case 7:
-                clist_print_cities_count(clist);
+            case CITIES_COUNT:
+                print_cities_count(clist);
                 break;
             default:
                 printf("Unknown option.\n");
                 break;
         }
-
     }
 }

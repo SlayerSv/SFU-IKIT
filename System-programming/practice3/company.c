@@ -1,28 +1,30 @@
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-
 #include "company.h"
 
-int COMPANY_NEXT_ID = 0;
+int company_next_id = 0;
 
 struct Company* company_new(char* name, char* city, int employees) {
-    struct Company* c = malloc(sizeof(struct Company));
-    strcpy(c->name, name);
-    strcpy(c->city, city);
-    c->employees = employees;
-    c->id = ++COMPANY_NEXT_ID;
-    return c;
+    struct Company* company = malloc(sizeof(struct Company));
+    company->name = malloc((MAX_COMPANY_NAME_SIZE + 1) * sizeof(char));
+    company->city = malloc((MAX_COMPANY_CITY_SIZE + 1) * sizeof(char));
+    company_update(company, name, city, employees);
+    company->id = ++company_next_id;
+    return company;
 }
 
-void company_update(struct Company* c, char* name, char* city, int employees) {
-    strcpy(c->name, name);
-    strcpy(c->city, city);
-    c->employees = employees;
+void company_update(struct Company* company, char* name, char* city, int employees) {
+    company->name[0] = '\0';
+    company->name[MAX_COMPANY_NAME_SIZE] = '\0';
+    strncat(company->name, name, MAX_COMPANY_NAME_SIZE);
+    company->city[0] = '\0';
+    company->city[MAX_COMPANY_CITY_SIZE] = '\0';
+    strncat(company->city, city, MAX_COMPANY_CITY_SIZE);
+    company->employees = employees;
 }
 
-void company_delete(struct Company* c) {
-    free(c);
+void company_delete(struct Company* company) {
+    free(company->name);
+    free(company->city);
+    free(company);
 }
 
 void company_print(struct Company* c) {
