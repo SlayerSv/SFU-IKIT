@@ -67,12 +67,16 @@ void input_take_uint(int* val, char* message) {
     }
 }
 
+/// @brief Check a string for validity by specific rules.
+/// @param input String to check.
+/// @return 0 if string is valid.
+///         -1 otherwise.
 int input_check_string(char* input) {
     int valid, c;
     size_t size = strlen(input);
     valid = 0;
-    if (size < 2) {
-        printf("Min %d characters are needed.\n", MIN_STRING_SIZE);
+    if (size < MIN_STRING_SIZE) {
+        printf("Minimum %d characters are needed.\n", MIN_STRING_SIZE);
         valid = -1;
     }
     int i = 0;

@@ -22,10 +22,16 @@ void clist_add(struct CLIST* clist, struct Company* company) {
     clist->size++;
 }
 
+/// @brief Finds and returns a company with specified id.
+/// @param clist List of companies to search.
+/// @param id Id of the company to find.
+/// @return Pointer to company struct if company is present in the list.
+///         NULL if company is not in the list.
 struct Company* clist_get(struct CLIST* clist, int id) {
     struct CNODE* tmp = clist->head->next;
     while (tmp) {
-        if (tmp->company->id == id) return tmp->company;
+        if (tmp->company->id == id)
+            return tmp->company;
         tmp = tmp->next;
     }
     return NULL;
@@ -55,6 +61,8 @@ int clist_delete(struct CLIST* clist, int id) {
     return 0;
 }
 
+/// @brief Clear a list deleting all companies and the list itself.
+/// @param clist List of the companies to clear.
 void clist_clear(struct CLIST* clist) {
     struct CNODE* curr = clist->head;
     struct CNODE* next;

@@ -9,6 +9,8 @@
 #define MOST_EMPLOYED 6
 #define CITIES_COUNT 7
 
+/// @brief Companies manager app. Allows to create, edit, delete, view
+/// different companies.
 int main() {
     printf("Welcome to companies manager app!\n");
     char input[DEFAULT_BUFFER_SIZE];
@@ -22,7 +24,7 @@ int main() {
         switch (option) {
             case EXIT:
                 clist_clear(clist);
-                printf("Exiting program.");
+                printf("Exiting program.\n");
                 return 0;
             case PRINT_ALL:
                 print_all_companies(clist);

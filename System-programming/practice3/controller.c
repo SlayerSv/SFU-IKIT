@@ -1,5 +1,10 @@
 #include "controller.h"
 
+/// @brief Creates and adds a new company to the list of companies.
+/// @details Takes input from a user for name, city, number of employees,
+/// then creates a new company with specified values, adds that company to the
+/// list of companies and notifies the user by rpinting info in the console.
+/// @param clist List of companies in which new company will be added.
 void create_and_add_new_company(struct CLIST* clist) {
     char name[MAX_COMPANY_NAME_SIZE + 1];
     input_take_string(name, MAX_COMPANY_NAME_SIZE + 1, "Enter company's name: ");
@@ -12,6 +17,9 @@ void create_and_add_new_company(struct CLIST* clist) {
     printf("\nCompany added to the list.\n");
 }
 
+/// @brief Takes input from a user and updates a company with the new values
+/// provided.
+/// @param clist List of companies in which company will be updated.
 void update_company(struct CLIST* clist) {
     if (clist->size == 0) {
         printf("\nList of companies is empty.");
@@ -35,6 +43,9 @@ void update_company(struct CLIST* clist) {
     printf("\nCompany has been updated.\n");
 }
 
+/// @brief Takes input - id of a company from a user and deletes that company from
+/// a list.
+/// @param clist List of companies from which to delete the company.
 void delete_company(struct CLIST* clist) {
     if (clist->size == 0) {
         printf("\nList of companies is empty.");
@@ -50,6 +61,9 @@ void delete_company(struct CLIST* clist) {
     }
 }
 
+/// @brief Takes input - id of a company, finds it in the list and prints
+/// information about that company.
+/// @param clist List of companies.
 void print_company(struct CLIST* clist) {
     if (clist->size == 0) {
         printf("\nList of companies is empty.");
@@ -66,6 +80,8 @@ void print_company(struct CLIST* clist) {
     company_print(company);
 }
 
+/// @brief Prints all companies in the list.
+/// @param clist List of companies.
 void print_all_companies(struct CLIST* clist) {
     if (clist->size == 0) {
         printf("\nList of companies is empty.");
@@ -81,6 +97,8 @@ void print_all_companies(struct CLIST* clist) {
     printf("\nFound companies: %d\n", count);
 }
 
+/// @brief Prints in how many unique cities companies are located.
+/// @param clist List of companies.
 void print_cities_count(struct CLIST* clist) {
     if (clist->size == 0) {
         printf("\nList of companies is empty.\n");
@@ -107,6 +125,8 @@ void print_cities_count(struct CLIST* clist) {
     printf("\nCompanies are in %d different cities.\n", count);
 }
 
+/// @brief Prints companies having a highest number of employees.
+/// @param clist List of companies.
 void print_most_employed(struct CLIST* clist) {
     if (clist->size == 0) {
         printf("\nList of companies is empty.\n");

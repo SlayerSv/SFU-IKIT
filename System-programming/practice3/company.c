@@ -2,6 +2,11 @@
 
 int company_next_id = 0;
 
+/// @brief Creates and returns new company struct with provided fields.
+/// @param name Name of the company.
+/// @param city Location (city) of the company.
+/// @param employees Number of employees of the company.
+/// @return Created company struct.
 struct Company* company_new(char* name, char* city, int employees) {
     struct Company* company = malloc(sizeof(struct Company));
     company->name = malloc((MAX_COMPANY_NAME_SIZE + 1) * sizeof(char));
@@ -11,6 +16,11 @@ struct Company* company_new(char* name, char* city, int employees) {
     return company;
 }
 
+/// @brief Updates company replacing all fields with provided arguments.
+/// @param company Company to update.
+/// @param name New name of the company.
+/// @param city New location (city) of the company.
+/// @param employees New number of employees of the company.
 void company_update(struct Company* company, char* name, char* city, int employees) {
     company->name[0] = '\0';
     company->name[MAX_COMPANY_NAME_SIZE] = '\0';
@@ -21,12 +31,17 @@ void company_update(struct Company* company, char* name, char* city, int employe
     company->employees = employees;
 }
 
+/// @brief Deletes a company, frees memory.
+/// @param company Company to delete.
 void company_delete(struct Company* company) {
     free(company->name);
     free(company->city);
     free(company);
 }
 
-void company_print(struct Company* c) {
-    printf("\nID: %d\nName: %s\nCity: %s\nEmployees: %d\n", c->id, c->name, c->city, c->employees);
+/// @brief Prints information about company.
+/// @param company Company to print. 
+void company_print(struct Company* company) {
+    printf("\nID: %d\nName: %s\nCity: %s\nEmployees: %d\n",
+        company->id, company->name, company->city, company->employees);
 }

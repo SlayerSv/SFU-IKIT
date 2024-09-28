@@ -10,10 +10,14 @@
 #define MAX_COMPANY_NAME_SIZE DEFAULT_BUFFER_SIZE - 1
 #define MAX_COMPANY_CITY_SIZE DEFAULT_BUFFER_SIZE - 1
 
+/// Struct representing a company.
 struct Company {
     int id;
+    /// Name of the company.
     char* name;
+    /// Location (city) of the company.
     char* city;
+    /// Number of employees.
     int employees;
 };
 
