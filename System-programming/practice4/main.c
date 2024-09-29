@@ -4,6 +4,18 @@
 
 #include "input.h"
 #include "companyfile.h"
+#include "constants.h"
+
+/// Number of arguments that contain a name of the program and a name of the command.
+#define PREFIX_ARGS 2
+/// Required number of arguments for the create command.
+#define CREATE_ARGS 3
+/// Required number of arguments for the update command.
+#define UPDATE_ARGS 4
+/// Required number of arguments for the delete command.
+#define DELETE_ARGS 1
+/// Required number of arguments for the print command.
+#define PRINT_ARGS 3
 
 void usage() {
     printf("Usage:\n\
@@ -18,81 +30,85 @@ print cities (print in how many cities companies are located)\n");
 
 int main(int argc, char* argv[]) {
     char* end;
-    if (argc < 2) {
+    if (argc < 1) {
         printf("Must provide a command for the app.\n");
         usage();
-        return 1;
+        return EXIT_FAILURE;
     }
-    if (strcasecmp(argv[1], "create") == 0) {
-        if (argc != 5) {
-            printf("At least 3 arguments required for create command. Passed: %d\n", argc - 2);
-            return 1;
+    if (strcasecmp(argv[1], "create") == SAME) {
+        if (argc != PREFIX_ARGS + CREATE_ARGS) {
+            printf("At least %d arguments required for create command. Passed: %d\n",
+                CREATE_ARGS, argc - PREFIX_ARGS);
+            return EXIT_FAILURE;
         }
         if (VALID != input_check_string(argv[2]) || VALID != input_check_string(argv[3])) {
-            return 1;
+            return EXIT_FAILURE;
         }
         strtoul(argv[4], &end, 10);
         if (*end != '\0') {
             printf("Wrong format of employees count (%s). Provide a positive integer.\n", argv[4]);
-            return 1;
+            return EXIT_FAILURE;
         }
         file_add_company(argv[2], argv[3], argv[4]);
-    } else if (strcasecmp(argv[1], "update") == 0) {
-        if (argc != 6) {
-            printf("At least 4 arguments required for update command. Passed: %d\n", argc - 2);
-            return 1;
+    } else if (strcasecmp(argv[1], "update") == SAME) {
+        if (argc != PREFIX_ARGS + UPDATE_ARGS) {
+            printf("At least %d arguments required for update command. Passed: %d\n",
+                UPDATE_ARGS, argc - PREFIX_ARGS);
+            return EXIT_FAILURE;
         }
         unsigned int id = strtoul(argv[2], &end, 10);
         if (*end != '\0' || id < 1) {
             printf("Wrong format of compnay ID (%s). Provide a positive integer.\n", argv[2]);
-            return 1;
+            return EXIT_FAILURE;
         }
         if (VALID != input_check_string(argv[3]) || VALID != input_check_string(argv[4])) {
-            return 1;
+            return EXIT_FAILURE;
         }
         strtoul(argv[5], &end, 10);
         if (*end != '\0') {
             printf("Wrong format of employees count (%s). Provide a positive integer.\n", argv[5]);
-            return 1;
+            return EXIT_FAILURE;
         }
         file_update_company(id, argv[3], argv[4], argv[5]);
-    } else if (strcasecmp(argv[1], "delete") == 0) {
-        if (argc != 3) {
-            printf("Must provide exactly 1 argument for delete command. Passed: %d\n", argc - 2);
-            return 1;
+    } else if (strcasecmp(argv[1], "delete") == SAME) {
+        if (argc != PREFIX_ARGS + DELETE_ARGS) {
+            printf("Must provide exactly %d argument for delete command. Passed: %d\n",
+                DELETE_ARGS, argc - PREFIX_ARGS);
+            return EXIT_FAILURE;
         }
         unsigned int id = strtoul(argv[2], &end, 10);
         if (*end != '\0' || id < 1) {
             printf("Wrong format of company ID (%s). Provide a positive integer.\n", argv[2]);
-            return 1;
+            return EXIT_FAILURE;
         }
         file_delete_company(id);
-    } else if (strcasecmp(argv[1], "print") == 0) {
-        if (argc != 3) {
-            printf("Must provide exactly 1 argument for print command. Passed: %d\n", argc - 2);
-            return 1;
+    } else if (strcasecmp(argv[1], "print") == SAME) {
+        if (argc != PREFIX_ARGS + PRINT_ARGS) {
+            printf("Must provide exactly %d argument for print command. Passed: %d\n",
+                PRINT_ARGS, argc - PREFIX_ARGS);
+            return EXIT_FAILURE;
         }
-        if (strcasecmp(argv[2], "all") == 0) {
+        if (strcasecmp(argv[2], "all") == SAME) {
             file_print_all();
-            return 0;
+            return EXIT_SUCCESS;
         }
-        if (strcasecmp(argv[2], "employees") == 0) {
+        if (strcasecmp(argv[2], "employees") == SAME) {
             file_print_most_employed();
-            return 0;
+            return EXIT_SUCCESS;
         }
-        if (strcasecmp(argv[2], "cities") == 0) {
+        if (strcasecmp(argv[2], "cities") == SAME) {
             file_print_cities_count();
-            return 0;
+            return EXIT_SUCCESS;
         }
         unsigned int id = strtoul(argv[2], &end, 10);
         if (*end != '\0' || id < 1) {
             printf("Wrong format of company ID (%s). Provide a positive integer.\n", argv[2]);
-            return 1;
+            return EXIT_FAILURE;
         }
         file_print_company(id);
     } else {
         printf("Unknown command: %s\n", argv[1]);
         usage();
-        return 1;
+        return EXIT_FAILURE;
     }
 }

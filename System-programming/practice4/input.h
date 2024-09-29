@@ -2,9 +2,13 @@
 #define INPUT
 
 #include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+#include <stdlib.h>
 
-#define MAX_STRING_SIZE 30
-#define MIN_STRING_SIZE 2
+#include "constants.h"
+
+/// returned when value is valid.
 #define VALID 0
 
 int input_check_string(char* input);

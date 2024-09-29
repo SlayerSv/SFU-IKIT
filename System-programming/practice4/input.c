@@ -1,19 +1,14 @@
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
-#include <stdlib.h>
-
 #include "input.h"
 
 int input_check_string(char* input) {
     int valid, c;
     size_t size = strlen(input);
     valid = 0;
-    if (size > 30) {
+    if (size > MAX_STRING_SIZE) {
         printf("Max %d characters are allowed.\n", MAX_STRING_SIZE);
         valid = -1;
     }
-    if (size < 2) {
+    if (size < MIN_STRING_SIZE) {
         printf("Min %d characters are needed.\n", MIN_STRING_SIZE);
         valid = -1;
     }
