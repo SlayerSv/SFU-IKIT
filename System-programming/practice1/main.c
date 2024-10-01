@@ -1,17 +1,18 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <stdlib.h>
 
 #include "constants.h"
+#include "input.h"
 
-/// \breaf Accepts input and passes it to a child process.
+/// @breaf Takes input from a user and then starts child process and passes
+/// to input for processing.
 int main() {
-    printf("Enter first value: ");
     char input1[DEFAULT_BUFF_SIZE];
-    scanf("%s", input1);
-    printf("Enter second value: ");
+    input_take_string(input1, DEFAULT_BUFF_SIZE, "Enter first value: ");
     char input2[DEFAULT_BUFF_SIZE];
-    scanf("%s", input2);
+    input_take_string(input2, DEFAULT_BUFF_SIZE, "Enter second value: ");
 
     pid_t childPid;
     char path[] = "child.out";
@@ -20,7 +21,7 @@ int main() {
     if (childPid == 0) {
         execv(path, args);
         printf("failed to run process\n");
-        return 1;
+        return EXIT_FAILURE;
     } else {
         wait(NULL);
     }

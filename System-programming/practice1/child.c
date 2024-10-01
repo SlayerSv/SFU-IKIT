@@ -1,12 +1,12 @@
 #include "process_values.h"
 #include "constants.h"
 
-/// \brief Accepts 2 arguments from CLI and calls processing function,
+/// @brief Accepts 2 arguments from CLI and calls processing function,
 /// writes the result to stdin.
 int main(int argc, char* argv[]) {
     if (argc != 3) {
         printf("Must be exactly 2 arguments. Provided: %d\n", argc - 1);
-        return 1;
+        return EXIT_FAILURE;
     }
     int buffsize = DEFAULT_BUFF_SIZE;
     int len1 = strlen(argv[1]);

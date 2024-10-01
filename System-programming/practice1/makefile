@@ -1,6 +1,6 @@
 CC = gcc
 
-run: child.out parent.out
+run: build
 	./parent.out
 
 build: child.out parent.out
@@ -14,5 +14,15 @@ test.out: test.o process_values.o
 child.out: child.o process_values.o
 	$(CC) -o $@ $^
 
-parent.out: main.o
+parent.out: main.o input.o
 	$(CC) -o $@ $^
+
+main.o: constants.h
+
+child.o: constants.h
+
+process_values.o: constants.h
+
+test.o: constants.h
+
+input.o: constants.h
