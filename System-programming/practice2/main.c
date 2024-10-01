@@ -5,6 +5,8 @@
 #include "buffer.h"
 #include "input.h"
 
+/// @brief \brief Creates and runs concurrently multiple readers and writers
+/// all accessing same shared records buffer.
 int main() {
     int max_record_buffer_size;
     input_take_uint(&max_record_buffer_size, "Enter max record buffer size: ");

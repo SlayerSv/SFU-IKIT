@@ -54,7 +54,7 @@ void record_buffer_write(struct Record_buffer* rb, struct Writer* writer) {
     while (rb->size >= rb->max_size) {
         pthread_cond_wait(&rb->has_space, &rb->mutex);
     }
-    /// rwriting operation must perform for a certain duration.
+    /// writing operation must perform for a certain duration.
     sleep(writer->write_time);
     /// create and add a new record.
     char record_text[DEFAULT_BUFFER_SIZE];

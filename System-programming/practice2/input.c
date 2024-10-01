@@ -4,7 +4,7 @@
 /// @param val Pointer to a value to which valid integer will be saved.
 /// @param message Message that will be prompted to a user before taking input.
 void input_take_uint(int* val, char* message) {
-    const int buffer_size = MAX_INT_SIZE;
+    const int buffer_size = MAX_INT_SIZE + 1;
     char input[buffer_size];
     input[buffer_size - 1] = '\0';
     int pos, c;

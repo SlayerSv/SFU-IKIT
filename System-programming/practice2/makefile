@@ -15,3 +15,5 @@ writer.o: constants.h
 input.o: constants.h
 
 record.o: constants.h
+
+buffer.o: constants.h

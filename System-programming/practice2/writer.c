@@ -14,6 +14,7 @@ void* writer_run(void* arg) {
     struct Writer_arg* warg = (struct Writer_arg*) arg;
     while (1) {
         record_buffer_write(warg->rb, warg->writer);
-        sleep(rand() % MAX_SLEEP_TIME);
+        int sleep_time = rand() % MAX_SLEEP_TIME;
+        sleep(sleep_time);
     }
 }

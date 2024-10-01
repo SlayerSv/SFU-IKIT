@@ -14,6 +14,7 @@ void* reader_run(void* arg) {
     struct Reader_arg* rarg = (struct Reader_arg*) arg;
     while (1) {
         record_buffer_read(rarg->rb, rarg->reader);
-        sleep(rand() % MAX_SLEEP_TIME);
+        int sleep_time = rand() % MAX_SLEEP_TIME;
+        sleep(sleep_time);
     }
 }
