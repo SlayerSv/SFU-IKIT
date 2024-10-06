@@ -1,10 +1,4 @@
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
-#include <stdlib.h>
-
 #include "input.h"
-#include "constants.h"
 
 /// @brief Requests input from a user until he provides a valid string.
 /// @param input Buffer to which string will be written.
@@ -60,10 +54,10 @@ void input_take_uint(int* val, char* message) {
         char* end;
         *val = strtol(input, &end, 10);
         /// check that value entered is a positive integer.
-        if (*end == '\0' && *val > 0 && pos > 0) {
+        if (*end == '\0' && *val >= 0 && pos > 0) {
             return;
         }
-        printf("Must provide a positive integer.\n");
+        printf("Must provide a non-negative integer.\n");
     }
 }
 

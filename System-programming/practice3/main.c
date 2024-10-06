@@ -12,14 +12,14 @@
 /// @brief Companies manager app. Allows to create, edit, delete, view
 /// different companies.
 int main() {
-    printf("Welcome to companies manager app!\n");
+    printf("\nWelcome to companies manager app!\n");
     char input[DEFAULT_BUFFER_SIZE];
     int option;
     struct CLIST* clist = clist_new();
     while (1) {
-        printf("\n1 Print all companies\n2 Create new company\n3 Update company\n\
-4 Delete company\n5 Print a company\n6 Companies with most employees\n\
-7 Count number of cities\n\n0 Exit\n\n");
+        printf("\n1 Print all companies\n2 Create new company\n\
+3 Update company\n4 Delete company\n5 Print a company\n\
+6 Companies with most employees\n7 Count number of cities\n\n0 Exit\n\n");
         input_take_uint(&option, "Choose an option: ");
         switch (option) {
             case EXIT:

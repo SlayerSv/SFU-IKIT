@@ -34,6 +34,9 @@ void company_update(struct Company* company, char* name, char* city, int employe
 /// @brief Deletes a company, frees memory.
 /// @param company Company to delete.
 void company_delete(struct Company* company) {
+    if (!company) {
+        return;
+    }
     free(company->name);
     free(company->city);
     free(company);
@@ -42,6 +45,9 @@ void company_delete(struct Company* company) {
 /// @brief Prints information about company.
 /// @param company Company to print. 
 void company_print(struct Company* company) {
+    if (!company) {
+        return;
+    }
     printf("\nID: %d\nName: %s\nCity: %s\nEmployees: %d\n",
         company->id, company->name, company->city, company->employees);
 }

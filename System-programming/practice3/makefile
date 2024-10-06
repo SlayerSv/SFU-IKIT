@@ -15,3 +15,5 @@ companylist.o: constants.h
 company.o: constants.h
 
 main.o: constants.h
+
+input.o: constants.h

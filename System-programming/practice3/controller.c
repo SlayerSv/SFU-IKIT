@@ -22,7 +22,7 @@ void create_and_add_new_company(struct CLIST* clist) {
 /// @param clist List of companies in which company will be updated.
 void update_company(struct CLIST* clist) {
     if (clist->size == 0) {
-        printf("\nList of companies is empty.");
+        printf("\nList of companies is empty.\n");
         return;
     }
     int id;
@@ -48,7 +48,7 @@ void update_company(struct CLIST* clist) {
 /// @param clist List of companies from which to delete the company.
 void delete_company(struct CLIST* clist) {
     if (clist->size == 0) {
-        printf("\nList of companies is empty.");
+        printf("\nList of companies is empty.\n");
         return;
     }
     int id;
@@ -66,7 +66,7 @@ void delete_company(struct CLIST* clist) {
 /// @param clist List of companies.
 void print_company(struct CLIST* clist) {
     if (clist->size == 0) {
-        printf("\nList of companies is empty.");
+        printf("\nList of companies is empty.\n");
         return;
     }
     int id;
@@ -84,7 +84,7 @@ void print_company(struct CLIST* clist) {
 /// @param clist List of companies.
 void print_all_companies(struct CLIST* clist) {
     if (clist->size == 0) {
-        printf("\nList of companies is empty.");
+        printf("\nList of companies is empty.\n");
         return;
     }
     int count = 0;
