@@ -1,7 +1,7 @@
 CC = gcc
 
 run: build
-	./.practice4.out
+	./practice4.out
 
 build: practice4.out
 

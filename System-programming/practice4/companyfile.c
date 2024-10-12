@@ -14,10 +14,9 @@ void file_add_company(char* name, char* city, char* employees) {
     int fd = open(FILE_PATH, O_CREAT|O_APPEND|O_WRONLY, 0644);
     struct stat fi;
     fstat(fd, &fi);
+    /// calculate next id based on number of records.
     int id = fi.st_size / RECORD_SIZE + 1;
-    char id_string[INT_FIELD_SIZE];
-    sprintf(id_string, "%d", id);
-    file_write_company(fd, id_string, name, city, employees);
+    file_write_company(fd, id, name, city, employees);
     close(fd);
 }
 
@@ -30,7 +29,10 @@ void file_update_company(int id, char* name, char* city, char* employees) {
     int fd = open(FILE_PATH, O_CREAT|O_RDWR, 0644);
     struct stat fi;
     fstat(fd, &fi);
+    /// calculate number of records based on file size
+    /// and size of the record.
     size_t size = fi.st_size / RECORD_SIZE;
+    /// check if id more than number of companies.
     if (size < id) {
         printf("\nCompany with id %d does not exist.\n", id);
         close(fd);
@@ -46,7 +48,7 @@ void file_update_company(int id, char* name, char* city, char* employees) {
         return;
     }
     lseek(fd, (id - 1) * RECORD_SIZE, SEEK_SET);
-    file_write_company(fd, idstring, name, city, employees);
+    file_write_company(fd, id, name, city, employees);
     close(fd);
 }
 
@@ -108,24 +110,48 @@ void file_print_all() {
 /// @param name Name of the company.
 /// @param city Location (city) of the company.
 /// @param employees Number of employees of the company.
-void file_write_company(int fd, char* id, char* name, char* city, char* employees) {
-    /// fill all unused bytes with null.
+void file_write_company(int fd, int id, char* name, char* city, char* employees) {
+    /// create buffers with fixed size, copy fields using
+    /// strncat func for overflow safety.
+    char id_buf[INT_FIELD_SIZE];
+    sprintf(id_buf, "%d", id);
+    /// id == 0 means no data.
+    if (id == 0) {
+        id_buf[0] = '\0';
+    }
+    char name_buf[STRING_FIELD_SIZE];
+    name_buf[0] = '\0';
+    strncat(name_buf, name, STRING_FIELD_SIZE);
+    char city_buf[STRING_FIELD_SIZE];
+    city_buf[0] = '\0';
+    strncat(city_buf, city, STRING_FIELD_SIZE);
+    char employees_buf[INT_FIELD_SIZE];
+    employees_buf[0] = '\0';
+    strncat(employees_buf, employees, INT_FIELD_SIZE);
+
+    /// fill unused bytes with zero bytes.
     for (int i = 1; i < INT_FIELD_SIZE; i++) {
-        if (id[i - 1] == '\0')
-            id[i] = '\0';
-        if (employees[i - 1] == '\0')
-            employees[i] = '\0';
+        if (id_buf[i - 1] == '\0') {
+            id_buf[i] = '\0';
+        }
+        if (employees_buf[i - 1] == '\0') {
+            employees_buf[i] = '\0';
+        }
     }
     for (int i = 1; i < STRING_FIELD_SIZE; i++) {
-        if (name[i - 1] == '\0')
-            name[i] = '\0';
-        if (city[i - 1] == '\0')
-            city[i] = '\0';
+        if (name_buf[i - 1] == '\0') {
+            name_buf[i] = '\0';
+        }   
+        if (city_buf[i - 1] == '\0') {
+            city_buf[i] = '\0';
+        }
     }
-    write(fd, id, INT_FIELD_SIZE);
-    write(fd, name, STRING_FIELD_SIZE);
-    write(fd, city, STRING_FIELD_SIZE);
-    write(fd, employees, INT_FIELD_SIZE);
+
+    /// write data with fixed size fields.
+    write(fd, id_buf, INT_FIELD_SIZE);
+    write(fd, name_buf, STRING_FIELD_SIZE);
+    write(fd, city_buf, STRING_FIELD_SIZE);
+    write(fd, employees_buf, INT_FIELD_SIZE);
 }
 
 /// @brief Deletes a company in a file by rewriting it's record with nulls.
@@ -150,12 +176,8 @@ void file_delete_company(int id) {
         return;
     }
     lseek(fd, (id - 1) * RECORD_SIZE, SEEK_SET);
-    /// set all fields to empty strings.
-    idstring[0] = '\0';
-    char name[STRING_FIELD_SIZE] = {'\0'};
-    char city[STRING_FIELD_SIZE] = {'\0'};
-    char employees[INT_FIELD_SIZE] = {'\0'};
-    file_write_company(fd, idstring, name, city, employees);
+    
+    file_write_company(fd, 0, "\0", "\0", "\0");
     close(fd);
 }
 
