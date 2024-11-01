@@ -6,6 +6,15 @@
 #include <unistd.h>
 #include "process_values.h"
 
+/// @brief Reads 2 values provided by incoming connection
+/// via socket and runs a function to process them.
+/// @details Firstly, reads sizes of 2 values, then reads
+/// the values itself, after that calls a function that
+/// processes those values based on their type and ouputs
+/// a result.
+/// @param clientSocket Socket descriptor of incoming connection 
+/// @return 1 if received request for shutting down,
+/// 0 otherwise.
 int serve(int clientSocket) {
     int size1;
     int size2;
@@ -27,6 +36,12 @@ int serve(int clientSocket) {
     return 0;
 }
 
+/// @brief Starts a local server that listens for incoming
+/// connections. After receiving a connection runs a function
+/// for processing that request.
+/// @param argc 
+/// @param argv 
+/// @return 
 int main(int argc, char* const argv[]) {
     if (argc < 2) {
         printf("Provide a socket name.\n");
