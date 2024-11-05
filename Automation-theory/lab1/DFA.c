@@ -64,7 +64,6 @@ int main(void) {
     int i = 0;
     int result = 0;
     int state = q0;
-    int фывыф = 4;
     do {
         for (int j = 0; j < i; j++) {
             printf("%c", user_input[j]);
