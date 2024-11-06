@@ -18,6 +18,8 @@ int  g_Accepted_states[FINAL_STATES] = {q1, q2, q3, q4};     // The set F
 char g_alphabet[ALPHABET_CHARCTERS] = {'a', 'b'};  // The set Sigma
 int  g_Transition_Table[TOTAL_STATES][ALPHABET_CHARCTERS] = {}; // Transition function
 
+
+
 void SetDFA_Transitions() {
     g_Transition_Table[q0][_a] = q1;
     g_Transition_Table[q0][_b] = q1;
@@ -74,9 +76,9 @@ int main(void) {
             break;
         }
         if (result == FINAL_STATE) {
-            printf(": Final state\n");
+            printf(": q%d, Final state\n", state);
         } else {
-            printf(": Not final state\n");
+            printf(": q%d, Not final state\n", state);
         }
         current_symbol = user_input[i++];
         state = nextState(state, current_symbol);

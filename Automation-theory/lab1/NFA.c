@@ -81,9 +81,9 @@ int main(void) {
             break;
         }
         if (result == FINAL_STATE) {
-            printf(": Final state\n");
+            printf(": q%d, Final state\n", state);
         } else {
-            printf(": Not final state\n");
+            printf(": q%d, Not final state\n", state);
         }
         current_symbol = user_input[i++];
         state = nextState(state, current_symbol);
