@@ -9,5 +9,5 @@ nfa: nfa.out
 dfa.out: dfa.o
 	$(CC) -o $@ $^
 
-nfa.out: nfa.o
+nfa.out: nfa.o state.o
 	$(CC) -o $@ $^

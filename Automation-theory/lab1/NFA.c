@@ -9,8 +9,7 @@ int main(void) {
     char current_symbol;
     char user_input[MAX_CHARS];
     input_take_string(user_input, MAX_CHARS, "Enter a string with any alphanumeric characters: ");
-    int i = 0;
-    int result = 0;
+    int accepted = 0;
     struct States* states = states_new(user_input);
     struct State* initial_state = state_new(0, 0); 
     states_push(states, initial_state);
@@ -18,7 +17,12 @@ int main(void) {
     while (states->size > 0) {
         printf("\nStep %d:\n", steps_counter++);
         states_print(states);
-        next_step(states);
+        accepted = next_step(states);
+    }
+    if (accepted) {
+        printf("\nAccepted: %s\n", user_input);
+    } else {
+        printf("\nRejected: %s\n", user_input);
     }
     return 0;
 }

@@ -36,4 +36,5 @@ struct State* states_pop(struct States* states);
 void states_print(struct States* states);
 struct States* states_new(char* word);
 void SetDFA_Transitions();
-void next_step(struct States* states);
+int next_step(struct States* states);
+int isFinalState(int state);

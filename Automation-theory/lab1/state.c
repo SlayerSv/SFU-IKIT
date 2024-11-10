@@ -24,11 +24,11 @@ void SetDFA_Transitions() {
     g_Transition_Table[q0][letter] = g_empty_state;
     g_Transition_Table[q0][digit] = g_empty_state;
     g_Transition_Table[q0][empty] = g_state1and2;
-    g_Transition_Table[q1][letter] = g_empty_state;
+    g_Transition_Table[q1][letter] = g_error_state;
     g_Transition_Table[q1][digit] = g_state3;
     g_Transition_Table[q1][empty] = g_empty_state;
     g_Transition_Table[q2][letter] = g_state4;
-    g_Transition_Table[q2][digit] = g_empty_state;
+    g_Transition_Table[q2][digit] = g_error_state;
     g_Transition_Table[q2][empty] = g_empty_state;
     g_Transition_Table[q3][letter] = g_state3;
     g_Transition_Table[q3][digit] = g_state3;
@@ -61,17 +61,22 @@ int* nextState(int state, const char current_symbol) {
     return g_Transition_Table[state][pos];
 }
 
-void next_step(struct States* states) {
+int next_step(struct States* states) {
     int size = states->size;
     int* next_states;
     struct State* curr_state;
     struct State* new_state;
+    int result = 0;
     for (int i = 0; i < size; i++) {
         curr_state = states_pop(states);
         if (curr_state->state_number == error) {
             free(curr_state);
             continue;
         }
+        if (curr_state->symbol_index == states->word_length &&
+            isFinalState(curr_state->state_number)) {
+                result = 1;
+            }
         next_states = nextState(curr_state->state_number, '\0');
         for (int j = 0; j < TOTAL_STATES; j++) {
             if (next_states[j] == end) {
@@ -94,6 +99,7 @@ void next_step(struct States* states) {
         }
         free(curr_state);
     }
+    return result;
 }
 
 
@@ -152,22 +158,16 @@ int isFinalState(int state) {
 void states_print(struct States* states) {
     struct State* state = states->head->next;
     for (int i = 0; i < states->size; i++) {
-        if (state->symbol_index == states->word_length || state->state_number == error) {
-            if (isFinalState(state->state_number)) {
-                printf("Accepted: ");
-            } else {
-                printf("Rejected: ");
-            }
-        }
         for (int j = 0; j < state->symbol_index; j++) {
             printf("%c", states->word[j]);
         }
         if (state->state_number == error) {
-            printf(". Unknown symbol '%c'", states->word[state->symbol_index - 1]);
+            printf(": transition failed\n");
             state = state->next;
             continue;
         }
         printf(": q%d, ", state->state_number);
+        
         if (isFinalState(state->state_number)) {
             printf("Final state\n");
         } else {
