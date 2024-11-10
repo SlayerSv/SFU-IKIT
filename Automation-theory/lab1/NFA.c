@@ -1,65 +1,6 @@
 #include <stdio.h> 
 #include <string.h>
-
-#define TOTAL_STATES            3
-#define FINAL_STATES            1
-#define NUMBER_OF_LETTERS       53
-#define NUMBER_OF_DIGITS        10
-#define NUMBER_OF_CHAR_TYPES    2
-#define MAX_CHARS 31
-
-#define UNKNOWN_SYMBOL_ERR -1
-#define NOT_FINAL_STATE     1
-#define FINAL_STATE         2
-
-enum DFA_STATES {q0, q1, q2};   // The set Q
-enum char_Types{letter, digit};
-int  g_Accepted_states[FINAL_STATES] = {q1};
-char g_Letters[NUMBER_OF_LETTERS] = {'_', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
-    'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
-    'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
-char g_Digits[NUMBER_OF_DIGITS] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
-int  g_Transition_Table[TOTAL_STATES][NUMBER_OF_CHAR_TYPES] = {}; // Transition function
-
-void SetDFA_Transitions() {
-    g_Transition_Table[q0][letter] = q1;
-    g_Transition_Table[q0][digit] = q2;
-    g_Transition_Table[q1][letter] = q1;
-    g_Transition_Table[q1][digit] = q1;
-    g_Transition_Table[q2][letter] = q2;
-    g_Transition_Table[q2][digit] = q2;
-}
-
-int nextState(int state, const char current_symbol) {
-    int pos = NUMBER_OF_CHAR_TYPES;
-    for (int i = 0; i < NUMBER_OF_LETTERS; i++) {
-        if (current_symbol == g_Letters[i]) {
-            pos = letter;
-            break;
-        }
-    }
-    for (int i = 0; i < NUMBER_OF_DIGITS; i++) {
-        if (current_symbol == g_Digits[i]) {
-            pos = digit;
-            break;
-        }
-    }
-    if (NUMBER_OF_CHAR_TYPES == pos) {
-        return UNKNOWN_SYMBOL_ERR;
-    }
-   state = g_Transition_Table[state][pos];
-   return state;
-}
-
-int isFinalState(int state) {
-    for (int i = 0; i < FINAL_STATES; ++i) {
-        if (state == g_Accepted_states[i]) {
-            return FINAL_STATE;
-        }
-    }
-    return NOT_FINAL_STATE;
-}
+#include "state.h"
 
 void input_take_string(char* input, int buffer_size, char* message);
 
@@ -70,30 +11,15 @@ int main(void) {
     input_take_string(user_input, MAX_CHARS, "Enter a string with any alphanumeric characters: ");
     int i = 0;
     int result = 0;
-    int state = q0;
-    do {
-        for (int j = 0; j < i; j++) {
-            printf("%c", user_input[j]);
-        }
-        result = isFinalState(state);
-        if (state == UNKNOWN_SYMBOL_ERR) {
-            printf(": Unknown symbol. Stop\n");
-            break;
-        }
-        if (result == FINAL_STATE) {
-            printf(": q%d, Final state\n", state);
-        } else {
-            printf(": q%d, Not final state\n", state);
-        }
-        current_symbol = user_input[i++];
-        state = nextState(state, current_symbol);
-    } while (current_symbol != '\0');
-    if (FINAL_STATE == result) {
-        printf("Accepted: ");
-    } else {
-        printf("Rejected: ");
+    struct States* states = states_new(user_input);
+    struct State* initial_state = state_new(0, 0); 
+    states_push(states, initial_state);
+    int steps_counter = 0;
+    while (states->size > 0) {
+        printf("\nStep %d:\n", steps_counter++);
+        states_print(states);
+        next_step(states);
     }
-    printf("%s\n", user_input);
     return 0;
 }
 
@@ -122,3 +48,4 @@ void input_take_string(char* input, int buffer_size, char* message) {
         break;
     }
 }
+
