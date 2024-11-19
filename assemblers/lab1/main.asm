@@ -1,13 +1,17 @@
 section	.data
     promptX	db 'Enter x: '
     lenX	equ	$ - promptX
-    charZero DB 48
+    promptY db 'Enter y: '
+    lenY equ $ - promptY
     errorMsg db 'ERROR: value must be an integer',10
     lenError equ $ - errorMsg
-    
+    x dd 0
+    y dd 0
+    z dd 0
+
 section .bss
     input resb 10
-
+    
 section	.text
 	global _start       ;must be declared for using gcc
 _start:                 ;tell linker entry point
@@ -19,20 +23,59 @@ _start:                 ;tell linker entry point
 	mov	edx, lenX       ;message length
 	int	0x80            ;call kernel
 	
-	;read entered value from user
+	;read x value from user
 	mov	eax, 3	        ;system call number (sys_read)
 	mov	ebx, 0	        ;file descriptor (stdin)
-	mov	ecx, input      ;message to write
+	mov	ecx, input      ;buffer to write
 	mov	edx, 10         ;message length
 	int	0x80            ;call kernel
 	mov esi, input
 	xor eax, eax
+	call atoi
+	mov [x], eax
+	
+	;message user to enter y value
+	mov	eax, 4	        ;system call number (sys_write)
+	mov	ebx, 1	        ;file descriptor (stdout)
+	mov	ecx, promptY    ;message to write
+	mov	edx, lenY       ;message length
+	int	0x80            ;call kernel
+	
+	;read y value from user
+	mov	eax, 3	        ;system call number (sys_read)
+	mov	ebx, 0	        ;file descriptor (stdin)
+	mov	ecx, input      ;buffer to write
+	mov	edx, 10         ;message length
+	int	0x80            ;call kernel
+	mov esi, input
+	xor eax, eax
+	call atoi
+	mov [y], eax
+	
+	;Z = ((X+1)/Y - 1)*2X;
+	mov eax, [x]
+	inc eax
+	xor edx, edx
+	mov ebx, [y]
+	div ebx
+	dec eax
+	call convertAndPrint
+	mov ebx, 0
+	call exit
+	mov ebx, 2
+	imul ebx
+	mov ebx, [x]
+	imul ebx
+	
+	call convertAndPrint
+	mov ebx, 0
+	call exit
 	
 atoi: ;converting string to number
     xor ecx, ecx
     MOV cl, byte [esi]
     CMP ecx, 10   ; newline character
-    JE next
+    JE return
     CMP ecx, 48
     JL error
     CMP ecx, 57
@@ -44,13 +87,18 @@ atoi: ;converting string to number
     INC esi
     JMP atoi
 	
-next:
+return:
+    ret
+    
+convertAndPrint:
+    cmp eax, 0
+    je printZero
+    push 0
     xor ecx, ecx
-	push 0
 itoa:
     cmp eax, 0
     je reverse
-    mov edx, 0
+    xor edx, edx
     mov ebx, 10
     div ebx
 	add edx, 48
@@ -70,11 +118,11 @@ print:
     mov [input + ecx], byte 10
 	mov eax, 4
 	mov ebx, 1
+	xor edx, edx
 	mov edx, ecx
 	mov ecx, input
 	int 0x80
-	mov ebx, 0 ;set exit status code 'success'
-	jmp exit
+	ret
 	
 error:                  ;write error msg to stderr
 	mov	eax, 4	        ;system call number (sys_write)
@@ -83,6 +131,18 @@ error:                  ;write error msg to stderr
 	mov	edx, lenError   ;message length
 	int	0x80            ;call kernel
     mov ebx, 1          ;set exit status code 'failure'
+    jmp exit
+    
+printZero:
+    mov eax, 4
+    mov ebx, 1
+    mov [input], byte 48
+    mov [input + 1], byte 10
+    mov ecx, input
+    mov edx, 2
+    int 0x80
+    mov ebx, 0
+    jmp exit
     
 exit:
 	mov	eax, 1	        ;system call number (sys_exit)
