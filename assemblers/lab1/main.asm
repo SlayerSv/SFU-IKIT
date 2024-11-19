@@ -52,23 +52,25 @@ _start:                 ;tell linker entry point
 	call atoi
 	mov [y], eax
 	
+	
+	
 	;Z = ((X+1)/Y - 1)*2X;
 	mov eax, [x]
 	inc eax
-	xor edx, edx
 	mov ebx, [y]
 	div ebx
 	dec eax
-	call convertAndPrint
-	mov ebx, 0
-	call exit
 	mov ebx, 2
 	imul ebx
 	mov ebx, [x]
 	imul ebx
-	
 	call convertAndPrint
-	mov ebx, 0
+	
+	
+	
+	
+	
+	mov ebx, ecx
 	call exit
 	
 atoi: ;converting string to number
@@ -114,11 +116,10 @@ reverse:
     jmp reverse
     
 print:
-    inc ecx
     mov [input + ecx], byte 10
+    inc ecx
 	mov eax, 4
 	mov ebx, 1
-	xor edx, edx
 	mov edx, ecx
 	mov ecx, input
 	int 0x80
