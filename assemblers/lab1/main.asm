@@ -78,7 +78,35 @@ _start:                 ;tell linker entry point
 	call convertAndPrint
 	
 	;Z = (XY - 1)/(X+Y);
+	mov eax, [x]
+	mov ebx, [y]
+	imul ebx
+	dec eax
+	mov ebx, [x]
+	add ebx, [y]
+	call negArgs
+	xor edx, edx
+	idiv ebx
+	call convertAndPrint
 	
+	;Z = X^3 + Y -1;
+	mov eax, [x]
+	imul dword [x]
+	imul dword [x]
+	add eax, [y]
+	dec eax
+	call convertAndPrint
+	
+	;Z = (XY + 1)/ X^2
+	mov eax, [x]
+	imul dword [y]
+	inc eax
+	mov ebx, [x]
+	imul ebx, ebx
+	xor edx, edx
+	call negArgs
+	idiv ebx
+	call convertAndPrint
 	
 	mov ebx, 0
 	call exit
