@@ -29,11 +29,9 @@ _start:                 ;tell linker entry point
 	mov	ecx, input      ;buffer to write
 	mov	edx, 10         ;message length
 	int	0x80            ;call kernel
-	mov esi, input
-	xor eax, eax
 	call atoi
 	mov [x], eax
-	
+
 	;message user to enter y value
 	mov	eax, 4	        ;system call number (sys_write)
 	mov	ebx, 1	        ;file descriptor (stdout)
@@ -47,8 +45,6 @@ _start:                 ;tell linker entry point
 	mov	ecx, input      ;buffer to write
 	mov	edx, 10         ;message length
 	int	0x80            ;call kernel
-	mov esi, input
-	xor eax, eax
 	call atoi
 	mov [y], eax
 	
@@ -58,6 +54,8 @@ _start:                 ;tell linker entry point
 	mov eax, [x]
 	inc eax
 	mov ebx, [y]
+	xor edx, edx
+	call negArgs
 	idiv ebx
 	dec eax
 	mov ebx, 2
@@ -71,6 +69,7 @@ _start:                 ;tell linker entry point
 	inc eax
 	mov ebx, [x]
 	xor edx, edx
+	call negArgs
 	idiv ebx
 	mov ebx, 2
 	sub ebx, eax
@@ -78,14 +77,22 @@ _start:                 ;tell linker entry point
 	imul ebx
 	call convertAndPrint
 	
+	;Z = (XY - 1)/(X+Y);
+	
+	
 	mov ebx, 0
 	call exit
 	
 atoi: ;converting string to number
-    xor ecx, ecx
+    mov esi, input
+	xor eax, eax
+	xor ecx, ecx
+	call setSign
+	
+atoiLoop:
     MOV cl, byte [esi]
     CMP ecx, 10   ; newline character
-    JE return
+    JE negate
     CMP ecx, 48
     JL error
     CMP ecx, 57
@@ -95,8 +102,26 @@ atoi: ;converting string to number
     SUB ecx, 48
     ADD eax, ecx
     INC esi
-    JMP atoi
-	
+    JMP atoiLoop
+
+setSign:
+    mov [sign], byte 1
+    cmp [esi], byte 45
+    je setMinus
+    ret
+
+setMinus:
+    inc esi
+    mov [sign], byte -1
+    ret
+    
+negate:
+    cmp [sign], byte 0
+    jg return
+    xor eax, -1
+    inc eax
+    ret
+
 return:
     ret
     
@@ -155,7 +180,14 @@ flipBits:
     xor eax, -1
     inc eax
     ret
-	
+
+negArgs:
+    cmp eax, 0
+    jge return
+    neg eax
+    neg ebx
+    ret
+
 error:                  ;write error msg to stderr
 	mov	eax, 4	        ;system call number (sys_write)
 	mov	ebx, 2	        ;file descriptor (stderr)
@@ -174,7 +206,7 @@ printZero:
     mov edx, 2
     int 0x80
     mov ebx, 0
-    jmp exit
+    ret
 
 exit:
 	mov	eax, 1	        ;system call number (sys_exit)
