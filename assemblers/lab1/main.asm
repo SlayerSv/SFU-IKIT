@@ -5,6 +5,7 @@ section	.data
     lenY equ $ - promptY
     errorMsg db 'ERROR: value must be an integer',10
     lenError equ $ - errorMsg
+    sign db 1
     x dd 0
     y dd 0
     z dd 0
@@ -15,7 +16,6 @@ section .bss
 section	.text
 	global _start       ;must be declared for using gcc
 _start:                 ;tell linker entry point
-	
 	;message user to enter x value
 	mov	eax, 4	        ;system call number (sys_write)
 	mov	ebx, 1	        ;file descriptor (stdout)
@@ -58,7 +58,7 @@ _start:                 ;tell linker entry point
 	mov eax, [x]
 	inc eax
 	mov ebx, [y]
-	div ebx
+	idiv ebx
 	dec eax
 	mov ebx, 2
 	imul ebx
@@ -66,11 +66,19 @@ _start:                 ;tell linker entry point
 	imul ebx
 	call convertAndPrint
 	
+	 ;Z = Y*( 2-(Y+1)/X )
+	mov eax, [y]
+	inc eax
+	mov ebx, [x]
+	xor edx, edx
+	idiv ebx
+	mov ebx, 2
+	sub ebx, eax
+	mov eax, [y]
+	imul ebx
+	call convertAndPrint
 	
-	
-	
-	
-	mov ebx, ecx
+	mov ebx, 0
 	call exit
 	
 atoi: ;converting string to number
@@ -97,15 +105,26 @@ convertAndPrint:
     je printZero
     push 0
     xor ecx, ecx
+    call checkSign
+    
 itoa:
     cmp eax, 0
-    je reverse
+    je addSign
     xor edx, edx
     mov ebx, 10
     div ebx
 	add edx, 48
 	push edx
 	jmp itoa
+	
+addSign:
+    cmp [sign], byte 0
+    jl addMinus
+    jmp reverse
+
+addMinus:
+    push 45
+	jmp reverse
 	
 reverse:
     pop ebx
@@ -124,6 +143,18 @@ print:
 	mov ecx, input
 	int 0x80
 	ret
+
+checkSign:
+    mov [sign], byte 1
+    cmp eax, 0
+    jl flipBits
+    ret
+	
+flipBits:
+    mov [sign], byte -1
+    xor eax, -1
+    inc eax
+    ret
 	
 error:                  ;write error msg to stderr
 	mov	eax, 4	        ;system call number (sys_write)
@@ -144,7 +175,7 @@ printZero:
     int 0x80
     mov ebx, 0
     jmp exit
-    
+
 exit:
 	mov	eax, 1	        ;system call number (sys_exit)
 	int	0x80            ;call kernel
