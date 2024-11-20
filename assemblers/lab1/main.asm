@@ -12,44 +12,42 @@ section	.data
 
 section .bss
     input resb 10
-    
+
 section	.text
-	global _start       ;must be declared for using gcc
-_start:                 ;tell linker entry point
-	;message user to enter x value
-	mov	eax, 4	        ;system call number (sys_write)
-	mov	ebx, 1	        ;file descriptor (stdout)
-	mov	ecx, promptX    ;message to write
-	mov	edx, lenX       ;message length
-	int	0x80            ;call kernel
+	global _start
+
+_start:
+	mov	eax, 4
+	mov	ebx, 1
+	mov	ecx, promptX
+	mov	edx, lenX
+	int	0x80
 	
 	;read x value from user
-	mov	eax, 3	        ;system call number (sys_read)
-	mov	ebx, 0	        ;file descriptor (stdin)
-	mov	ecx, input      ;buffer to write
-	mov	edx, 10         ;message length
-	int	0x80            ;call kernel
+	mov	eax, 3
+	mov	ebx, 0
+	mov	ecx, input
+	mov	edx, 10
+	int	0x80
 	call atoi
 	mov [x], eax
 
 	;message user to enter y value
-	mov	eax, 4	        ;system call number (sys_write)
-	mov	ebx, 1	        ;file descriptor (stdout)
-	mov	ecx, promptY    ;message to write
-	mov	edx, lenY       ;message length
-	int	0x80            ;call kernel
-	
+	mov	eax, 4
+	mov	ebx, 1
+	mov	ecx, promptY
+	mov	edx, lenY
+	int	0x80
+
 	;read y value from user
-	mov	eax, 3	        ;system call number (sys_read)
-	mov	ebx, 0	        ;file descriptor (stdin)
-	mov	ecx, input      ;buffer to write
-	mov	edx, 10         ;message length
-	int	0x80            ;call kernel
+	mov	eax, 3
+	mov	ebx, 0
+	mov	ecx, input
+	mov	edx, 10
+	int	0x80
 	call atoi
 	mov [y], eax
-	
-	
-	
+
 	;Z = ((X+1)/Y - 1)*2X;
 	mov eax, [x]
 	inc eax
@@ -63,8 +61,8 @@ _start:                 ;tell linker entry point
 	mov ebx, [x]
 	imul ebx
 	call convertAndPrint
-	
-	 ;Z = Y*( 2-(Y+1)/X )
+
+	;Z = Y*( 2-(Y+1)/X )
 	mov eax, [y]
 	inc eax
 	mov ebx, [x]
@@ -76,7 +74,7 @@ _start:                 ;tell linker entry point
 	mov eax, [y]
 	imul ebx
 	call convertAndPrint
-	
+
 	;Z = (XY - 1)/(X+Y);
 	mov eax, [x]
 	mov ebx, [y]
@@ -88,7 +86,7 @@ _start:                 ;tell linker entry point
 	xor edx, edx
 	idiv ebx
 	call convertAndPrint
-	
+
 	;Z = X^3 + Y -1;
 	mov eax, [x]
 	imul dword [x]
@@ -96,7 +94,7 @@ _start:                 ;tell linker entry point
 	add eax, [y]
 	dec eax
 	call convertAndPrint
-	
+
 	;Z = (XY + 1)/ X^2
 	mov eax, [x]
 	imul dword [y]
@@ -107,19 +105,19 @@ _start:                 ;tell linker entry point
 	call negArgs
 	idiv ebx
 	call convertAndPrint
-	
+
 	mov ebx, 0
 	call exit
-	
-atoi: ;converting string to number
+
+atoi:
     mov esi, input
 	xor eax, eax
 	xor ecx, ecx
 	call setSign
-	
+
 atoiLoop:
     MOV cl, byte [esi]
-    CMP ecx, 10   ; newline character
+    CMP ecx, 10
     JE negate
     CMP ecx, 48
     JL error
@@ -142,7 +140,7 @@ setMinus:
     inc esi
     mov [sign], byte -1
     ret
-    
+
 negate:
     cmp [sign], byte 0
     jg return
@@ -152,14 +150,14 @@ negate:
 
 return:
     ret
-    
+
 convertAndPrint:
     cmp eax, 0
     je printZero
     push 0
     xor ecx, ecx
     call checkSign
-    
+
 itoa:
     cmp eax, 0
     je addSign
@@ -169,7 +167,7 @@ itoa:
 	add edx, 48
 	push edx
 	jmp itoa
-	
+
 addSign:
     cmp [sign], byte 0
     jl addMinus
@@ -178,7 +176,7 @@ addSign:
 addMinus:
     push 45
 	jmp reverse
-	
+
 reverse:
     pop ebx
     cmp bl, 0
@@ -186,7 +184,7 @@ reverse:
     mov [input + ecx], bl
     inc ecx
     jmp reverse
-    
+
 print:
     mov [input + ecx], byte 10
     inc ecx
@@ -202,7 +200,7 @@ checkSign:
     cmp eax, 0
     jl flipBits
     ret
-	
+
 flipBits:
     mov [sign], byte -1
     xor eax, -1
@@ -216,15 +214,15 @@ negArgs:
     neg ebx
     ret
 
-error:                  ;write error msg to stderr
-	mov	eax, 4	        ;system call number (sys_write)
-	mov	ebx, 2	        ;file descriptor (stderr)
-	mov	ecx, errorMsg   ;message to write (user input)
-	mov	edx, lenError   ;message length
-	int	0x80            ;call kernel
-    mov ebx, 1          ;set exit status code 'failure'
+error:
+	mov	eax, 4
+	mov	ebx, 2
+	mov	ecx, errorMsg
+	mov	edx, lenError
+	int	0x80
+    mov ebx, 1
     jmp exit
-    
+
 printZero:
     mov eax, 4
     mov ebx, 1
@@ -237,5 +235,5 @@ printZero:
     ret
 
 exit:
-	mov	eax, 1	        ;system call number (sys_exit)
-	int	0x80            ;call kernel
+	mov	eax, 1
+	int	0x80
