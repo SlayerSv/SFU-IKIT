@@ -116,19 +116,19 @@ atoi:
 	call setSign
 
 atoiLoop:
-    MOV cl, byte [esi]
-    CMP ecx, 10
-    JE negate
-    CMP ecx, 48
-    JL error
-    CMP ecx, 57
-    JG error
-    MOV ebx, 10
-    MUL ebx
-    SUB ecx, 48
-    ADD eax, ecx
-    INC esi
-    JMP atoiLoop
+    mov cl, byte [esi]
+    cmp ecx, 10
+    je negate
+    cmp ecx, 48
+    jl error
+    cmp ecx, 57
+    jg error
+    mov ebx, 10
+    mul ebx
+    sub ecx, 48
+    add eax, ecx
+    inc esi
+    jmp atoiLoop
 
 setSign:
     mov [sign], byte 1
