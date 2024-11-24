@@ -1,7 +1,7 @@
 section	.data
-    promptX	db 'Enter x: '
+    promptX	db 'Enter x (format *.xx): '
     lenX	equ	$ - promptX
-    promptA db 'Enter a: '
+    promptA db 'Enter a (format *.xx): '
     lenA equ $ - promptA
     errorMsg db 'ERROR: value must be a number',10
     lenError equ $ - errorMsg
@@ -43,7 +43,7 @@ _start:
 	divss xmm0, xmm1
 	movss [x], xmm0
 
-	;message user to enter y value
+	;message user to enter a value
 	mov	eax, 4
 	mov	ebx, 1
 	mov	ecx, promptA
