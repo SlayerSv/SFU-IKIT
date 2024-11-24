@@ -35,8 +35,60 @@ _start:
     movzx edx, byte [outputSize]
     int 0x80
     
+    call zeroMainDiagonal
+    
+    mov eax, 4
+	mov ebx, 1
+	mov ecx, msg2
+	mov edx, msg2Len
+	int 0x80
+    
+    call itoaMatrix
+
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, output
+    movzx edx, byte [outputSize]
+    int 0x80
+    
 	mov ebx, 0
 	call exit
+
+zeroMainDiagonal:
+    push eax
+    push ebx
+    push ecx
+    push edx
+    xor ecx, ecx
+    xor edx, edx
+    movzx ebx, byte [dimension]
+    
+zeroMainDiagonalLoop:
+    cmp ecx, ebx
+    je return
+    call zeroCell
+    inc edx
+    cmp edx, ebx
+    je nextRow
+    jmp zeroMainDiagonalLoop
+    
+nextRow:
+    inc ecx
+    mov edx, ecx
+    jmp zeroMainDiagonalLoop
+    
+zeroCell:
+    push eax
+    push ebx
+    push ecx
+    push edx
+    mov eax, ecx
+    mul ebx
+    pop edx
+    add eax, edx
+    push edx
+    mov [matrix + eax], byte 0
+    jmp return
 
 itoaMatrix:
     push eax
@@ -46,6 +98,7 @@ itoaMatrix:
     xor ecx, ecx
     xor ebx, ebx
     xor edx, edx
+
 itoaMatrixLoop:
     cmp ecx, matrixSize
     je return
@@ -66,7 +119,6 @@ checkEndOfRow:
     push edx
     xor edx, edx
     mov eax, ecx
-    xor ebx, ebx
     movzx ebx, byte [dimension]
     div ebx
     cmp edx, 0
@@ -127,6 +179,10 @@ return:
     ret
 
 convertAndPrint:
+    push eax
+    push ebx
+    push ecx
+    push edx
     cmp eax, 0
     je printZero
     push 0
@@ -168,7 +224,7 @@ print:
 	mov edx, ecx
 	mov ecx, input
 	int 0x80
-	ret
+	jmp return
 
 checkSign:
     mov [sign], byte 1
@@ -183,11 +239,15 @@ flipBits:
     ret
 
 negArgs:
+    push eax
+    push ebx
+    push ecx
+    push edx
     cmp eax, 0
     jge return
     neg eax
     neg ebx
-    ret
+    jmp return
 
 error:
 	mov	eax, 4
@@ -207,7 +267,7 @@ printZero:
     mov edx, 2
     int 0x80
     mov ebx, 0
-    ret
+    jmp return
 
 exit:
 	mov	eax, 1
