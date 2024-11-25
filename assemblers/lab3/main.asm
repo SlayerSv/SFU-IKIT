@@ -35,7 +35,7 @@ _start:
     movzx edx, byte [outputSize]
     int 0x80
     
-    call zeroMainDiagonal
+    call iterateMatrix
     
     mov eax, 4
 	mov ebx, 1
@@ -54,7 +54,7 @@ _start:
 	mov ebx, 0
 	call exit
 
-zeroMainDiagonal:
+iterateMatrix:
     push eax
     push ebx
     push ecx
@@ -63,20 +63,33 @@ zeroMainDiagonal:
     xor edx, edx
     movzx ebx, byte [dimension]
     
-zeroMainDiagonalLoop:
+iterateMatrixLoop:
     cmp ecx, ebx
     je return
-    call zeroCell
+    call checkMainDiagonal
     inc edx
     cmp edx, ebx
     je nextRow
-    jmp zeroMainDiagonalLoop
+    jmp iterateMatrixLoop
     
 nextRow:
     inc ecx
-    mov edx, ecx
-    jmp zeroMainDiagonalLoop
+    mov edx, 0
+    jmp iterateMatrixLoop
+
+checkMainDiagonal:
+    cmp edx, ecx
+    jge checkSecondaryDiagonal
+    ret
     
+checkSecondaryDiagonal:
+    push ebx
+    sub ebx, ecx
+    cmp edx, ebx
+    pop ebx
+    jl zeroCell
+    ret
+
 zeroCell:
     push eax
     push ebx
@@ -132,142 +145,12 @@ pushNewLine:
     mov [outputSize], dl
     jmp return
 
-atoi:
-    mov esi, input
-	xor eax, eax
-	xor ecx, ecx
-	call setSign
-
-atoiLoop:
-    mov cl, byte [esi]
-    cmp ecx, 10
-    je negate
-    cmp ecx, 48
-    jl error
-    cmp ecx, 57
-    jg error
-    mov ebx, 10
-    mul ebx
-    sub ecx, 48
-    add eax, ecx
-    inc esi
-    jmp atoiLoop
-
-setSign:
-    mov [sign], byte 1
-    cmp [esi], byte 45
-    je setMinus
-    ret
-
-setMinus:
-    inc esi
-    mov [sign], byte -1
-    ret
-
-negate:
-    cmp [sign], byte 0
-    jg return
-    xor eax, -1
-    inc eax
-    ret
-
 return:
     pop edx
     pop ecx
     pop ebx
     pop eax
     ret
-
-convertAndPrint:
-    push eax
-    push ebx
-    push ecx
-    push edx
-    cmp eax, 0
-    je printZero
-    push 0
-    xor ecx, ecx
-    call checkSign
-
-itoa:
-    cmp eax, 0
-    je addSign
-    xor edx, edx
-    mov ebx, 10
-    div ebx
-	add edx, 48
-	push edx
-	jmp itoa
-
-addSign:
-    cmp [sign], byte 0
-    jl addMinus
-    jmp reverse
-
-addMinus:
-    push 45
-	jmp reverse
-
-reverse:
-    pop ebx
-    cmp bl, 0
-    je print
-    mov [input + ecx], bl
-    inc ecx
-    jmp reverse
-
-print:
-    mov [input + ecx], byte 10
-    inc ecx
-	mov eax, 4
-	mov ebx, 1
-	mov edx, ecx
-	mov ecx, input
-	int 0x80
-	jmp return
-
-checkSign:
-    mov [sign], byte 1
-    cmp eax, 0
-    jl flipBits
-    ret
-
-flipBits:
-    mov [sign], byte -1
-    xor eax, -1
-    inc eax
-    ret
-
-negArgs:
-    push eax
-    push ebx
-    push ecx
-    push edx
-    cmp eax, 0
-    jge return
-    neg eax
-    neg ebx
-    jmp return
-
-error:
-	mov	eax, 4
-	mov	ebx, 2
-	mov	ecx, errorMsg
-	mov	edx, lenError
-	int	0x80
-    mov ebx, 1
-    jmp exit
-
-printZero:
-    mov eax, 4
-    mov ebx, 1
-    mov [input], byte 48
-    mov [input + 1], byte 10
-    mov ecx, input
-    mov edx, 2
-    int 0x80
-    mov ebx, 0
-    jmp return
 
 exit:
 	mov	eax, 1
