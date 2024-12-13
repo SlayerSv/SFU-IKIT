@@ -1,7 +1,8 @@
 section	.data
-    dimension db 5
+    dimension db 6
     ;matrix values must be between 0 and 9
-    matrix db 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 8, 7, 6, 5, 4, 3, 2, 1, 1, 2, 3, 4, 5, 6, 7
+    matrix db 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 8, 7, 6, 5, 4, 3, 2, 1, 1, 2, 3, 4, 5, 6, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+
     matrixSize equ $ - matrix
     outputSize db 0
     msg1 db 'Initial matrix:', 10
