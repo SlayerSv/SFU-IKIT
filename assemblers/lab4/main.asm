@@ -21,13 +21,13 @@ section	.text
 	global _start
 
 _start:
-	mov	eax, 5
-	mov	ebx, inputFile
-	mov	ecx, 0
-	int	0x80
+    mov	eax, 5
+    mov	ebx, inputFile
+    mov	ecx, 0
+    int	0x80
     mov [inputFD], eax
-	
-	mov eax, 3
+
+    mov eax, 3
     mov ebx, [inputFD]
     mov ecx, welders
     mov edx, welderSize * weldersCount
@@ -38,21 +38,23 @@ _start:
 
     call decreaseRank
 
-	mov eax, 5
+    mov eax, 5
     mov ebx, outputFile
     mov ecx, o_creat | o_trunc | o_wronly
     mov edx, 0666
     int 0x80
     mov [outputFD], eax ;output file fd
 
-    call printWelders
-
     mov eax, 4
-    mov ebx, 1
+    mov ebx, [outputFD]
+    mov ecx, welders
+    mov edx, welderSize * weldersCount
     int 0x80
 
-	mov ebx, 0
-	call exit
+    call printWelders
+
+    mov ebx, 0
+    call exit
 
 decreaseRank:
     push eax
@@ -109,5 +111,5 @@ printWeldersLoop:
     ret
 
 exit:
-	mov	eax, 1
-	int	0x80
+    mov	eax, 1
+    int	0x80
