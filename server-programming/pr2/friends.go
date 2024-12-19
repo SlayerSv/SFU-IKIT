@@ -18,7 +18,7 @@ func genFriends(t time.Time) time.Time {
 	for i := range taken {
 		taken[i] = make([]int, len(users))
 	}
-	i := 100
+	i := len(users) / 2
 	for i > 0 {
 		friend1 := rand.IntN(len(users))
 		friend2 := rand.IntN(len(users))
@@ -28,7 +28,7 @@ func genFriends(t time.Time) time.Time {
 		if taken[friend1][friend2] != 0 {
 			continue
 		}
-		t.Add(time.Second + time.Duration(rand.IntN(9)+1))
+		t = t.Add(time.Second * time.Duration(rand.IntN(9)+1))
 		frnds := Friends{
 			friend1,
 			friend2,

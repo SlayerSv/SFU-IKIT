@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math/rand/v2"
 	"time"
 )
 
@@ -10,3 +11,12 @@ type Thread struct {
 }
 
 var threads = []Thread{}
+
+func genThread(t time.Time) {
+	user := rand.IntN(len(users))
+	thread := Thread{
+		userID:     user,
+		created_at: t,
+	}
+	threads = append(threads, thread)
+}

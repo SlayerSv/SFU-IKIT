@@ -19,16 +19,22 @@ func main() {
 	currTime = genUsers(currTime)
 	currTime = genFriends(currTime)
 	for rows > 0 {
-		currTime.Add(time.Second * time.Duration(rand.IntN(9)+1))
+		currTime = currTime.Add(time.Second * time.Duration(rand.IntN(9)+1))
 		action := rand.IntN(100)
-		if action == 0 {
-
-		} else if action < 30 {
-
+		if action < 5 {
+			genThread(currTime)
+		} else if action < 50 {
+			err := genPost(currTime)
+			if err != nil {
+				continue
+			}
 		} else {
-
+			err := genLike(currTime)
+			if err != nil {
+				continue
+			}
 		}
-
+		rows--
 	}
-
+	writeFiles()
 }
