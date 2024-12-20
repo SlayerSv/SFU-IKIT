@@ -6,14 +6,14 @@ drop table if exists likes cascade;
 
 create table users (
     id serial primary key,
-    name varchar(20),
-    created_at timestamp
+    name varchar(20) not null,
+    created_at timestamp not null
 );
 
 create table friends (
-    user1_id int,
-    user2_id int,
-    created_at timestamp,
+    user1_id int not null,
+    user2_id int not null,
+    created_at timestamp not null,
     foreign key (user1_id)
         references users(id)
         on delete cascade,
@@ -24,8 +24,8 @@ create table friends (
 
 create table threads (
     id serial primary key,
-    user_id int,
-    created_at timestamp,
+    user_id int not null,
+    created_at timestamp not null,
     foreign key (user_id)
         references users(id)
         on delete cascade
@@ -33,9 +33,9 @@ create table threads (
 
 create table posts (
     id serial primary key,
-    user_id int,
-    thread_id int,
-    created_at timestamp,
+    user_id int not null,
+    thread_id int not null,
+    created_at timestamp not null,
     foreign key (user_id)
         references users(id)
         on delete cascade,
@@ -45,9 +45,9 @@ create table posts (
 );
 
 create table likes (
-    post_id int,
-    user_id int,
-    created_at timestamp,
+    post_id int not null,
+    user_id int not null,
+    created_at timestamp not null,
     foreign key (post_id)
         references posts(id)
         on delete cascade,

@@ -1,3 +1,13 @@
+delete from users;
+delete from friends;
+delete from threads;
+delete from posts;
+delete from likes;
+
+SELECT setval(pg_get_serial_sequence('users', 'id'), coalesce(max(id),0) + 1, false) FROM users;
+SELECT setval(pg_get_serial_sequence('threads', 'id'), coalesce(max(id),0) + 1, false) FROM threads;
+SELECT setval(pg_get_serial_sequence('posts', 'id'), coalesce(max(id),0) + 1, false) FROM posts;
+
 insert into users (name, created_at)
 values
 ('Anna Zhukova', timestamp '2024-12-01 04:05:06'),
