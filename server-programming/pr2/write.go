@@ -41,20 +41,16 @@ func writeFiles() {
 	writer.Flush()
 
 	writer = bufio.NewWriter(friendsFile)
-	for i, friend := range friends {
-		writer.WriteString(strconv.Itoa(i + 1))
+	for _, friend := range friends {
+		writer.WriteString(strconv.Itoa(friend.user1ID + 1))
 		writer.WriteByte(',')
-		writer.WriteString(strconv.Itoa(friend.user1ID))
-		writer.WriteByte(',')
-		writer.WriteString(strconv.Itoa(friend.user2ID))
+		writer.WriteString(strconv.Itoa(friend.user2ID + 1))
 		writer.WriteByte(',')
 		writer.WriteString(friend.created_at.Format("01-02-2006 15:04:05"))
 		writer.WriteByte('\n')
-		writer.WriteString(strconv.Itoa(i + 1))
+		writer.WriteString(strconv.Itoa(friend.user2ID + 1))
 		writer.WriteByte(',')
-		writer.WriteString(strconv.Itoa(friend.user2ID))
-		writer.WriteByte(',')
-		writer.WriteString(strconv.Itoa(friend.user1ID))
+		writer.WriteString(strconv.Itoa(friend.user1ID + 1))
 		writer.WriteByte(',')
 		writer.WriteString(friend.created_at.Format("01-02-2006 15:04:05"))
 		writer.WriteByte('\n')
@@ -65,7 +61,7 @@ func writeFiles() {
 	for i, thread := range threads {
 		writer.WriteString(strconv.Itoa(i + 1))
 		writer.WriteByte(',')
-		writer.WriteString(strconv.Itoa(thread.userID))
+		writer.WriteString(strconv.Itoa(thread.userID + 1))
 		writer.WriteByte(',')
 		writer.WriteString(thread.created_at.Format("01-02-2006 15:04:05"))
 		writer.WriteByte('\n')
@@ -76,9 +72,9 @@ func writeFiles() {
 	for i, post := range posts {
 		writer.WriteString(strconv.Itoa(i + 1))
 		writer.WriteByte(',')
-		writer.WriteString(strconv.Itoa(post.userID))
+		writer.WriteString(strconv.Itoa(post.userID + 1))
 		writer.WriteByte(',')
-		writer.WriteString(strconv.Itoa(post.threadID))
+		writer.WriteString(strconv.Itoa(post.threadID + 1))
 		writer.WriteByte(',')
 		writer.WriteString(post.created_at.Format("01-02-2006 15:04:05"))
 		writer.WriteByte('\n')
@@ -86,12 +82,10 @@ func writeFiles() {
 	writer.Flush()
 
 	writer = bufio.NewWriter(likesFile)
-	for i, like := range likes {
-		writer.WriteString(strconv.Itoa(i + 1))
+	for _, like := range likes {
+		writer.WriteString(strconv.Itoa(like.postID + 1))
 		writer.WriteByte(',')
-		writer.WriteString(strconv.Itoa(like.postID))
-		writer.WriteByte(',')
-		writer.WriteString(strconv.Itoa(like.userID))
+		writer.WriteString(strconv.Itoa(like.userID + 1))
 		writer.WriteByte(',')
 		writer.WriteString(like.created_at.Format("01-02-2006 15:04:05"))
 		writer.WriteByte('\n')
