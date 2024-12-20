@@ -19,7 +19,7 @@ func main() {
 	currTime = genUsers(currTime)
 	currTime = genFriends(currTime)
 	for rows > 0 {
-		currTime = currTime.Add(time.Second * time.Duration(rand.IntN(9)+1))
+		currTime = currTime.Add(time.Second * time.Duration(rand.IntN(100)+1))
 		action := rand.IntN(100)
 		if action < 5 {
 			genThread(currTime)

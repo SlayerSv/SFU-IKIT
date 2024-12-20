@@ -25,27 +25,31 @@ var surnames = []string{"Ivanov", "Petrov", "Sidorov", "Komarov", "Medvedev", "V
 func genUsers(t time.Time) time.Time {
 	var builder strings.Builder
 	for i := range male_names {
-		user := User{}
-		builder.WriteString(male_names[i])
-		builder.WriteByte(' ')
-		builder.WriteString(surnames[i])
-		user.name = builder.String()
-		t = t.Add(time.Second * time.Duration(rand.IntN(9)+1))
-		user.created_at = t
-		users = append(users, user)
-		builder.Reset()
+		for j := range surnames {
+			user := User{}
+			builder.WriteString(male_names[i])
+			builder.WriteByte(' ')
+			builder.WriteString(surnames[j])
+			user.name = builder.String()
+			t = t.Add(time.Second * time.Duration(rand.IntN(100)+1))
+			user.created_at = t
+			users = append(users, user)
+			builder.Reset()
+		}
 	}
 	for i := range female_names {
-		user := User{}
-		builder.WriteString(female_names[i])
-		builder.WriteByte(' ')
-		builder.WriteString(surnames[i])
-		builder.WriteByte('a')
-		user.name = builder.String()
-		t = t.Add(time.Second + time.Duration(rand.IntN(9)+1))
-		user.created_at = t
-		users = append(users, user)
-		builder.Reset()
+		for j := range surnames {
+			user := User{}
+			builder.WriteString(female_names[i])
+			builder.WriteByte(' ')
+			builder.WriteString(surnames[j])
+			builder.WriteByte('a')
+			user.name = builder.String()
+			t = t.Add(time.Second + time.Duration(rand.IntN(100)+1))
+			user.created_at = t
+			users = append(users, user)
+			builder.Reset()
+		}
 	}
 	return t
 }

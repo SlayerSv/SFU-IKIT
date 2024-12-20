@@ -28,7 +28,7 @@ func genFriends(t time.Time) time.Time {
 		if taken[friend1][friend2] != 0 {
 			continue
 		}
-		t = t.Add(time.Second * time.Duration(rand.IntN(9)+1))
+		t = t.Add(time.Second * time.Duration(rand.IntN(100)+1))
 		frnds := Friends{
 			friend1,
 			friend2,
