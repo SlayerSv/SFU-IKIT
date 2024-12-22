@@ -13,7 +13,7 @@ type User struct {
 
 var users = []User{}
 var male_names = []string{"Alexandr", "Sergey", "Ivan", "Pavel", "Nikita", "Artem", "Nikolay",
-	"Albert", "Petr", "Victor", "Gennadiy", "Anton", "Vadim", "Vladimir", "Dmitriy", "Boris",
+	"Albert", "Petr", "Victor", "Gennadiy", "Anton", "Vadim", "Vladimir", "Oleg", "Boris",
 	"Dmitriy", "Igor", "Semen", "Leonid"}
 var female_names = []string{"Maria", "Anna", "Alena", "Anastasia", "Oksana", "Svetlana", "Daria",
 	"Natalia", "Marina", "Nina", "Elena", "Kira", "Karina", "Zlata", "Zhanna", "Zoya", "Lubov",
