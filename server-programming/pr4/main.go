@@ -23,7 +23,7 @@ func main() {
 				fmt.Printf("Error querying for data: %s", err.Error())
 				os.Exit(1)
 			}
-			fmt.Printf("%s\n", user.String())
+			fmt.Printf("\n%s", user.String())
 			return
 		}
 		users, err := getUsers(*offsetPtr, *limitPtr)
@@ -32,7 +32,7 @@ func main() {
 			os.Exit(1)
 		}
 		for _, user := range users {
-			fmt.Printf("%s\n", user.String())
+			fmt.Printf("\n%s", user.String())
 		}
 	case "add":
 		os.Args = os.Args[2:]
@@ -41,7 +41,7 @@ func main() {
 			fmt.Printf("Error adding users: %s", err.Error())
 			os.Exit(1)
 		}
-		fmt.Printf("Added user's IDs:\n")
+		fmt.Printf("\nAdded user's IDs:\n")
 		for _, user := range newUsers {
 			fmt.Printf("%d ", user.ID)
 		}

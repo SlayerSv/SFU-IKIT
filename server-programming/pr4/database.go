@@ -31,7 +31,7 @@ func getUsers(offset, limit int) ([]User, error) {
 }
 
 func getByName(name string) (User, error) {
-	row := db.QueryRow("SELECT * from users where LOWER(name) = $1", name)
+	row := db.QueryRow("SELECT * from users where name = $1", name)
 	user := User{}
 	err := row.Scan(&user.ID, &user.Name, &user.Created_at)
 	if err != nil {
