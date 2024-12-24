@@ -1,0 +1,28 @@
+GET http://localhost:8080/users?offset=800&limit=5 HTTP/1.1
+
+###
+
+GET http://localhost:8080/users/413 HTTP/1.1
+
+###
+
+POST http://localhost:8080/users/ HTTP/1.1
+content-type: application/json
+
+{
+  "name": "Zhanna Lubimova"
+}
+
+###
+
+PUT http://localhost:8080/users/ HTTP/1.1
+content-type: application/json
+
+{
+  "id": 823,
+  "name": "Nonexisting user"
+}
+
+###
+
+DELETE http://localhost:8080/users/812 HTTP/1.1
