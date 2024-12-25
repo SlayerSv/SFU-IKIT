@@ -67,6 +67,8 @@ func writeFiles() {
 		writer.WriteByte(',')
 		writer.WriteString(strconv.Itoa(thread.userID + 1))
 		writer.WriteByte(',')
+		writer.WriteString(thread.title)
+		writer.WriteByte(',')
 		writer.WriteString(thread.created_at.Format("02-01-2006 15:04:05"))
 		writer.WriteByte('\n')
 	}
@@ -79,6 +81,8 @@ func writeFiles() {
 		writer.WriteString(strconv.Itoa(post.userID + 1))
 		writer.WriteByte(',')
 		writer.WriteString(strconv.Itoa(post.threadID + 1))
+		writer.WriteByte(',')
+		writer.WriteString(post.body)
 		writer.WriteByte(',')
 		writer.WriteString(post.created_at.Format("02-01-2006 15:04:05"))
 		writer.WriteByte('\n')
