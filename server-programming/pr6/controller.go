@@ -132,8 +132,10 @@ func errorJSON(w http.ResponseWriter, r *http.Request, err error) {
 	}
 	w.WriteHeader(code)
 	json.NewEncoder(w).Encode(struct {
+		Query string `json:"query"`
 		Error string `json:"error"`
 	}{
+		Query: r.URL.String(),
 		Error: err.Error(),
 	})
 }

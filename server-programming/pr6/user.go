@@ -6,9 +6,9 @@ import (
 )
 
 type User struct {
-	ID         int
-	Name       string
-	Created_at time.Time
+	ID         int       `json:"id"`
+	Name       string    `json:"name"`
+	Created_at time.Time `json:"created_at"`
 }
 
 func (u User) String() string {

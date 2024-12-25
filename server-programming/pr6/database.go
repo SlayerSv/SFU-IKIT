@@ -34,14 +34,10 @@ func getUsers(offset, limit int) ([]User, error) {
 }
 
 func getUserByID(id int) (User, error) {
-	users, err := getUsers(id-1, 1)
-	if err != nil {
-		return User{}, err
-	}
-	if len(users) == 0 {
-		return User{}, sql.ErrNoRows
-	}
-	return users[0], nil
+	row := db.QueryRow("select * from users where id = $1", id)
+	user := User{}
+	err := row.Scan(&user.ID, &user.Name, &user.Created_at)
+	return user, err
 }
 
 func addUser(user User) (User, error) {
@@ -73,7 +69,16 @@ func deleteUser(id int) (User, error) {
 	if err != nil {
 		return deletedUser, err
 	}
+	resetSequence("users")
 	return deletedUser, nil
+}
+
+func resetSequence(tableName string) {
+	_, err := db.Exec("SELECT setval(pg_get_serial_sequence($1, 'id'), coalesce(max(id),0) + 1, false) FROM users;",
+		tableName)
+	if err != nil {
+		fmt.Printf("error resetting sequence %s: %v\n", tableName, err)
+	}
 }
 
 func init() {

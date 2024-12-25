@@ -1,8 +1,8 @@
-GET http://localhost:8080/users?offset=800&limit=5 HTTP/1.1
+GET http://localhost:8080/users/?offset=800&limit=5 HTTP/1.1
 
 ###
 
-GET http://localhost:8080/users/413 HTTP/1.1
+GET http://localhost:8080/users/807 HTTP/1.1
 
 ###
 
