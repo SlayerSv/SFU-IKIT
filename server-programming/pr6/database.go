@@ -44,31 +44,6 @@ func getUserByID(id int) (User, error) {
 	return users[0], nil
 }
 
-func addManyUsers(names []string) ([]User, error) {
-	ctx, err := db.Begin()
-	if err != nil {
-		return nil, err
-	}
-	newUsers := []User{}
-	for _, name := range names {
-		row := ctx.QueryRow("Insert into users(name, created_at) values ($1, $2) returning *",
-			name, time.Now().Format("2006-01-02 15:04:05"))
-		newUser := User{}
-		err := row.Scan(&newUser.ID, &newUser.Name, &newUser.Created_at)
-		if err != nil {
-			ctx.Rollback()
-			return nil, err
-		}
-		newUsers = append(newUsers, newUser)
-	}
-	err = ctx.Commit()
-	if err != nil {
-		ctx.Rollback()
-		return nil, err
-	}
-	return newUsers, nil
-}
-
 func addUser(user User) (User, error) {
 	row := db.QueryRow("Insert into users(name, created_at) values ($1, $2)  returning *",
 		user.Name, time.Now().Format("2006-01-02 15:04:05"))
