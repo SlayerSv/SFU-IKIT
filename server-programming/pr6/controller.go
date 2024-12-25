@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cmp"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -14,22 +15,19 @@ var errInternal = errors.New("internal server error")
 var errBadRequest = errors.New("bad request")
 
 func get(w http.ResponseWriter, r *http.Request) {
-	offsetStr := r.URL.Query().Get("offset")
+	offsetStr := cmp.Or(r.URL.Query().Get("offset"), "0")
 	offset, err := strconv.Atoi(offsetStr)
 	if err != nil {
 		errorJSON(w, r, fmt.Errorf("%w\nincorrect offset query param value\n%w",
 			errBadRequest, err))
 		return
 	}
-	limitStr := r.URL.Query().Get("limit")
+	limitStr := cmp.Or(r.URL.Query().Get("limit"), "10")
 	limit, err := strconv.Atoi(limitStr)
 	if err != nil {
 		errorJSON(w, r, fmt.Errorf("%w\nincorrect limit query param value\n%w",
 			errBadRequest, err))
 		return
-	}
-	if limit == 0 {
-		limit = 1
 	}
 	users, err := getUsers(offset, limit)
 	if err != nil {
