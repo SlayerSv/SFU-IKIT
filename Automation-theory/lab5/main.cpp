@@ -7,22 +7,21 @@
 using namespace std;
 
 bool parse_expression(string&, const unordered_map<char, vector<string>>&);
-void getValidSymbols(set<char>&);
 
 const unordered_map<char, vector<string>> rhsLists = {
-    {'S', {"VQ=MG", ""}},
-    {'G', {"NO", "(MNO)O"}},
+    {'S', {"VQ=MGE", ""}},
+    {'G', {"(MGOMGE)", "N"}},
+    {'E', {"OMGE", ""}},
     {'M', {"-", ""}},
-    {'N', {"VQ", "BC"}},
+    {'N', {"VQ", "CF"}},
     {'V', {"a", "b", "c", "d"}},
     {'Q', {"V", ""}},
-    {'B', {"1", "2", "3", "4", "5", "6", "7", "8", "9"}},
-    {'D', {"BH", "0H"}},
-    {'C', {".DeZD", "H"}},
+    {'C', {"1", "2", "3", "4", "5", "6", "7", "8"}},
+    {'D', {"CH", "0H"}},
+    {'F', {".DeZD", "H"}},
     {'H', {"D", ""}},
     {'Z', {"+", "-"}},
-    {'O', {"+MG", "*MG", ""}},
-    {'$', {}}
+    {'O', {"+", "*"}}
 };
 
 int main() {
@@ -30,29 +29,33 @@ int main() {
     cin.tie(0);
     string expression;
     while (true) {
-        cout << "Enter expression for parsing or 'exit': ";
+        cout << "\nEnter expression for parsing or 'exit': ";
         cout.flush();
         getline(cin, expression);
         if (expression == "exit") break;
         if (parse_expression(expression, rhsLists)) {
-            cout << "\nSTRING ACCEPTED" << endl;
+            cout << "STRING ACCEPTED" << endl;
         } else {
-            cout << "\nSTRING REJECTED" << endl;
+            cout << "STRING REJECTED" << endl;
         }
     }
 }
 
 const string getRHS(char terminal, char nonTerminal, bool& emptyAllowed) {
-    auto rhsList = rhsLists.find(nonTerminal)->second;
+    vector<string> rhsList;
+    auto pointer = rhsLists.find(nonTerminal);
+    if (pointer != rhsLists.end()) {
+        rhsList = pointer->second;
+    }
     int n = rhsList.size();
     for (int i = 0; i < n; i++) {
-        if (rhsList[i] == "") {
+        if (rhsList[i].empty()) {
             emptyAllowed = true;
             continue;
         }
         if (isupper(rhsList[i][0])) {
             string rhs = getRHS(terminal, rhsList[i][0], emptyAllowed);
-            if (rhs != "") {
+            if (!rhs.empty()) {
                 return rhsList[i];
             }
         }
@@ -76,6 +79,7 @@ bool validateInput(const string& input,
             }
         }
     }
+    allowedChars.insert(' '); allowedChars.insert('\t');
     for (auto ch : input) {
         if (allowedChars.find(ch) == allowedChars.end()) {
             cout << "ERROR: symbol '" << ch << "' is not allowed.\n" <<
@@ -92,8 +96,13 @@ bool validateInput(const string& input,
 
 void getExpected(char ch, set<char>& expected,
         const unordered_map<char, vector<string>>& rhsLists) {
-    auto rhsList = rhsLists.find(ch)->second;
+    vector<string> rhsList;
+    auto pointer = rhsLists.find(ch);
+    if (pointer != rhsLists.end()) {
+        rhsList = pointer->second;
+    }
     for (auto& word : rhsList) {
+        if (word.empty()) continue;
         if (isupper(word[0])) {
             getExpected(word[0], expected, rhsLists);
             continue;
@@ -102,12 +111,19 @@ void getExpected(char ch, set<char>& expected,
     }
 }
 
-void unexpectedSymbol(char input, char stack,
+void unexpectedSymbol(char input, string stack,
         const unordered_map<char, vector<string>>& rhsLists) {
     set<char> expected;
-    getExpected(stack, expected, rhsLists);
-    cout << "\nERROR: symbol '" << input << "' is unexpected.\n" <<
-        "Expected: ";
+    for (char ch : stack) {
+        if (isupper(ch)) getExpected(ch, expected, rhsLists);
+        else expected.insert(ch);
+    }
+    if (input == '$') {
+        cout << "\nERROR: end of input is unexpected.\n";
+    } else {
+        cout << "\nERROR: symbol '" << input << "' is unexpected.\n";
+    }
+    cout  <<"Expected: ";
     for (auto ch : expected) {
         cout << " '" << ch << "' ";
     }
@@ -123,9 +139,14 @@ bool parse_expression(string& expression,
     expression.push_back('$');
     string rhs;
     char curr_expression_char, curr_stack_char;
+    string pushedOut;
     while (!expression.empty()) {
-        cout << "expression: '" << expression << "' stack: '" << stack << "' | ";
         curr_expression_char = expression.front();
+        if (curr_expression_char == ' ' || curr_expression_char == '\t') {
+            expression.erase(0, 1);
+            continue;
+        }
+        cout << "expression: '" << expression << "' stack: '" << stack << "' | ";
         curr_stack_char = stack.front();
         if (curr_expression_char == curr_stack_char) {
             cout << "Pushing out and consuming '" << curr_expression_char << "'\n";
@@ -135,17 +156,20 @@ bool parse_expression(string& expression,
         }
         bool emptyAllowed = false;
         rhs = getRHS(curr_expression_char, curr_stack_char, emptyAllowed);
-        if (rhs != "") {
+        if (!rhs.empty()) {
             cout << "'" << curr_stack_char << "' -> '" << rhs << "'\n";
-            stack.replace(0, 1, rhs.data());
+            stack.replace(0, 1, rhs);
+            pushedOut.clear();
             continue;
         }
         if (emptyAllowed) {
             cout << "'" << curr_stack_char << "' -> empty string\n";
             stack.erase(0, 1);
+            pushedOut.push_back(curr_stack_char);
             continue;
         }
-        unexpectedSymbol(curr_expression_char, curr_stack_char, rhsLists);
+        pushedOut.push_back(curr_stack_char);
+        unexpectedSymbol(curr_expression_char, pushedOut, rhsLists);
         break;
     }
     if (expression.empty() && stack.empty()) {
