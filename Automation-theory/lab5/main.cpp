@@ -9,7 +9,7 @@ using namespace std;
 bool parse_expression(string&, const unordered_map<char, vector<string>>&);
 
 const unordered_map<char, vector<string>> rhs_lists = {
-    {'S', {"VQ=MGE", ""}},
+    {'S', {"VQ=MGE;S", ""}},
     {'G', {"(MGOMGE)", "N"}},
     {'E', {"OMGE", ""}},
     {'M', {"-", ""}},
