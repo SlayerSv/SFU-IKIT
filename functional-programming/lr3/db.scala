@@ -28,11 +28,13 @@ package values {
 
     class DBStructVal(name: String, val fields: List[DBVal] = List[DBVal]())
         extends DBVal(name, ValType.Struct) {
-
     }
 }
 
-class DB(data: Map[String, values.DBVal] = Map[String, values.DBVal]()) {
+// Использование Map позволяет проверять наличие и получать данные за О(1),
+// но ведет к использованию чуть большей памяти.
+// Таким образом получается аналог базы данных с хеш индексом по полю name.
+class DB(data: Map[String, values.DBVal] = dataD) {
 
     def getType(name: String): Option[String] = {
         val opt = data.get(name)
@@ -42,33 +44,20 @@ class DB(data: Map[String, values.DBVal] = Map[String, values.DBVal]()) {
             None
     }
 
-    def getByType(valTypeName: String): Optional[List[String]] = {
+    def getByType(valTypeName: String): Option[List[String]] = {
         getByTypes(List(valTypeName))
     }
 
-    def getByTypes(typeNames: List[String]): Optional[List[String]] = {
-        val namesList = scala.collection.mutable.ListBuffer[String]()
-        val valTypes = scala.collection.mutable.Set[values.ValType]()
-        for typeName <- typeNames
-        do
-            val opt = values.ValType(typeName)
-            if opt.isDefined then
-                valTypes += opt.get
-
-        if valTypes.isEmpty then
+    def getByTypes(typeNames: List[String]): Option[List[String]] = {
+        val validTypeNames = typeNames.filter(values.ValType(_).isDefined)
+        if validTypeNames.isEmpty then
             return None
-
-        for (name, dbVal) <- data
-        do
-            for valType <- valTypes
-            if dbVal.isType(valType)
-            do
-                namesList += name
-
-        if namesList.isEmpty then
-            None
         else
-            Some(namesList.toList)
+            Some(data.
+                filter((name, dbVal) => validTypeNames.contains(dbVal.valType.typeName)).
+                keys.
+                toList
+        )
     }
 
     def getFields(name: String): Option[List[(String, String)]] = {
@@ -81,20 +70,15 @@ class DB(data: Map[String, values.DBVal] = Map[String, values.DBVal]()) {
             return None
         
         val dbStructVal = dbVal.asInstanceOf[values.DBStructVal]
-        val fieldsList = scala.collection.mutable.ListBuffer[(String,String)]()
-        for field <- dbStructVal.fields
-        do
-            fieldsList += (field.name, field.valType.typeName)
-
-        Some(fieldsList.toList)
+        Some(dbStructVal.fields.map(field => (field.name, field.valType.typeName)))
     }
 
-    def isStructed(name: String): Optional[Boolean] = {
+    def isStructured(name: String): Option[Boolean] = {
         val opt = data.get(name)
         if opt.isEmpty then
-            return None
-
-        Some(opt.get.isStructured())
+            None
+        else
+            Some(opt.get.isStructured())
     }
 }
 
