@@ -68,10 +68,12 @@ def getByTypes(typeNames: List[String], db: DB): Unit = {
 }
 
 def getFields(varName: String, db: DB): Unit = {
-    val opt = db.getFields(varName)
+    val opt = db.isStructured(varName)
     if opt.isEmpty then
-        return println(s"Cannot get fields of '$varName' because it does not exist or is not structured.")
-    println(s"Fields of '$varName' are: ${opt.get.
+        return println(s"Cannot get fields of '$varName' because it does not exist.")
+    if !opt.get then
+        return println(s"Cannot get fields of '$varName' because it is not structured.")
+    println(s"Fields of '$varName' are: ${db.getFields(varName).get.
         map((name, typeName) => s"'$name'('$typeName')").
         mkString(", ")}.")
 }
