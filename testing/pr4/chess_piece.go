@@ -1,9 +1,10 @@
 package pr4
 
 type IChessPiece interface {
-	GetPosition() *chessField
+	GetChessField() *chessField
 	GoToPosition(string, *chessBoard) (chessMove, error)
 	GetSide() side
+	GetType() chessPieceType
 }
 
 type chessPiece struct {
@@ -40,6 +41,8 @@ func NewChessPiece(cpt chessPieceType, side side, cf *chessField) IChessPiece {
 type IChessPieceCastler interface {
 	IChessPiece
 	Castle(newPosition string, board *chessBoard) (chessMove, error)
+	HasMoved() bool
+	SetMoved()
 }
 
 type chessPieceType int8

@@ -4,18 +4,54 @@ import (
 	"errors"
 )
 
-var errInvalidChessField error = errors.New("invalid chess field")
+var errInvalidChessPosition error = errors.New("invalid chess position")
 var errIllegalMove error = errors.New("illegal move")
 
 type chessBoard [8][8]chessField
 
-func (cb *chessBoard) GetField(cbp chessBoardCoordinates) *chessField {
-	return &cb[int8(cbp.row-'a')][cbp.col-1]
+func (cb *chessBoard) GetField(cbp chessBoardPosition) *chessField {
+	return &cb[cbp.row-1][cbp.col-'a']
+}
+
+// from and to must form a straight line in any direction including diagonal
+func (cb *chessBoard) collectFields(from, to chessBoardPosition) []*chessField {
+	var rowDir int8
+	if to.GetRow() < from.GetRow() {
+		rowDir = -1
+	} else if to.GetRow() > from.GetRow() {
+		rowDir = 1
+	}
+	var colDir int8
+	if to.GetCol() < from.GetCol() {
+		colDir = -1
+	} else if to.GetCol() > from.GetCol() {
+		rowDir = 1
+	}
+
+	fields := make([]*chessField, 0, 8)
+	for from.GetRow() != to.GetRow() || from.GetCol() != to.GetCol() {
+		fields = append(fields, cb.GetField(from))
+		if colDir != 0 {
+			err := from.SetCol(byte(int8(from.GetCol()) + colDir))
+			if err != nil {
+				return fields
+			}
+		}
+		if rowDir != 0 {
+			err := from.SetRow(from.GetRow() + rowDir)
+			if err != nil {
+				return fields
+			}
+		}
+	}
+	// last field is not added in the loop
+	fields = append(fields, cb.GetField(from))
+	return fields
 }
 
 type chessField struct {
 	chessPiece IChessPiece
-	chessBoardCoordinates
+	chessBoardPosition
 	attackedByWhite bool
 	attackedByBlack bool
 }
@@ -43,44 +79,52 @@ func (cf *chessField) SetAttackedBy(side side) {
 	cf.attackedByBlack = true
 }
 
-type chessBoardCoordinates struct {
-	row byte
-	col int8
+type chessBoardPosition struct {
+	col byte
+	row int8
 }
 
-func (cbp chessBoardCoordinates) GetRow() byte {
+func (cbp chessBoardPosition) GetRow() int8 {
 	return cbp.row
 }
 
-func (cbp *chessBoardCoordinates) SetRow(row byte) error {
-	if row < 'a' || row > 'h' {
-		return errInvalidChessField
+func (cbp *chessBoardPosition) SetRow(row int8) error {
+	if row < 1 || row > 8 {
+		return errInvalidChessPosition
 	}
 	cbp.row = row
 	return nil
 }
 
-func (cbp *chessBoardCoordinates) SetCol(col int8) error {
-	if col < 1 || col > 8 {
-		return errInvalidChessField
+func (cbp chessBoardPosition) GetCol() byte {
+	return cbp.col
+}
+
+func (cbp *chessBoardPosition) SetCol(col byte) error {
+	if col < 'a' || col > 'h' {
+		return errInvalidChessPosition
 	}
 	cbp.col = col
 	return nil
 }
 
-func NewChessBoardCoordinates(position string) (chessBoardCoordinates, error) {
-	cbp := chessBoardCoordinates{}
+func (cbp chessBoardPosition) GetPosition() chessBoardPosition {
+	return cbp
+}
+
+func NewChessBoardPosition(position string) (chessBoardPosition, error) {
+	cbp := chessBoardPosition{}
 	if len(position) != 2 {
-		return cbp, errInvalidChessField
+		return cbp, errInvalidChessPosition
 	}
-	err := cbp.SetRow(position[0])
+	err := cbp.SetCol(position[0])
 	if err != nil {
-		return cbp, errInvalidChessField
+		return cbp, errInvalidChessPosition
 	}
-	col := int8(position[1] - '0')
-	err = cbp.SetCol(col)
+	row := int8(position[1]) - '0'
+	err = cbp.SetRow(row)
 	if err != nil {
-		return chessBoardCoordinates{}, errInvalidChessField
+		return chessBoardPosition{}, errInvalidChessPosition
 	}
 	return cbp, nil
 }

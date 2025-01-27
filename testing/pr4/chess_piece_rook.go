@@ -5,12 +5,28 @@ type chessPieceRook struct {
 	moved bool
 }
 
-func (r *chessPieceRook) GetPosition() *chessField {
+func (r *chessPieceRook) GetChessField() *chessField {
 	return r.chessField
+}
+
+func (r *chessPieceRook) SetChessField(cf *chessField) {
+	r.chessField = cf
 }
 
 func (r *chessPieceRook) GetSide() side {
 	return r.side
+}
+
+func (r *chessPieceRook) GetType() chessPieceType {
+	return r.pieceType
+}
+
+func (r *chessPieceRook) HasMoved() bool {
+	return r.moved
+}
+
+func (r *chessPieceRook) SetMoved() {
+	r.moved = true
 }
 
 func (r *chessPieceRook) GoToPosition(newPosition string, board *chessBoard) (chessMove, error) {

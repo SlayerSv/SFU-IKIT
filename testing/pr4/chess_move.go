@@ -1,7 +1,9 @@
 package pr4
 
 type chessMove struct {
-	oldCoords chessBoardCoordinates
-	newCoords chessBoardCoordinates
-	isTake    bool
+	oldPos        chessBoardPosition
+	newPos        chessBoardPosition
+	isTake        bool
+	isShortCastle bool
+	isLongCastle  bool
 }
