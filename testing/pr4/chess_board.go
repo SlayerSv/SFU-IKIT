@@ -2,6 +2,7 @@ package pr4
 
 import (
 	"errors"
+	"strings"
 )
 
 var errInvalidChessPosition error = errors.New("invalid chess position")
@@ -101,6 +102,7 @@ func (cbp chessBoardPosition) GetCol() byte {
 }
 
 func (cbp *chessBoardPosition) SetCol(col byte) error {
+	col = byte(strings.ToLower(string(col))[0])
 	if col < 'a' || col > 'h' {
 		return errInvalidChessPosition
 	}
