@@ -10,6 +10,17 @@ var errIllegalMove error = errors.New("illegal move")
 
 type chessBoard [8][8]chessField
 
+func NewChessBoard() *chessBoard {
+	board := chessBoard([8][8]chessField{})
+	for i := 0; i < 8; i++ {
+		for j := 0; j < 8; j++ {
+			board[i][j].SetCol(byte(j) + 'a')
+			board[i][j].SetRow(int8(i) + 1)
+		}
+	}
+	return &board
+}
+
 func (cb *chessBoard) GetField(cbp chessBoardPosition) *chessField {
 	return &cb[cbp.row-1][cbp.col-'a']
 }
@@ -112,6 +123,10 @@ func (cbp *chessBoardPosition) SetCol(col byte) error {
 
 func (cbp chessBoardPosition) GetPosition() chessBoardPosition {
 	return cbp
+}
+
+func (cbp chessBoardPosition) String() string {
+	return string(cbp.col) + string(byte(cbp.row)+'0')
 }
 
 func NewChessBoardPosition(position string) (chessBoardPosition, error) {
