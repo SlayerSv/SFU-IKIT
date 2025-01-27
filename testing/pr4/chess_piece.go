@@ -17,7 +17,7 @@ type chessPiece struct {
 func NewChessPiece(cpt chessPieceType, side side, cf *chessField) IChessPiece {
 	switch cpt {
 	case ROOK:
-		return &chessPieceRook{
+		rook := &chessPieceRook{
 			chessPiece: chessPiece{
 				pieceType:  cpt,
 				side:       side,
@@ -25,8 +25,10 @@ func NewChessPiece(cpt chessPieceType, side side, cf *chessField) IChessPiece {
 			},
 			moved: false,
 		}
+		cf.SetChessPiece(rook)
+		return rook
 	case KING:
-		return &chessPieceKing{
+		king := &chessPieceKing{
 			chessPiece: chessPiece{
 				pieceType:  cpt,
 				side:       side,
@@ -34,6 +36,8 @@ func NewChessPiece(cpt chessPieceType, side side, cf *chessField) IChessPiece {
 			},
 			moved: false,
 		}
+		cf.SetChessPiece(king)
+		return king
 	default:
 		return nil
 	}
@@ -55,6 +59,23 @@ const (
 	QUEEN
 	KING
 )
+
+func (pt chessPieceType) String() string {
+	switch pt {
+	case KNIGHT:
+		return "N"
+	case BISHOP:
+		return "B"
+	case ROOK:
+		return "R"
+	case QUEEN:
+		return "Q"
+	case KING:
+		return "K"
+	default:
+		return ""
+	}
+}
 
 type side int8
 
