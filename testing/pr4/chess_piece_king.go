@@ -32,16 +32,19 @@ func (k *chessPieceKing) SetMoved() {
 func (k *chessPieceKing) GoToPosition(newPosition string, board *chessBoard) (chessMove, error) {
 	// check for castling move
 	if !k.moved {
-		if k.side == WHITE && (strings.ToLower(newPosition) == "f1" ||
-			strings.ToLower(newPosition) == "h1" ||
-			strings.ToLower(newPosition) == "b1" ||
-			strings.ToLower(newPosition) == "a1") {
-			return k.Castle(newPosition, board)
-		} else if k.side == BLACK && (strings.ToLower(newPosition) == "f8" ||
-			strings.ToLower(newPosition) == "h8" ||
-			strings.ToLower(newPosition) == "a8" ||
-			strings.ToLower(newPosition) == "b8") {
-			return k.Castle(newPosition, board)
+		newPosLower := strings.ToLower(newPosition)
+		// castling is allowed by moving king to the rook position
+		// and to actual castling position
+		if k.side == WHITE && (newPosLower == "f1" ||
+			newPosLower == "h1" ||
+			newPosLower == "b1" ||
+			newPosLower == "a1") {
+			return k.Castle(newPosLower, board)
+		} else if k.side == BLACK && (newPosLower == "f8" ||
+			newPosLower == "h8" ||
+			newPosLower == "a8" ||
+			newPosLower == "b8") {
+			return k.Castle(newPosLower, board)
 		}
 	}
 	var cm chessMove
@@ -51,21 +54,26 @@ func (k *chessPieceKing) GoToPosition(newPosition string, board *chessBoard) (ch
 	if err != nil {
 		return cm, err
 	}
-	oldPos := k.chessField.chessBoardPosition
 
-	// check if old and new chess fields are adjacent (king moves only 1 square)
-	rowDiff := oldPos.row - newPos.row
-	if rowDiff < 1 || rowDiff > 1 {
+	// check the new position is not the same as old one
+	oldPos := k.chessField.chessBoardPosition
+	if newPos.GetCol() == oldPos.GetCol() && newPos.GetRow() == oldPos.GetRow() {
 		return cm, errIllegalMove
 	}
-	colDiff := oldPos.col - newPos.col
-	if colDiff < 1 || colDiff > 1 {
+
+	// check if old and new chess fields are adjacent (king moves only 1 square)
+	rowDiff := oldPos.GetRow() - newPos.GetRow()
+	if rowDiff < -1 || rowDiff > 1 {
+		return cm, errIllegalMove
+	}
+	colDiff := int8(oldPos.GetCol()) - int8(newPos.GetCol())
+	if colDiff < -1 || colDiff > 1 {
 		return cm, errIllegalMove
 	}
 
 	// check if field is occupied by same side piece
-	newField := board.GetField(newPos)
-	piece := newField.chessPiece
+	newKingField := board.GetField(newPos)
+	piece := newKingField.GetChessPiece()
 	if piece != nil && piece.GetSide() == k.side {
 		return cm, errIllegalMove
 	}
@@ -75,18 +83,19 @@ func (k *chessPieceKing) GoToPosition(newPosition string, board *chessBoard) (ch
 		isTake = true
 	}
 	// check if new field is under attack by the opposite side
-	otherSide := WHITE
-	if k.side == otherSide {
-		otherSide = BLACK
+	oppositeSide := WHITE
+	if k.side == oppositeSide {
+		oppositeSide = BLACK
 	}
-	if newField.IsAttackedBy(otherSide) {
+	if newKingField.IsAttackedBy(oppositeSide) {
 		return cm, errIllegalMove
 	}
 
 	// make move - set new values for fields and chess piece
 	k.chessField.chessPiece = nil
-	newField.chessPiece = k
-	k.chessField = newField
+	newKingField.SetChessPiece(k)
+	k.chessField = newKingField
+	k.SetMoved()
 	cm = chessMove{
 		oldPos: oldPos,
 		newPos: newPos,
@@ -112,7 +121,7 @@ func (k *chessPieceKing) Castle(newPosition string, board *chessBoard) (chessMov
 
 	// determine presumable rook position
 	oldRookPos := oldKingPos
-	if newKingPos.col < oldKingPos.col {
+	if newKingPos.GetCol() < oldKingPos.GetCol() {
 		oldRookPos.SetCol('a')
 	} else {
 		oldRookPos.SetCol('h')
@@ -154,8 +163,10 @@ func (k *chessPieceKing) Castle(newPosition string, board *chessBoard) (chessMov
 	k.chessField.chessPiece = nil
 	newKingField.SetChessPiece(k)
 	k.chessField = newKingField
+	k.SetMoved()
 
 	// move rook
+	// place rook to the opposite side of the king
 	newRookPos := k.GetChessField().GetPosition()
 	if oldRookPos.GetCol() < oldKingPos.GetCol() {
 		newRookPos.SetCol(newKingPos.GetCol() + 1)
@@ -166,6 +177,7 @@ func (k *chessPieceKing) Castle(newPosition string, board *chessBoard) (chessMov
 	rook.GetChessField().SetChessPiece(nil)
 	newRookField.SetChessPiece(rook)
 	rook.SetChessField(newRookField)
+	rook.SetMoved()
 
 	cm = chessMove{
 		oldPos: oldKingPos,
