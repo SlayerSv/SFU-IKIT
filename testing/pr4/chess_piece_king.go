@@ -13,6 +13,10 @@ func (k *chessPieceKing) GetChessField() *chessField {
 	return k.chessField
 }
 
+func (k *chessPieceKing) SetChessField(cf *chessField) {
+	k.chessField = cf
+}
+
 func (k *chessPieceKing) GetSide() side {
 	return k.side
 }
@@ -34,7 +38,7 @@ func (k *chessPieceKing) GoToPosition(newPosition string, board *chessBoard) (ch
 	if !k.moved {
 		newPosLower := strings.ToLower(newPosition)
 		// castling is allowed by moving king to the rook position
-		// and to actual castling position
+		// and to the actual castling position
 		if k.side == WHITE && (newPosLower == "f1" ||
 			newPosLower == "h1" ||
 			newPosLower == "b1" ||
@@ -55,7 +59,7 @@ func (k *chessPieceKing) GoToPosition(newPosition string, board *chessBoard) (ch
 		return cm, err
 	}
 
-	// check the new position is not the same as old one
+	// check new position is not the same as old one
 	oldPos := k.chessField.chessBoardPosition
 	if newPos.GetCol() == oldPos.GetCol() && newPos.GetRow() == oldPos.GetRow() {
 		return cm, errIllegalMove
@@ -78,10 +82,12 @@ func (k *chessPieceKing) GoToPosition(newPosition string, board *chessBoard) (ch
 		return cm, errIllegalMove
 	}
 
+	// check if move takes opponents' piece
 	isTake := false
 	if piece != nil && piece.GetSide() != k.side {
 		isTake = true
 	}
+
 	// check if new field is under attack by the opposite side
 	oppositeSide := WHITE
 	if k.side == oppositeSide {
@@ -97,9 +103,10 @@ func (k *chessPieceKing) GoToPosition(newPosition string, board *chessBoard) (ch
 	k.chessField = newKingField
 	k.SetMoved()
 	cm = chessMove{
-		oldPos: oldPos,
-		newPos: newPos,
-		isTake: isTake,
+		oldPos:    oldPos,
+		newPos:    newPos,
+		pieceType: k.GetType(),
+		isTake:    isTake,
 	}
 	return cm, nil
 }
@@ -135,7 +142,7 @@ func (k *chessPieceKing) Castle(newPosition string, board *chessBoard) (chessMov
 	if sidePiece.GetType() != ROOK || sidePiece.GetSide() != k.GetSide() {
 		return cm, errIllegalMove
 	}
-	rook := sidePiece.(*chessPieceRook)
+	rook := sidePiece.(IChessPieceCastler)
 	if rook.HasMoved() {
 		return cm, errIllegalMove
 	}
@@ -180,8 +187,9 @@ func (k *chessPieceKing) Castle(newPosition string, board *chessBoard) (chessMov
 	rook.SetMoved()
 
 	cm = chessMove{
-		oldPos: oldKingPos,
-		newPos: newKingPos,
+		oldPos:    oldKingPos,
+		newPos:    newKingPos,
+		pieceType: k.GetType(),
 	}
 	if oldRookPos.col < oldKingPos.col {
 		cm.isShortCastle = true
