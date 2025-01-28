@@ -37,23 +37,17 @@ func (cb *chessBoard) collectFields(from, to chessBoardPosition) []*chessField {
 	if to.GetCol() < from.GetCol() {
 		colDir = -1
 	} else if to.GetCol() > from.GetCol() {
-		rowDir = 1
+		colDir = 1
 	}
 
 	fields := make([]*chessField, 0, 8)
 	for from.GetRow() != to.GetRow() || from.GetCol() != to.GetCol() {
 		fields = append(fields, cb.GetField(from))
 		if colDir != 0 {
-			err := from.SetCol(byte(int8(from.GetCol()) + colDir))
-			if err != nil {
-				return fields
-			}
+			from.SetCol(byte(int8(from.GetCol()) + colDir))
 		}
 		if rowDir != 0 {
-			err := from.SetRow(from.GetRow() + rowDir)
-			if err != nil {
-				return fields
-			}
+			from.SetRow(from.GetRow() + rowDir)
 		}
 	}
 	// last field is not added in the loop
@@ -75,20 +69,25 @@ func (cf chessField) IsAttackedBy(side side) bool {
 	return cf.attackedByBlack
 }
 
-func (cf chessField) GetChessPiece() IChessPiece {
-	return cf.chessPiece
-}
-
-func (cf *chessField) SetChessPiece(chessPiece IChessPiece) {
-	cf.chessPiece = chessPiece
-}
-
 func (cf *chessField) SetAttackedBy(side side) {
 	if side == WHITE {
 		cf.attackedByWhite = true
 		return
 	}
 	cf.attackedByBlack = true
+}
+
+func (cf *chessField) ClearAttacked() {
+	cf.attackedByBlack = false
+	cf.attackedByWhite = false
+}
+
+func (cf chessField) GetChessPiece() IChessPiece {
+	return cf.chessPiece
+}
+
+func (cf *chessField) SetChessPiece(chessPiece IChessPiece) {
+	cf.chessPiece = chessPiece
 }
 
 type chessBoardPosition struct {
