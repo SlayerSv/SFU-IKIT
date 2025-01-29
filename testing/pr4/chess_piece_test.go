@@ -2,7 +2,7 @@ package pr4
 
 import "testing"
 
-func TestPiece(t *testing.T) {
+func TestChessPieceType(t *testing.T) {
 	tests := []struct {
 		cpt  chessPieceType
 		want string
@@ -10,6 +10,9 @@ func TestPiece(t *testing.T) {
 		{KING, "K"},
 		{ROOK, "R"},
 		{PAWN, ""},
+		{KNIGHT, "N"},
+		{BISHOP, "B"},
+		{QUEEN, "Q"},
 	}
 	NewChessPiece(PAWN, WHITE, nil)
 	for _, tt := range tests {
@@ -19,5 +22,13 @@ func TestPiece(t *testing.T) {
 			}
 		})
 	}
+}
 
+func TestSide(t *testing.T) {
+	if WHITE.GetOpposite() != BLACK {
+		t.Errorf("wrong opposite of white")
+	}
+	if BLACK.GetOpposite() != WHITE {
+		t.Errorf("wrong opposite of black")
+	}
 }

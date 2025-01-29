@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-var errInvalidChessPosition error = errors.New("invalid chess position")
+var errInvalidChessBoardPosition error = errors.New("invalid chess position")
 var errIllegalMove error = errors.New("illegal move")
 
 type chessBoard [8][8]chessField
@@ -101,7 +101,7 @@ func (cbp chessBoardPosition) GetRow() int8 {
 
 func (cbp *chessBoardPosition) SetRow(row int8) error {
 	if row < 1 || row > 8 {
-		return errInvalidChessPosition
+		return errInvalidChessBoardPosition
 	}
 	cbp.row = row
 	return nil
@@ -114,7 +114,7 @@ func (cbp chessBoardPosition) GetCol() byte {
 func (cbp *chessBoardPosition) SetCol(col byte) error {
 	col = byte(strings.ToLower(string(col))[0])
 	if col < 'a' || col > 'h' {
-		return errInvalidChessPosition
+		return errInvalidChessBoardPosition
 	}
 	cbp.col = col
 	return nil
@@ -128,19 +128,19 @@ func (cbp chessBoardPosition) String() string {
 	return string(cbp.col) + string(byte(cbp.row)+'0')
 }
 
-func NewChessBoardPosition(position string) (chessBoardPosition, error) {
+func NewChessBoardPosition(pos string) (chessBoardPosition, error) {
 	cbp := chessBoardPosition{}
-	if len(position) != 2 {
-		return cbp, errInvalidChessPosition
+	if len(pos) != 2 {
+		return cbp, errInvalidChessBoardPosition
 	}
-	err := cbp.SetCol(position[0])
+	err := cbp.SetCol(pos[0])
 	if err != nil {
-		return cbp, errInvalidChessPosition
+		return cbp, errInvalidChessBoardPosition
 	}
-	row := int8(position[1]) - '0'
+	row := int8(pos[1]) - '0'
 	err = cbp.SetRow(row)
 	if err != nil {
-		return chessBoardPosition{}, errInvalidChessPosition
+		return chessBoardPosition{}, errInvalidChessBoardPosition
 	}
 	return cbp, nil
 }

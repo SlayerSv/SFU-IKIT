@@ -31,24 +31,24 @@ func (r *chessPieceRook) SetMoved() {
 
 func (r *chessPieceRook) GoToPosition(newPosition string, board *chessBoard) (chessMove, error) {
 	var cm chessMove
-	newPos, err := NewChessBoardPosition(newPosition)
+	toPos, err := NewChessBoardPosition(newPosition)
 	if err != nil {
 		return cm, err
 	}
-	oldPos := r.GetChessField().GetPosition()
+	fromPos := r.GetChessField().GetPosition()
 
 	// check for same position
-	if newPos.GetCol() == oldPos.GetCol() && newPos.GetRow() == oldPos.GetRow() {
+	if toPos.GetCol() == fromPos.GetCol() && toPos.GetRow() == fromPos.GetRow() {
 		return cm, errIllegalMove
 	}
 
 	// check move is a straight vertical or horizontal line
-	if newPos.GetCol() != oldPos.GetCol() && newPos.GetRow() != oldPos.GetRow() {
+	if toPos.GetCol() != fromPos.GetCol() && toPos.GetRow() != fromPos.GetRow() {
 		return cm, errIllegalMove
 	}
 
 	// check for any piece blocking path between positions
-	movePath := board.collectFields(oldPos, newPos)
+	movePath := board.collectFields(fromPos, toPos)
 	for i, field := range movePath {
 		if i != 0 && i != len(movePath)-1 && field.GetChessPiece() != nil {
 			return cm, errIllegalMove
@@ -67,15 +67,10 @@ func (r *chessPieceRook) GoToPosition(newPosition string, board *chessBoard) (ch
 
 	r.SetMoved()
 	r.GetChessField().SetChessPiece(nil)
-	r.SetChessField(board.GetField(newPos))
+	r.SetChessField(board.GetField(toPos))
 	r.GetChessField().SetChessPiece(r)
 
-	cm = chessMove{
-		oldPos:    oldPos,
-		newPos:    newPos,
-		pieceType: r.GetType(),
-		isTake:    isTake,
-	}
+	cm = NewChessMove(fromPos, toPos, r.GetType(), isTake, false, false)
 
 	return cm, nil
 }

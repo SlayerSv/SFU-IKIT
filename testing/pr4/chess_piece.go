@@ -62,8 +62,14 @@ const (
 
 func (pt chessPieceType) String() string {
 	switch pt {
+	case KNIGHT:
+		return "N"
+	case BISHOP:
+		return "B"
 	case ROOK:
 		return "R"
+	case QUEEN:
+		return "Q"
 	case KING:
 		return "K"
 	default:
@@ -78,9 +84,9 @@ const (
 	BLACK
 )
 
-func (s side) String() string {
+func (s side) GetOpposite() side {
 	if s == WHITE {
-		return "White"
+		return BLACK
 	}
-	return "Black"
+	return WHITE
 }

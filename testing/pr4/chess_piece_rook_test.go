@@ -1,120 +1,101 @@
 package pr4
 
 import (
-	"fmt"
 	"testing"
 )
 
-func TestRookMove(t *testing.T) {
-	var tests = []struct {
-		from    string
-		to      string
-		wantErr bool
+func TestGoToPosition(t *testing.T) {
+	var tests = map[string]struct {
+		from               string
+		to                 string
+		pieceSide          side
+		hasOtherPiece      bool
+		otherPieceSide     side
+		otherPiecePosition string
+		wantErr            bool
 	}{
-		{"d4", "d5", false},
-		{"a1", "h1", false},
-		{"d4", "d8", false},
-		{"b7", "b2", false},
-		{"d4", "d4", true},
-		{"c4", "d3", true},
-		{"d4", "j1", true},
-		{"c3", "asd", true},
+		"move top":              {"a1", "a8", WHITE, false, BLACK, "", false},
+		"move left":             {"h4", "a4", WHITE, false, BLACK, "", false},
+		"move right":            {"a5", "h5", WHITE, false, BLACK, "", false},
+		"move down":             {"e8", "e1", WHITE, false, BLACK, "", false},
+		"move diagonal":         {"c8", "a6", WHITE, false, BLACK, "", true},
+		"not straight move":     {"g3", "d2", WHITE, false, BLACK, "", true},
+		"move to same field":    {"f6", "f6", WHITE, false, BLACK, "", true},
+		"take":                  {"d4", "c4", WHITE, true, BLACK, "c4", false},
+		"to field blocked":      {"b5", "b8", WHITE, true, WHITE, "b8", true},
+		"path blocked by enemy": {"d7", "d1", WHITE, true, BLACK, "d4", true},
+		"path blocked by ally":  {"b2", "f2", WHITE, true, WHITE, "d2", true},
+		"out of bounds":         {"a1", "a9", WHITE, false, BLACK, "", true},
 	}
-	for _, tt := range tests {
+	for tname, tt := range tests {
 		var board = NewChessBoard()
-		pFrom, err := NewChessBoardPosition(tt.from)
+		fromPos, err := NewChessBoardPosition(tt.from)
 		if err != nil {
-			t.Fatalf("incorrect position: %v, pos: %s", err, tt.from)
+			t.Fatalf("from position is incorrect %s", tt.from)
+			continue
 		}
-		rook := NewChessPiece(ROOK, WHITE, board.GetField(pFrom))
-		t.Run(fmt.Sprintf("%s%s%s", rook.GetSide(), tt.from, tt.to), func(t *testing.T) {
-			cm, err := rook.GoToPosition(tt.to, board)
-			if err != nil && !tt.wantErr {
+		rook := NewChessPiece(ROOK, tt.pieceSide, board.GetField(fromPos))
+		var otherPiece IChessPiece
+		otherPiecePos, err := NewChessBoardPosition(tt.otherPiecePosition)
+		if tt.hasOtherPiece {
+			if err != nil {
+				t.Fatalf("other piece field position is incorrect %s", tt.otherPiecePosition)
+				continue
+			}
+			otherPiece = NewChessPiece(ROOK, tt.otherPieceSide, board.GetField(otherPiecePos))
+		}
+		t.Run(tname, func(t *testing.T) {
+			fromField := board.GetField(fromPos)
+			_, err := rook.GoToPosition(tt.to, board)
+
+			// process error case, meaning the move is illegal and
+			// all pieces should stay on the same fields
+			if tt.wantErr {
+				if err == nil {
+					t.Errorf("expected an error")
+				}
+
+				if fromField.GetChessPiece() != rook {
+					t.Errorf("rook didnt stay on field %s", tt.from)
+				}
+				if rook.GetChessField() != fromField {
+					t.Errorf("rook field is incorrect got %s want %s",
+						rook.GetChessField().GetPosition().String(), tt.from)
+				}
+				if !tt.hasOtherPiece {
+					return
+				}
+				otherPieceField := board.GetField(otherPiecePos)
+				if otherPieceField.GetChessPiece() != otherPiece {
+					t.Errorf("other piece didnt stay on field %s", tt.otherPiecePosition)
+				}
+				if otherPiece.GetChessField() != otherPieceField {
+					t.Errorf("other piece field is incorrect got %s want %s",
+						otherPiece.GetChessField().GetPosition().String(), tt.otherPiecePosition)
+				}
+				return
+			}
+
+			// legal move
+			if err != nil {
 				t.Errorf("unexpected error: %v", err)
 			}
-			if err == nil && tt.wantErr {
-				t.Errorf("expected an error")
+			toPos, err := NewChessBoardPosition(tt.to)
+			if err != nil {
+				t.Fatalf("to position is incorrect %s", tt.to)
 			}
-			if err == nil {
-				if cm.String() != fmt.Sprintf("R%s%s", tt.from, tt.to) {
-					t.Errorf("wrong move notation got %s want %s",
-						cm.String(), fmt.Sprintf("R%s%s", tt.from, tt.to))
-				}
-			}
-		})
-	}
-}
+			toField := board.GetField(toPos)
 
-func TestRookTake(t *testing.T) {
-	var tests = []struct {
-		from           string
-		to             string
-		rookSide       side
-		otherPieceSide side
-		wantErr        bool
-	}{
-		{"d4", "b4", WHITE, BLACK, false},
-		{"a1", "h1", BLACK, WHITE, false},
-		{"e4", "e8", WHITE, WHITE, true},
-		{"b7", "b2", BLACK, BLACK, true},
-	}
-	for _, tt := range tests {
-		var board = NewChessBoard()
-		pFrom, err := NewChessBoardPosition(tt.from)
-		if err != nil {
-			t.Fatalf("incorrect position: %v, pos: %s", err, tt.from)
-		}
-		pTo, err := NewChessBoardPosition(tt.to)
-		if err != nil {
-			t.Fatalf("incorrect position: %v, pos: %s", err, tt.to)
-		}
-		rook := NewChessPiece(ROOK, tt.rookSide, board.GetField(pFrom))
-		NewChessPiece(ROOK, tt.otherPieceSide, board.GetField(pTo))
-		t.Run(fmt.Sprintf("%s%s%s", rook.GetSide(), tt.from, tt.to), func(t *testing.T) {
-			cm, err := rook.GoToPosition(tt.to, board)
-			if tt.wantErr && err == nil {
-				t.Errorf("expected an error")
+			if fromField.GetChessPiece() != nil {
+				t.Errorf("rook didnt move from field %s", tt.from)
 			}
-			if !tt.wantErr && err != nil {
-				t.Errorf("unexpected error: %v", err)
+			if toField.GetChessPiece() != rook {
+				t.Errorf("rook didnt move to field %s", tt.to)
 			}
-			if err == nil {
-				if cm.String() != fmt.Sprintf("R%sx%s", tt.from, tt.to) {
-					t.Errorf("wrong move notation got %s want %s",
-						cm.String(), fmt.Sprintf("R%sx%s", tt.from, tt.to))
-				}
-			}
-		})
-	}
-}
-
-func TestRookBlockedMove(t *testing.T) {
-	var tests = []struct {
-		from     string
-		to       string
-		blockPos string
-	}{
-		{"d4", "d7", "d5"},
-		{"a1", "h1", "g1"},
-		{"e4", "e8", "e6"},
-		{"c7", "a7", "b7"},
-	}
-	for _, tt := range tests {
-		var board = NewChessBoard()
-		pFrom, err := NewChessBoardPosition(tt.from)
-		if err != nil {
-			t.Fatalf("incorrect position: %v, pos: %s", err, tt.from)
-		}
-		pBlock, err := NewChessBoardPosition(tt.blockPos)
-		if err != nil {
-			t.Fatalf("incorrect position: %v, pos: %s", err, tt.blockPos)
-		}
-		piece := NewChessPiece(ROOK, WHITE, board.GetField(pFrom))
-		NewChessPiece(ROOK, BLACK, board.GetField(pBlock))
-		t.Run(fmt.Sprintf("%s%s%s", piece.GetSide(), tt.from, tt.to), func(t *testing.T) {
-			_, err := piece.GoToPosition(tt.to, board)
-			if err == nil {
-				t.Errorf("expected an error")
+			if rook.GetChessField() != toField {
+				t.Errorf("rook's chess field is incorrect: got %s, want %s",
+					rook.GetChessField().GetPosition().String(),
+					toField.GetPosition().String())
 			}
 		})
 	}
