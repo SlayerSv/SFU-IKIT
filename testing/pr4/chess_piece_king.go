@@ -40,13 +40,9 @@ func (k *chessPieceKing) GoToPosition(newPosition string, board *chessBoard) (ch
 		// castling is allowed by moving king to the rook position
 		// and to the actual castling position
 		if k.side == WHITE && (newPosLower == "f1" ||
-			newPosLower == "h1" ||
-			newPosLower == "b1" ||
-			newPosLower == "a1") {
+			newPosLower == "b1") {
 			return k.Castle(newPosLower, board)
 		} else if k.side == BLACK && (newPosLower == "f8" ||
-			newPosLower == "h8" ||
-			newPosLower == "a8" ||
 			newPosLower == "b8") {
 			return k.Castle(newPosLower, board)
 		}
@@ -100,7 +96,7 @@ func (k *chessPieceKing) GoToPosition(newPosition string, board *chessBoard) (ch
 	// make move - set new values for fields and chess piece
 	k.chessField.chessPiece = nil
 	newKingField.SetChessPiece(k)
-	k.chessField = newKingField
+	k.SetChessField(newKingField)
 	k.SetMoved()
 	cm = chessMove{
 		oldPos:    oldPos,
@@ -113,17 +109,7 @@ func (k *chessPieceKing) GoToPosition(newPosition string, board *chessBoard) (ch
 
 func (k *chessPieceKing) Castle(newPosition string, board *chessBoard) (chessMove, error) {
 	var cm chessMove
-	newKingPos, err := NewChessBoardPosition(newPosition)
-	if err != nil {
-		return cm, err
-	}
-	// correct position in case king was moved to rook
-	if newKingPos.GetCol() == 'a' {
-		newKingPos.SetCol('b')
-	}
-	if newKingPos.GetCol() == 'h' {
-		newKingPos.SetCol('f')
-	}
+	newKingPos, _ := NewChessBoardPosition(newPosition)
 	oldKingPos := k.GetChessField().GetPosition()
 
 	// determine presumable rook position
@@ -169,7 +155,7 @@ func (k *chessPieceKing) Castle(newPosition string, board *chessBoard) (chessMov
 	newKingField := board.GetField(newKingPos)
 	k.chessField.chessPiece = nil
 	newKingField.SetChessPiece(k)
-	k.chessField = newKingField
+	k.SetChessField(newKingField)
 	k.SetMoved()
 
 	// move rook
@@ -190,11 +176,6 @@ func (k *chessPieceKing) Castle(newPosition string, board *chessBoard) (chessMov
 		oldPos:    oldKingPos,
 		newPos:    newKingPos,
 		pieceType: k.GetType(),
-	}
-	if oldRookPos.col < oldKingPos.col {
-		cm.isShortCastle = true
-	} else {
-		cm.isLongCastle = true
 	}
 	return cm, nil
 }

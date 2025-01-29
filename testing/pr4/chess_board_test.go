@@ -134,5 +134,4 @@ func TestAttackedBy(t *testing.T) {
 			}
 		})
 	}
-
 }

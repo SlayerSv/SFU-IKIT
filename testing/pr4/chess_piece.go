@@ -83,3 +83,10 @@ const (
 	WHITE side = iota
 	BLACK
 )
+
+func (s side) String() string {
+	if s == WHITE {
+		return "White"
+	}
+	return "Black"
+}
