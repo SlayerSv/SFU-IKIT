@@ -13,11 +13,11 @@ func TestNewChessBoard(t *testing.T) {
 				pos := string(byte(j)+'a') + string(byte(i)+'0'+1)
 				cbp, err := NewChessBoardPosition(pos)
 				if err != nil {
-					t.Fatalf("unexpected error %v, pos: %s", err, pos)
+					t.Fatalf("incorrect position: %v, pos: %s", err, pos)
 				}
 				field := board.GetField(cbp)
 				if field == nil {
-					t.Fatalf("null field %s at indices %d %d", pos, i, j)
+					t.Fatalf("nil field %s at indices %d %d", pos, i, j)
 				}
 				if field.GetPosition().String() != pos {
 					t.Errorf("wrong pos name got %s want %s", field.GetPosition().String(), pos)
@@ -45,11 +45,11 @@ func TestCollectFields(t *testing.T) {
 		t.Run(fmt.Sprintf("%s-%s", tt.from, tt.to), func(t *testing.T) {
 			pFrom, err := NewChessBoardPosition(tt.from)
 			if err != nil {
-				t.Fatalf("unexpected error %v, pos: %s", err, tt.from)
+				t.Fatalf("incorrect position: %v, pos: %s", err, tt.from)
 			}
 			pTo, err := NewChessBoardPosition(tt.to)
 			if err != nil {
-				t.Fatalf("unexpected error %v, pos: %s", err, tt.to)
+				t.Fatalf("incorrect position: %v, pos: %s", err, tt.to)
 			}
 			fields := board.collectFields(pFrom, pTo)
 			if len(fields) != len(tt.want) {
@@ -97,10 +97,7 @@ func TestChessBoardPosition(t *testing.T) {
 }
 
 func TestAttackedBy(t *testing.T) {
-	pos, err := NewChessBoardPosition("a1")
-	if err != nil {
-		t.Fatalf("unexpected error %v", err)
-	}
+	pos, _ := NewChessBoardPosition("a1")
 	tests := []struct {
 		white bool
 		black bool
@@ -131,6 +128,77 @@ func TestAttackedBy(t *testing.T) {
 			if field.IsAttackedBy(WHITE) || field.IsAttackedBy(BLACK) {
 				t.Errorf("unexpected attacks after clear: by white: %v, by black: %v",
 					field.IsAttackedBy(WHITE), field.IsAttackedBy(BLACK))
+			}
+		})
+	}
+}
+
+func TestChessFieldChange(t *testing.T) {
+	var tests = []struct {
+		from           string
+		to             string
+		pieceSide      side
+		hasOtherPiece  bool
+		otherPieceSide side
+		wantErr        bool
+	}{
+		{"d4", "c4", WHITE, false, BLACK, false},
+		{"a1", "a2", BLACK, true, WHITE, false},
+		{"e5", "e4", WHITE, true, WHITE, true},
+	}
+	for _, tt := range tests {
+		var board = NewChessBoard()
+		pFrom, err := NewChessBoardPosition(tt.from)
+		if err != nil {
+			t.Fatalf("incorrect position: %v, pos: %s", err, tt.from)
+		}
+		pTo, err := NewChessBoardPosition(tt.to)
+		if err != nil {
+			t.Fatalf("incorrect position: %v, pos: %s", err, tt.to)
+		}
+		piece := NewChessPiece(ROOK, tt.pieceSide, board.GetField(pFrom))
+		var otherPiece IChessPiece
+		if tt.hasOtherPiece {
+			otherPiece = NewChessPiece(ROOK, tt.otherPieceSide, board.GetField(pTo))
+		}
+		t.Run(fmt.Sprintf("%s%s%s", tt.pieceSide, tt.from, tt.to), func(t *testing.T) {
+			_, err := piece.GoToPosition(tt.to, board)
+			if tt.wantErr {
+				if err == nil {
+					t.Errorf("expected an error")
+				}
+				if board.GetField(pFrom).GetChessPiece() != piece {
+					t.Errorf("piece didnt stay on field %s", tt.from)
+				}
+				if piece.GetChessField() != board.GetField(pFrom) {
+					t.Errorf("piece field is incorrect got %s want %s",
+						piece.GetChessField().GetPosition().String(), tt.from)
+				}
+				if !tt.hasOtherPiece {
+					return
+				}
+				if board.GetField(pTo).GetChessPiece() != otherPiece {
+					t.Errorf("other piece didnt stay on field %s", tt.to)
+				}
+				if otherPiece.GetChessField() != board.GetField(pTo) {
+					t.Errorf("other piece field is incorrect got %s want %s",
+						otherPiece.GetChessField().GetPosition().String(), tt.to)
+				}
+				return
+			}
+			if err != nil {
+				t.Errorf("unexpected error: %v", err)
+			}
+			if board.GetField(pFrom).GetChessPiece() != nil {
+				t.Errorf("piece didnt move from field %s", tt.from)
+			}
+			if board.GetField(pTo).GetChessPiece() != piece {
+				t.Errorf("piece didnt move to field %s", tt.to)
+			}
+			if piece.GetChessField() != board.GetField(pTo) {
+				t.Errorf("piece's chess field is incorrect: got %s, want %s",
+					piece.GetChessField().GetPosition().String(),
+					board.GetField(pTo).GetPosition().String())
 			}
 		})
 	}

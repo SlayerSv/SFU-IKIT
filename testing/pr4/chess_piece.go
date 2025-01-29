@@ -62,14 +62,8 @@ const (
 
 func (pt chessPieceType) String() string {
 	switch pt {
-	case KNIGHT:
-		return "N"
-	case BISHOP:
-		return "B"
 	case ROOK:
 		return "R"
-	case QUEEN:
-		return "Q"
 	case KING:
 		return "K"
 	default:
