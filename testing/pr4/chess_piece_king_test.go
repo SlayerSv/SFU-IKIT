@@ -69,7 +69,6 @@ func TestKingGoToPosition(t *testing.T) {
 				if err == nil {
 					t.Errorf("expected an error")
 				}
-
 				if fromField.GetChessPiece() != king {
 					t.Errorf("king didnt stay on field %s", tt.from)
 				}
@@ -172,7 +171,7 @@ func TestKingCastle(t *testing.T) {
 			}
 		}
 		if tt.underAttack {
-			rook.GetChessField().SetAttackedBy(rook.GetSide().GetOpposite())
+			board.GetField(pTo).SetAttackedBy(king.GetSide().GetOpposite())
 		}
 		if tt.blocked {
 			pos := pFrom
@@ -185,14 +184,33 @@ func TestKingCastle(t *testing.T) {
 		}
 		t.Run(testName, func(t *testing.T) {
 			_, err = king.GoToPosition(tt.to, board)
-			if err == nil && tt.wantErr {
-				t.Errorf("expected an error")
-			}
-			if err != nil && !tt.wantErr {
-				t.Errorf("unexpected error %v", err)
-			}
 			if tt.wantErr {
+				if err == nil {
+					t.Errorf("expected an error")
+				}
+				fromField := board.GetField(pFrom)
+				if fromField.GetChessPiece() != king {
+					t.Errorf("king didnt stay on field %s", tt.from)
+				}
+				if king.GetChessField() != fromField {
+					t.Errorf("king field is incorrect got %s want %s",
+						king.GetChessField().GetPosition().String(), tt.from)
+				}
+				if !tt.hasRook {
+					return
+				}
+				rookField := board.GetField(rookPos)
+				if rookField.GetChessPiece() != rook {
+					t.Errorf("rook didnt stay on field %s", rookPos.String())
+				}
+				if rook.GetChessField() != rookField {
+					t.Errorf("rook field is incorrect got %s want %s",
+						rook.GetChessField().GetPosition().String(), rookPos.String())
+				}
 				return
+			}
+			if err != nil {
+				t.Errorf("unexpected error %v", err)
 			}
 			if board.GetField(pFrom).GetChessPiece() == king {
 				t.Errorf("king stayed on field %s", tt.from)
@@ -216,7 +234,6 @@ func TestKingCastle(t *testing.T) {
 			if board.GetField(rookPos).GetChessPiece() != rook {
 				t.Errorf("rook didnt move to field %s", rookPos.String())
 			}
-
 			if rook.GetChessField() != board.GetField(rookPos) {
 				t.Errorf("rook chess field is incorrect: got %s, want %s",
 					rook.GetChessField().GetPosition().String(),
