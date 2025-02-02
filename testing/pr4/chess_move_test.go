@@ -29,11 +29,11 @@ func TestChessMoveString(t *testing.T) {
 	for _, tt := range tests {
 		pFrom, err := NewChessBoardPosition(tt.from)
 		if err != nil {
-			t.Fatalf("inocrrect position %s", tt.from)
+			t.Fatalf("incorrect position %s", tt.from)
 		}
 		pTo, err := NewChessBoardPosition(tt.to)
 		if err != nil {
-			t.Fatalf("inocrrect position %s", tt.to)
+			t.Fatalf("incorrect position %s", tt.to)
 		}
 		cm := chessMove{pFrom, pTo, tt.pieceType, tt.isTake, tt.isCheck, tt.isMate}
 		t.Run(tt.want, func(t *testing.T) {

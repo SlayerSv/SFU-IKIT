@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestGoToPosition(t *testing.T) {
+func TestRookGoToPosition(t *testing.T) {
 	var tests = map[string]struct {
 		from               string
 		to                 string
