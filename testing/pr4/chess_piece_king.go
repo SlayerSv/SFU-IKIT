@@ -127,8 +127,8 @@ func (k *chessPieceKing) Castle(to string, board *chessBoard) (chessMove, error)
 		if i != 0 && i != (len(castlingPath)-1) && field.GetChessPiece() != nil {
 			return cm, errIllegalMove
 		}
-		// check fields are not under attack
-		if field.IsAttackedBy(k.GetSide().GetOpposite()) {
+		// check king moving path is not under attack
+		if i < 3 && field.IsAttackedBy(k.GetSide().GetOpposite()) {
 			return cm, errIllegalMove
 		}
 	}
