@@ -28,10 +28,7 @@ def main(start: Double, end: Double, step: Double, e: Double): Unit = {
 def solve(currVal: Double, endVal: Double, step: Double, e: Double): Unit = {
     val (taylorRes, iterations) = calc(currVal, 0, 0, e)
     val fRes = log((1 + currVal) / (1 - currVal))
-    val fResString = f"${if fRes >= 0 then " " else ""}%s$fRes%.15f"
-    val taylorResString = f"${if taylorRes >= 0 then " " else ""}$taylorRes%.15f"
-    val currValString = f"${if currVal >= 0 then " " else ""}%s$currVal%.2f"
-    println(s" $currValString | $fResString | $taylorResString | $iterations")
+    println(f" $currVal%5.2f | $fRes%18.15f | $taylorRes%18.15f | $iterations")
     if currVal.toFloat == endVal.toFloat then
         return
     solve(currVal + step, endVal, step, e)
