@@ -2,6 +2,9 @@ package main
 
 import (
 	"errors"
+	"fmt"
+	"os"
+	"strings"
 
 	"github.com/tebeka/selenium"
 )
@@ -9,7 +12,7 @@ import (
 var errWrongCredentials = errors.New("wrong credentials")
 
 type LoginPage struct {
-	wb selenium.WebDriver
+	wd selenium.WebDriver
 }
 
 func NewLoginPage(driver selenium.WebDriver) (*LoginPage, error) {
@@ -17,13 +20,18 @@ func NewLoginPage(driver selenium.WebDriver) (*LoginPage, error) {
 	if err != nil {
 		return nil, err
 	}
+	WaitForPageLoad(driver)
 	return &LoginPage{
-		wb: driver,
+		wd: driver,
 	}, nil
 }
 
 func (l *LoginPage) EnterEmail(email string) error {
-	loginField, err := l.wb.FindElement(selenium.ByCSSSelector, "#login")
+	loginField, err := l.wd.FindElement(selenium.ByCSSSelector, "#login")
+	if err != nil {
+		return err
+	}
+	err = loginField.Clear()
 	if err != nil {
 		return err
 	}
@@ -35,7 +43,11 @@ func (l *LoginPage) EnterEmail(email string) error {
 }
 
 func (l *LoginPage) EnterPassword(password string) error {
-	passwordField, err := l.wb.FindElement(selenium.ByCSSSelector, "#pass")
+	passwordField, err := l.wd.FindElement(selenium.ByCSSSelector, "#pass")
+	if err != nil {
+		return err
+	}
+	err = passwordField.Clear()
 	if err != nil {
 		return err
 	}
@@ -47,7 +59,7 @@ func (l *LoginPage) EnterPassword(password string) error {
 }
 
 func (l *LoginPage) Submit() error {
-	submitBtn, err := l.wb.FindElement(selenium.ByCSSSelector, ".btn-primary")
+	submitBtn, err := l.wd.FindElement(selenium.ByCSSSelector, ".btn-primary")
 	if err != nil {
 		return err
 	}
@@ -71,24 +83,25 @@ func (l *LoginPage) Login(email, password string) error {
 	if err != nil {
 		return err
 	}
-	l.wb.SetImplicitWaitTimeout(0)
-	err = l.wb.WaitWithTimeout(func(wb selenium.WebDriver) (bool, error) {
-		alert, err := l.wb.FindElement(selenium.ByCSSSelector, ".alert-danger")
-		if err == nil {
-			alertText, err := alert.Text()
-			if err == nil && alertText == "Не верно указан логин или пароль" {
-				return true, errWrongCredentials
-			}
+	WaitForPageLoad(l.wd)
+	alert, err := l.wd.FindElement(selenium.ByCSSSelector, ".alert-danger")
+	if err == nil {
+		alertText, err := alert.Text()
+		if err == nil && alertText == "Не верно указан логин или пароль" {
+			return errWrongCredentials
 		}
-		_, err = l.wb.FindElement(selenium.ByLinkText, "Выйти из системы")
-		if err == nil {
-			return true, nil
-		}
-		return false, nil
-	}, waitTime)
-	l.wb.SetImplicitWaitTimeout(waitTime)
-	if err != nil {
-		return err
 	}
 	return nil
+}
+
+func GetCredentials() (string, string, error) {
+	credentials, err := os.ReadFile("credentials.txt")
+	if err != nil {
+		return "", "", fmt.Errorf("error reading credentials file: %v", err)
+	}
+	creds := strings.Fields(string(credentials))
+	if len(creds) != 2 {
+		return "", "", fmt.Errorf("credentials must have 2 values, have: %d", len(creds))
+	}
+	return creds[0], creds[1], nil
 }
