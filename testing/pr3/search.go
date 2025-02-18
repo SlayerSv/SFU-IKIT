@@ -85,20 +85,3 @@ func (s *SearchPage) GetItems() ([]Item, error) {
 	}
 	return products, nil
 }
-
-func (s *SearchPage) addToCart(item selenium.WebElement) error {
-	cartBtn, err := item.FindElement(selenium.ByCSSSelector, ".icon-cart")
-	if err != nil {
-		return err
-	}
-	err = cartBtn.Click()
-	if err != nil {
-		return err
-	}
-	WaitForPageLoad(s.wd)
-	closeBtn, err := item.FindElement(selenium.ByCSSSelector, ".close")
-	if err == nil {
-		closeBtn.Click()
-	}
-	return nil
-}
