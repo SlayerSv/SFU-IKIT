@@ -87,3 +87,15 @@ func (item Item) parsePrice(priceString string) (int, error) {
 	}
 	return price, nil
 }
+
+func (item Item) AddToCart() error {
+	cartBtn, err := item.FindElement(selenium.ByCSSSelector, ".icon-cart")
+	if err != nil {
+		return err
+	}
+	err = cartBtn.Click()
+	if err != nil {
+		return err
+	}
+	return nil
+}
