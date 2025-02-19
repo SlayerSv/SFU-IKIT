@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -9,7 +8,7 @@ import (
 	"github.com/tebeka/selenium"
 )
 
-var errWrongCredentials = errors.New("wrong credentials")
+var errWrongCredentials = fmt.Errorf("wrong credentials")
 
 type LoginPage struct {
 	wd selenium.WebDriver

@@ -52,9 +52,9 @@ func TestLogin(t *testing.T) {
 		t.Run(testName, func(t *testing.T) {
 			err = loginPage.Login(tt.email, tt.password)
 			if err == nil && tt.wantErr {
-				t.Errorf("expected an error %s %s", tt.email, tt.password)
+				t.Fatalf("expected an error %s %s", tt.email, tt.password)
 			} else if err != nil && !tt.wantErr {
-				t.Errorf("unexpected error: %v %s %s", err, tt.email, tt.password)
+				t.Fatalf("unexpected error: %v %s %s", err, tt.email, tt.password)
 			}
 		})
 	}

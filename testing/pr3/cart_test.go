@@ -1,7 +1,6 @@
 package main
 
 import (
-	"os"
 	"testing"
 	"time"
 
@@ -63,8 +62,6 @@ func TestCart(t *testing.T) {
 		t.Fatal(err)
 	}
 	if len(cartItems) != 1 {
-		scr, _ := driver.Screenshot()
-		os.WriteFile("screen.jpg", scr, 0644)
 		t.Fatalf("expected exactly 1 item in cart, got %d", len(cartItems))
 	}
 
@@ -75,10 +72,7 @@ func TestCart(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	cartPage, err = NewCartPage(cartPage.wd)
-	if err != nil {
-		t.Fatalf("error getting webpage: %v\n", err)
-	}
+	time.Sleep(time.Millisecond * 200)
 	cartItems, err = cartPage.GetCartItems()
 	if err != nil {
 		t.Fatal(err)
@@ -101,10 +95,7 @@ func TestCart(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	cartPage, err = NewCartPage(cartPage.wd)
-	if err != nil {
-		t.Fatalf("error getting webpage: %v\n", err)
-	}
+	time.Sleep(time.Millisecond * 200)
 	cartItems, err = cartPage.GetCartItems()
 	if err != nil {
 		t.Fatal(err)
@@ -127,10 +118,7 @@ func TestCart(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	cartPage, err = NewCartPage(cartPage.wd)
-	if err != nil {
-		t.Fatalf("error getting webpage: %v\n", err)
-	}
+	time.Sleep(time.Millisecond * 200)
 	cartItems, err = cartPage.GetCartItems()
 	if err != nil {
 		t.Fatal(err)
@@ -152,7 +140,7 @@ func TestCart(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	WaitForPageLoad(cartPage.wd)
+	time.Sleep(time.Millisecond * 1000)
 	cartItems, err = cartPage.GetCartItems()
 	if err != nil {
 		t.Fatal(err)
