@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -9,30 +10,36 @@ import (
 )
 
 func TestCart(t *testing.T) {
-	service, err := selenium.NewChromeDriverService("./chromedriver", 4444)
+	t.Parallel()
+	port := 4441
+	service, err := selenium.NewChromeDriverService("./chromedriver", port)
 	if err != nil {
 		t.Fatalf("error starting service: %v\n", err)
 	}
-	defer service.Stop()
-
+	t.Cleanup(func() {
+		service.Stop()
+	})
 	caps := selenium.Capabilities{}
 	caps.AddChrome(chrome.Capabilities{Args: []string{
 		"--headless",
 		"--disable-gpu",
 		"--window-size=1920,1080",
-		"--disable-features=WebRtcHideLocalIpsWithMdns",
-		"--disable-features=WebRtcUseConeNatTraversal",
-		"--ignore-certificate-errors",
 		"--use-fake-ui-for-media-stream",
+		"--disable-bluetooth",
+		"--disable-device-discovery-notifications",
+		"--disable-hid-blocklist",
+		"--log-level=3",
 	}})
 
 	// create a new remote client with the specified options
-	driver, err := selenium.NewRemote(caps, "")
+	driver, err := selenium.NewRemote(caps, fmt.Sprintf("http://localhost:%d/wd/hub", port))
 	if err != nil {
 		t.Fatalf("error getting driver: %v\n", err)
 		return
 	}
-	defer driver.Quit()
+	t.Cleanup(func() {
+		driver.Quit()
+	})
 
 	searchPage, err := NewSearchPage(driver)
 	if err != nil {

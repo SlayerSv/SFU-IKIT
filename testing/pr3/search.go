@@ -71,6 +71,7 @@ func (s *SearchPage) ClickSearchBtn() error {
 	if err != nil {
 		return fmt.Errorf("error clicking search button: %v", err)
 	}
+	WaitForPageLoad(s.wd)
 	return nil
 }
 
