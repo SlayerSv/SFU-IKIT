@@ -17,7 +17,13 @@ func TestCart(t *testing.T) {
 
 	caps := selenium.Capabilities{}
 	caps.AddChrome(chrome.Capabilities{Args: []string{
-		"--headless", "--disable-gpu", "--window-size=1920,1080",
+		"--headless",
+		"--disable-gpu",
+		"--window-size=1920,1080",
+		"--disable-features=WebRtcHideLocalIpsWithMdns",
+		"--disable-features=WebRtcUseConeNatTraversal",
+		"--ignore-certificate-errors",
+		"--use-fake-ui-for-media-stream",
 	}})
 
 	// create a new remote client with the specified options
@@ -72,7 +78,7 @@ func TestCart(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	time.Sleep(time.Millisecond * 200)
+	time.Sleep(time.Millisecond * 500)
 	cartItems, err = cartPage.GetCartItems()
 	if err != nil {
 		t.Fatal(err)
@@ -95,7 +101,7 @@ func TestCart(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	time.Sleep(time.Millisecond * 200)
+	time.Sleep(time.Millisecond * 500)
 	cartItems, err = cartPage.GetCartItems()
 	if err != nil {
 		t.Fatal(err)
@@ -118,7 +124,7 @@ func TestCart(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	time.Sleep(time.Millisecond * 200)
+	time.Sleep(time.Millisecond * 500)
 	cartItems, err = cartPage.GetCartItems()
 	if err != nil {
 		t.Fatal(err)

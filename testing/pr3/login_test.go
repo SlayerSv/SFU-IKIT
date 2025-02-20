@@ -16,7 +16,13 @@ func TestLogin(t *testing.T) {
 
 	caps := selenium.Capabilities{}
 	caps.AddChrome(chrome.Capabilities{Args: []string{
-		"--headless", "--disable-gpu", "--window-size=1920,1080",
+		"--headless",
+		"--disable-gpu",
+		"--window-size=1920,1080",
+		"--disable-features=WebRtcHideLocalIpsWithMdns",
+		"--disable-features=WebRtcUseConeNatTraversal",
+		"--ignore-certificate-errors",
+		"--use-fake-ui-for-media-stream",
 	}})
 
 	// create a new remote client with the specified options

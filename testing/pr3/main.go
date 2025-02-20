@@ -11,8 +11,7 @@ const (
 )
 
 func main() {
-	// scr, _ := driver.Screenshot()
-	// os.WriteFile("screen.jpg", scr, 0644)
+
 }
 
 func WaitForPageLoad(driver selenium.WebDriver) {
