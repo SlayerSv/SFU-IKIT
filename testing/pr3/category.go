@@ -17,7 +17,10 @@ func NewCategoryPage(driver selenium.WebDriver) (*CategoryPage, error) {
 	if err != nil {
 		return nil, err
 	}
-	WaitForPageLoad(driver)
+	err = WaitForPageLoad(driver)
+	if err != nil {
+		return nil, err
+	}
 	return &CategoryPage{
 		wd: driver,
 	}, nil

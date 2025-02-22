@@ -11,7 +11,7 @@ import (
 
 func TestCart(t *testing.T) {
 	t.Parallel()
-	port := 4441
+	port := GetNextPortNumber()
 	service, err := selenium.NewChromeDriverService("./chromedriver", port)
 	if err != nil {
 		t.Fatalf("error starting service: %v\n", err)
@@ -19,18 +19,8 @@ func TestCart(t *testing.T) {
 	t.Cleanup(func() {
 		service.Stop()
 	})
-	caps := selenium.Capabilities{}
-	caps.AddChrome(chrome.Capabilities{Args: []string{
-		"--headless",
-		"--disable-gpu",
-		"--window-size=1920,1080",
-		"--use-fake-ui-for-media-stream",
-		"--disable-bluetooth",
-		"--disable-device-discovery-notifications",
-		"--disable-hid-blocklist",
-		"--log-level=3",
-	}})
-
+	var caps = selenium.Capabilities{}
+	caps.AddChrome(chrome.Capabilities{Args: chromeArgs})
 	// create a new remote client with the specified options
 	driver, err := selenium.NewRemote(caps, fmt.Sprintf("http://localhost:%d/wd/hub", port))
 	if err != nil {
@@ -54,18 +44,27 @@ func TestCart(t *testing.T) {
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
-	WaitForPageLoad(searchPage.wd)
-
+	err = WaitForPageLoad(searchPage.wd)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
 	// test add item to cart
 	items[0].AddToCart()
-	WaitForPageLoad(searchPage.wd)
-	// close pop-up window
-	closeBtn, err := searchPage.wd.FindElement(selenium.ByCSSSelector, ".close")
-	if err == nil {
-		closeBtn.Click()
+	if err != nil {
+		t.Fatalf("%v", err)
 	}
-	// website backend sometimes cant process adding item fast enough
-	time.Sleep(time.Millisecond * 100)
+	// close pop-up window
+	err = searchPage.wd.WaitWithTimeout(func(wd selenium.WebDriver) (bool, error) {
+		closeBtn, err := wd.FindElement(selenium.ByCSSSelector, ".close")
+		if err == nil {
+			closeBtn.Click()
+			return true, nil
+		}
+		return false, err
+	}, timeout)
+	if err != nil {
+		t.Fatalf("error finding popup closing button after adding item to a cart")
+	}
 	cartPage, err := NewCartPage(searchPage.wd)
 	if err != nil {
 		t.Fatalf("error getting webpage: %v\n", err)
@@ -75,6 +74,7 @@ func TestCart(t *testing.T) {
 		t.Fatal(err)
 	}
 	if len(cartItems) != 1 {
+		TakeScreenshot(searchPage.wd)
 		t.Fatalf("expected exactly 1 item in cart, got %d", len(cartItems))
 	}
 
@@ -85,12 +85,13 @@ func TestCart(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	time.Sleep(time.Millisecond * 500)
+	time.Sleep(time.Millisecond * 1000)
 	cartItems, err = cartPage.GetCartItems()
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(cartItems) != 1 {
+		TakeScreenshot(cartPage.wd)
 		t.Fatalf("expected exactly 1 item in cart, got %d", len(cartItems))
 	}
 	cartItem = cartItems[0]
@@ -99,7 +100,8 @@ func TestCart(t *testing.T) {
 		t.Fatal(err)
 	}
 	if currCount != newCount {
-		t.Errorf("Wrong count got %d want %d", currCount, newCount)
+		TakeScreenshot(cartPage.wd)
+		t.Fatalf("Wrong count got %d want %d", currCount, newCount)
 	}
 
 	// test increment
@@ -108,12 +110,13 @@ func TestCart(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	time.Sleep(time.Millisecond * 500)
+	time.Sleep(time.Millisecond * 1000)
 	cartItems, err = cartPage.GetCartItems()
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(cartItems) != 1 {
+		TakeScreenshot(searchPage.wd)
 		t.Fatalf("expected exactly 1 item in cart, got %d", len(cartItems))
 	}
 	cartItem = cartItems[0]
@@ -122,21 +125,24 @@ func TestCart(t *testing.T) {
 		t.Fatal(err)
 	}
 	if currCount != prevCount+1 {
-		t.Errorf("Wrong count got %d want %d", currCount, prevCount+1)
+		TakeScreenshot(searchPage.wd)
+		t.Fatalf("Wrong count got %d want %d", currCount, prevCount+1)
 	}
 
 	// test decrement
 	prevCount = currCount
 	err = cartItem.DecrementCount()
 	if err != nil {
+		TakeScreenshot(searchPage.wd)
 		t.Fatal(err)
 	}
-	time.Sleep(time.Millisecond * 500)
+	time.Sleep(time.Millisecond * 1000)
 	cartItems, err = cartPage.GetCartItems()
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(cartItems) != 1 {
+		TakeScreenshot(searchPage.wd)
 		t.Fatalf("expected exactly 1 item in cart, got %d", len(cartItems))
 	}
 	cartItem = cartItems[0]
@@ -145,7 +151,8 @@ func TestCart(t *testing.T) {
 		t.Fatal(err)
 	}
 	if currCount != prevCount-1 {
-		t.Errorf("Wrong count got %d want %d", currCount, prevCount-1)
+		TakeScreenshot(searchPage.wd)
+		t.Fatalf("Wrong count got %d want %d", currCount, prevCount-1)
 	}
 
 	// test delete
@@ -159,6 +166,7 @@ func TestCart(t *testing.T) {
 		t.Fatal(err)
 	}
 	if len(cartItems) != 0 {
+		TakeScreenshot(searchPage.wd)
 		t.Fatal("expected cart to be empty")
 	}
 }

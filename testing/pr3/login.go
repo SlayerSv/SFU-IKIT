@@ -19,7 +19,10 @@ func NewLoginPage(driver selenium.WebDriver) (*LoginPage, error) {
 	if err != nil {
 		return nil, err
 	}
-	WaitForPageLoad(driver)
+	err = WaitForPageLoad(driver)
+	if err != nil {
+		return nil, err
+	}
 	return &LoginPage{
 		wd: driver,
 	}, nil

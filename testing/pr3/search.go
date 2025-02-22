@@ -17,7 +17,10 @@ func NewSearchPage(driver selenium.WebDriver) (*SearchPage, error) {
 	if err != nil {
 		return nil, err
 	}
-	WaitForPageLoad(driver)
+	err = WaitForPageLoad(driver)
+	if err != nil {
+		return nil, err
+	}
 	return &SearchPage{
 		wd: driver,
 	}, nil

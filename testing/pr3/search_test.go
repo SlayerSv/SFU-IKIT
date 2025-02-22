@@ -10,7 +10,7 @@ import (
 
 func TestSearch(t *testing.T) {
 	t.Parallel()
-	port := 4440
+	port := GetNextPortNumber()
 	service, err := selenium.NewChromeDriverService("./chromedriver", port)
 	if err != nil {
 		t.Fatalf("error starting service: %v\n", err)
@@ -19,17 +19,8 @@ func TestSearch(t *testing.T) {
 		service.Stop()
 	})
 
-	caps := selenium.Capabilities{}
-	caps.AddChrome(chrome.Capabilities{Args: []string{
-		"--headless",
-		"--disable-gpu",
-		"--window-size=1920,1080",
-		"--use-fake-ui-for-media-stream",
-		"--disable-bluetooth",
-		"--disable-device-discovery-notifications",
-		"--disable-hid-blocklist",
-		"--log-level=3",
-	}})
+	var caps = selenium.Capabilities{}
+	caps.AddChrome(chrome.Capabilities{Args: chromeArgs})
 
 	// create a new remote client with the specified options
 	driver, err := selenium.NewRemote(caps, fmt.Sprintf("http://localhost:%d/wd/hub", port))

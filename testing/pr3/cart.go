@@ -15,7 +15,10 @@ func NewCartPage(driver selenium.WebDriver) (*CartPage, error) {
 	if err != nil {
 		return nil, err
 	}
-	WaitForPageLoad(driver)
+	err = WaitForPageLoad(driver)
+	if err != nil {
+		return nil, err
+	}
 	return &CartPage{
 		wd: driver,
 	}, nil
