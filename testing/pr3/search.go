@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"strings"
 
@@ -21,6 +22,10 @@ func NewSearchPage(driver selenium.WebDriver) (*SearchPage, error) {
 	if err != nil {
 		return nil, err
 	}
+	okBtn, err := driver.FindElement(selenium.ByCSSSelector, ".city-ok")
+	if err == nil {
+		okBtn.Click()
+	}
 	return &SearchPage{
 		wd: driver,
 	}, nil
@@ -35,6 +40,7 @@ func (s *SearchPage) Search(itemName string) ([]Item, error) {
 	if err != nil {
 		return nil, err
 	}
+	WaitForPageLoad(s.wd)
 	alert, err := s.wd.FindElement(selenium.ByCSSSelector, ".alert-danger")
 	if err == nil {
 		alertText, err := alert.Text()
@@ -74,7 +80,6 @@ func (s *SearchPage) ClickSearchBtn() error {
 	if err != nil {
 		return fmt.Errorf("error clicking search button: %v", err)
 	}
-	WaitForPageLoad(s.wd)
 	return nil
 }
 
@@ -88,4 +93,25 @@ func (s *SearchPage) GetItems() ([]Item, error) {
 		products = append(products, NewItem(el))
 	}
 	return products, nil
+}
+
+func (s *SearchPage) AddToCart(item Item) error {
+	err := item.AddToCart()
+	if err != nil {
+		return fmt.Errorf("error adding item to cart: %v", err)
+	}
+	// close pop-up window
+	err = s.wd.WaitWithTimeout(func(wd selenium.WebDriver) (bool, error) {
+		closeBtn, err := wd.FindElement(selenium.ByCSSSelector, ".close")
+		if err == nil {
+			closeBtn.Click()
+			return true, nil
+		}
+		return false, err
+	}, timeout)
+	if err != nil {
+		return fmt.Errorf("error finding popup closing button after adding item to a cart: %v", err)
+	}
+	time.Sleep(200 * time.Millisecond) // let website backend process
+	return nil
 }

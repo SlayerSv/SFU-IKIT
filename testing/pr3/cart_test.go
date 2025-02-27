@@ -35,36 +35,13 @@ func TestCart(t *testing.T) {
 	if err != nil {
 		t.Fatalf("error getting webpage: %v\n", err)
 	}
-	// close pop-up window
-	okBtn, err := driver.FindElement(selenium.ByCSSSelector, ".city-ok")
-	if err == nil {
-		okBtn.Click()
-	}
 	items, err := searchPage.Search("RTX4060")
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
-	err = WaitForPageLoad(searchPage.wd)
-	if err != nil {
-		t.Fatalf("%v", err)
-	}
+
 	// test add item to cart
-	items[0].AddToCart()
-	if err != nil {
-		t.Fatalf("%v", err)
-	}
-	// close pop-up window
-	err = searchPage.wd.WaitWithTimeout(func(wd selenium.WebDriver) (bool, error) {
-		closeBtn, err := wd.FindElement(selenium.ByCSSSelector, ".close")
-		if err == nil {
-			closeBtn.Click()
-			return true, nil
-		}
-		return false, err
-	}, timeout)
-	if err != nil {
-		t.Fatalf("error finding popup closing button after adding item to a cart")
-	}
+	searchPage.AddToCart(items[0])
 	cartPage, err := NewCartPage(searchPage.wd)
 	if err != nil {
 		t.Fatalf("error getting webpage: %v\n", err)

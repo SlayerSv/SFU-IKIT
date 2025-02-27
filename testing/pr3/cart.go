@@ -19,6 +19,10 @@ func NewCartPage(driver selenium.WebDriver) (*CartPage, error) {
 	if err != nil {
 		return nil, err
 	}
+	okBtn, err := driver.FindElement(selenium.ByCSSSelector, ".city-ok")
+	if err == nil {
+		okBtn.Click()
+	}
 	return &CartPage{
 		wd: driver,
 	}, nil
