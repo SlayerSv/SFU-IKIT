@@ -42,6 +42,7 @@ func NewDriver() (*selenium.Service, selenium.WebDriver, error) {
 	// create a new remote client with the specified options
 	driver, err := selenium.NewRemote(caps, fmt.Sprintf("http://localhost:%d/wd/hub", port))
 	if err != nil {
+		service.Stop()
 		return nil, nil, fmt.Errorf("error getting driver: %v", err)
 	}
 	return service, driver, nil
