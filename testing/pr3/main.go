@@ -7,26 +7,44 @@ import (
 	"time"
 
 	"github.com/tebeka/selenium"
+	"github.com/tebeka/selenium/chrome"
 )
 
 const (
-	timeout = time.Second * 10
+	timeout  = time.Second * 10
+	waitTime = time.Second * 2
 )
 
 var nextPortNumber int64 = 4440
-var chromeArgs = []string{
-	"--headless",
-	"--disable-gpu",
-	"--window-size=1920,1080",
-	"--use-fake-ui-for-media-stream",
-	"--disable-bluetooth",
-	"--disable-device-discovery-notifications",
-	"--disable-hid-blocklist",
-	"--log-level=3",
-}
 
 func main() {
 
+}
+
+func NewDriver() (*selenium.Service, selenium.WebDriver, error) {
+	port := GetNextPortNumber()
+	service, err := selenium.NewChromeDriverService("./chromedriver", port)
+	if err != nil {
+		return nil, nil, fmt.Errorf("error starting service: %v", err)
+	}
+	var caps = selenium.Capabilities{}
+	var chromeArgs = []string{
+		"--headless",
+		"--disable-gpu",
+		"--window-size=1920,1080",
+		"--use-fake-ui-for-media-stream",
+		"--disable-bluetooth",
+		"--disable-device-discovery-notifications",
+		"--disable-hid-blocklist",
+		"--log-level=3",
+	}
+	caps.AddChrome(chrome.Capabilities{Args: chromeArgs})
+	// create a new remote client with the specified options
+	driver, err := selenium.NewRemote(caps, fmt.Sprintf("http://localhost:%d/wd/hub", port))
+	if err != nil {
+		return nil, nil, fmt.Errorf("error getting driver: %v", err)
+	}
+	return service, driver, nil
 }
 
 func GetNextPortNumber() int {

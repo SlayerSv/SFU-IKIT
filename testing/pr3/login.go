@@ -23,6 +23,11 @@ func NewLoginPage(driver selenium.WebDriver) (*LoginPage, error) {
 	if err != nil {
 		return nil, err
 	}
+	// close pop-up window
+	okBtn, err := driver.FindElement(selenium.ByCSSSelector, ".city-ok")
+	if err == nil {
+		okBtn.Click()
+	}
 	return &LoginPage{
 		wd: driver,
 	}, nil

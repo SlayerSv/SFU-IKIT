@@ -21,6 +21,11 @@ func NewCategoryPage(driver selenium.WebDriver) (*CategoryPage, error) {
 	if err != nil {
 		return nil, err
 	}
+	// close pop-up window
+	okBtn, err := driver.FindElement(selenium.ByCSSSelector, ".city-ok")
+	if err == nil {
+		okBtn.Click()
+	}
 	return &CategoryPage{
 		wd: driver,
 	}, nil
@@ -31,7 +36,7 @@ func (c *CategoryPage) GoToCategory(category string) error {
 	if err == nil {
 		btn.Click()
 	}
-	time.Sleep(time.Millisecond * 100)
+	time.Sleep(waitTime / 10)
 	menu, err := c.wd.FindElement(selenium.ByCSSSelector, ".menu-cat")
 	if err != nil {
 		return fmt.Errorf("error finding categories menu: %v", err)
@@ -74,7 +79,7 @@ func (c *CategoryPage) FilterByPrice(min, max int) error {
 		return fmt.Errorf("error setting max price field %v", err)
 	}
 	minField.SendKeys("")
-	time.Sleep(time.Second * 2)
+	time.Sleep(waitTime)
 	popup, err := c.wd.FindElement(selenium.ByID, "SearchExtPopup")
 	if err != nil {
 		return fmt.Errorf("error finding search popup %v", err)

@@ -3,40 +3,22 @@ package main
 import (
 	"fmt"
 	"testing"
-
-	"github.com/tebeka/selenium"
-	"github.com/tebeka/selenium/chrome"
 )
 
 func TestCategory(t *testing.T) {
 	t.Parallel()
-	port := GetNextPortNumber()
-	service, err := selenium.NewChromeDriverService("./chromedriver", port)
+	service, driver, err := NewDriver()
 	if err != nil {
-		t.Fatalf("error starting service: %v\n", err)
-	}
-	t.Cleanup(func() {
-		service.Stop()
-	})
-	var caps = selenium.Capabilities{}
-	caps.AddChrome(chrome.Capabilities{Args: chromeArgs})
-	// create a new remote client with the specified options
-	driver, err := selenium.NewRemote(caps, fmt.Sprintf("http://localhost:%d/wd/hub", port))
-	if err != nil {
-		t.Fatalf("error getting driver: %v\n", err)
-		return
+		t.Fatalf("error starting service or driver: %v", err)
 	}
 	t.Cleanup(func() {
 		driver.Quit()
+		service.Stop()
 	})
+
 	categoryPage, err := NewCategoryPage(driver)
 	if err != nil {
 		t.Fatalf("error getting webpage: %v\n", err)
-	}
-	// close pop-up window
-	okBtn, err := driver.FindElement(selenium.ByCSSSelector, ".city-ok")
-	if err == nil {
-		okBtn.Click()
 	}
 	categoryPage.GoToCategory("Комплектующие")
 	url, err := categoryPage.wd.CurrentURL()

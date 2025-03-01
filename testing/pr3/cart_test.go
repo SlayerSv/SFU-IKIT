@@ -1,36 +1,20 @@
 package main
 
 import (
-	"fmt"
 	"testing"
 	"time"
-
-	"github.com/tebeka/selenium"
-	"github.com/tebeka/selenium/chrome"
 )
 
 func TestCart(t *testing.T) {
 	t.Parallel()
-	port := GetNextPortNumber()
-	service, err := selenium.NewChromeDriverService("./chromedriver", port)
+	service, driver, err := NewDriver()
 	if err != nil {
-		t.Fatalf("error starting service: %v\n", err)
-	}
-	t.Cleanup(func() {
-		service.Stop()
-	})
-	var caps = selenium.Capabilities{}
-	caps.AddChrome(chrome.Capabilities{Args: chromeArgs})
-	// create a new remote client with the specified options
-	driver, err := selenium.NewRemote(caps, fmt.Sprintf("http://localhost:%d/wd/hub", port))
-	if err != nil {
-		t.Fatalf("error getting driver: %v\n", err)
-		return
+		t.Fatalf("error starting service or driver: %v", err)
 	}
 	t.Cleanup(func() {
 		driver.Quit()
+		service.Stop()
 	})
-
 	searchPage, err := NewSearchPage(driver)
 	if err != nil {
 		t.Fatalf("error getting webpage: %v\n", err)
@@ -62,7 +46,7 @@ func TestCart(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	time.Sleep(time.Millisecond * 1000)
+	time.Sleep(waitTime)
 	cartItems, err = cartPage.GetCartItems()
 	if err != nil {
 		t.Fatal(err)
@@ -87,7 +71,7 @@ func TestCart(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	time.Sleep(time.Millisecond * 1000)
+	time.Sleep(waitTime)
 	cartItems, err = cartPage.GetCartItems()
 	if err != nil {
 		t.Fatal(err)
@@ -113,7 +97,7 @@ func TestCart(t *testing.T) {
 		TakeScreenshot(searchPage.wd)
 		t.Fatal(err)
 	}
-	time.Sleep(time.Millisecond * 1000)
+	time.Sleep(waitTime)
 	cartItems, err = cartPage.GetCartItems()
 	if err != nil {
 		t.Fatal(err)
@@ -137,7 +121,7 @@ func TestCart(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	time.Sleep(time.Millisecond * 1000)
+	time.Sleep(waitTime)
 	cartItems, err = cartPage.GetCartItems()
 	if err != nil {
 		t.Fatal(err)

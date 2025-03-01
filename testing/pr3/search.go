@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"time"
-
 	"strings"
 
 	"github.com/tebeka/selenium"
@@ -112,6 +110,5 @@ func (s *SearchPage) AddToCart(item Item) error {
 	if err != nil {
 		return fmt.Errorf("error finding popup closing button after adding item to a cart: %v", err)
 	}
-	time.Sleep(200 * time.Millisecond) // let website backend process
 	return nil
 }
