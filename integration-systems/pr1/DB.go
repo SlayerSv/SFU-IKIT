@@ -37,7 +37,7 @@ func (db *PostgresDB) SetupDatabase() error {
 	`
 	_, err := db.Exec(createTableSQL)
 	if err != nil {
-		return fmt.Errorf("creating currencies table: %w", err)
+		return fmt.Errorf("create currencies table: %w", err)
 	}
 	return nil
 }
@@ -57,7 +57,7 @@ func (db *PostgresDB) InsertCurrencies(currencies map[string]Currency) error {
 			currency.SymbolNative,
 		)
 		if err != nil {
-			return fmt.Errorf("inserting currency %s: %w", name, err)
+			return fmt.Errorf("insert currency %s: %w", name, err)
 		}
 	}
 	return nil
