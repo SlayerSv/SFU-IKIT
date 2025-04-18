@@ -1,0 +1,18 @@
+package main
+
+import (
+	"net/http"
+)
+
+func (app *App) NewRouter() http.Handler {
+	router := http.NewServeMux()
+	router.HandleFunc("GET /currencies", app.Auth(app.GetCurrencies))
+	router.HandleFunc("GET /currencies/count", app.Auth(app.GetCurrencyCount))
+	router.HandleFunc("GET /currencies/{code}", app.Auth(app.GetCurrencyByCode))
+	router.HandleFunc("GET /currencies/updated_at", app.Auth(app.UpdatedAt))
+	router.HandleFunc("POST /currencies", app.Auth(app.AddCurrency))
+
+	router.HandleFunc("GET /api_key", app.GetAPIKey)
+
+	return router
+}
