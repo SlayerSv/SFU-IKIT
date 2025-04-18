@@ -78,21 +78,21 @@ func (db *PostgresDB) GetCurrencies() ([]Currency, error) {
 	return db.extractCurrencies(rows)
 }
 
-func (db *PostgresDB) AddCurrency(c Currency) error {
-	_, err := db.Exec("Insert into currencies values($1, $2, $3, $4, $5)",
+func (db *PostgresDB) InsertCurrency(c Currency) (Currency, error) {
+	row := db.QueryRow("Insert into currencies values($1, $2, $3, $4, $5) returning *",
 		c.Code, c.Name, c.NamePlural, c.Symbol, c.SymbolNative)
-
+	c, err := db.extractCurrency(row)
 	var pgErr *pq.Error
 	if errors.As(err, &pgErr) {
 		switch pgErr.Code {
 		case "23505":
-			return errAlreadyExists
+			return c, errAlreadyExists
 		}
 	}
 	if err == nil {
 		db.lastUpdate = time.Now()
 	}
-	return err
+	return c, err
 }
 
 func (db *PostgresDB) GetCurrencyCount() (int, error) {

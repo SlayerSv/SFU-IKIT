@@ -5,6 +5,15 @@ import (
 	"net/http"
 )
 
+// @title Currency API
+// @version 1.0
+// @description A RESTful API for managing currency data, supporting API key authentication and CRUD operations.
+// @openapi 3.0.0
+// @host localhost:8080
+// @BasePath /
+// @securityDefinitions.apikey ApiKeyAuth
+// @in query
+// @name api_key
 func main() {
 	cfg, err := NewConfig()
 	if err != nil {
