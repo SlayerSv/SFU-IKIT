@@ -104,7 +104,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/main.Currency"
+                            "$ref": "#/definitions/main.CurrencyD"
                         }
                     }
                 ],
@@ -113,6 +113,12 @@ const docTemplate = `{
                         "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/main.Currency"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/main.ErrorResponse"
                         }
                     },
                     "401": {
@@ -241,6 +247,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/main.Currency"
                         }
                     },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/main.ErrorResponse"
+                        }
+                    },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
@@ -283,7 +295,34 @@ const docTemplate = `{
             }
         },
         "main.Currency": {
-            "description": "Currency data with code, name, and symbols",
+            "description": "Currency data with timestamps",
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "name_plural": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                },
+                "symbol_native": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.CurrencyD": {
+            "description": "Currency data",
             "type": "object",
             "properties": {
                 "code": {

@@ -13,7 +13,25 @@ definitions:
         type: integer
     type: object
   main.Currency:
-    description: Currency data with code, name, and symbols
+    description: Currency data with timestamps
+    properties:
+      code:
+        type: string
+      created_at:
+        type: string
+      name:
+        type: string
+      name_plural:
+        type: string
+      symbol:
+        type: string
+      symbol_native:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  main.CurrencyD:
+    description: Currency data
     properties:
       code:
         type: string
@@ -98,7 +116,7 @@ paths:
         name: currency
         required: true
         schema:
-          $ref: '#/definitions/main.Currency'
+          $ref: '#/definitions/main.CurrencyD'
       produces:
       - application/json
       responses:
@@ -106,6 +124,10 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/main.Currency'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
@@ -139,6 +161,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/main.Currency'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
         "401":
           description: Unauthorized
           schema:

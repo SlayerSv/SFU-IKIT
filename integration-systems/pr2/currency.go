@@ -8,9 +8,17 @@ type Response struct {
 	Data map[string]Currency `json:"data"`
 }
 
-// Currency represents a currency entity
-// @Description Currency data with code, name, and symbols
+// CurrencyT represents a currency model with timestamps
+// @Description Currency data with timestamps
 type Currency struct {
+	CurrencyD
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// Currency represents a currency model
+// @Description Currency data
+type CurrencyD struct {
 	Code         string `json:"code"`
 	Name         string `json:"name"`
 	NamePlural   string `json:"name_plural"`

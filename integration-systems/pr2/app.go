@@ -30,7 +30,7 @@ type DB interface {
 	GetCurrencyCount() (int, error)
 	HasAPIKey(key string) (bool, error)
 	AddAPIKey(key string) error
-	UpdatedAt() time.Time
+	UpdatedAt() (time.Time, error)
 }
 
 func NewApp(cfg *Config, db DB, log *log.Logger) *App {
@@ -98,6 +98,7 @@ func (app *App) GetCurrencies(w http.ResponseWriter, r *http.Request) {
 // @Security ApiKeyAuth
 // @Param code path string true "The currency code (e.g., USD, EUR)"
 // @Success 200 {object} Currency
+// @Failure 400 {object} ErrorResponse
 // @Failure 401 {object} ErrorResponse
 // @Failure 404 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
@@ -168,16 +169,17 @@ func (app *App) GetCurrencyCount(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Security ApiKeyAuth
-// @Param currency body Currency true "Currency object to add"
+// @Param currency body CurrencyD true "Currency object to add"
 // @Success 201 {object} Currency
+// @Failure 400 {object} ErrorResponse
 // @Failure 401 {object} ErrorResponse
 // @Failure 409 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /currencies [post]
 func (app *App) AddCurrency(w http.ResponseWriter, r *http.Request) {
 	var c Currency
-	e := json.NewEncoder(w)
 	err := json.NewDecoder(r.Body).Decode(&c)
+	e := json.NewEncoder(w)
 	if err != nil {
 		app.Log.Printf("ERROR: Decode currency from request: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
@@ -212,9 +214,15 @@ func (app *App) AddCurrency(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} ErrorResponse
 // @Router /currencies/updated_at [get]
 func (app *App) UpdatedAt(w http.ResponseWriter, r *http.Request) {
-	t := app.DB.UpdatedAt()
+	t, err := app.DB.UpdatedAt()
 	e := json.NewEncoder(w)
-	err := e.Encode(UpdatedAtResponse{UpdatedAt: t})
+	if err != nil {
+		app.Log.Printf("ERROR: Get updated at: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		e.Encode(ErrorResponse{Message: errInternal.Error()})
+		return
+	}
+	err = e.Encode(UpdatedAtResponse{UpdatedAt: t})
 	if err != nil {
 		app.Log.Printf("ERROR: Encode updated at json: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -298,9 +306,6 @@ func (app *App) Auth(next http.HandlerFunc) http.HandlerFunc {
 
 func (app *App) RecoverPanic(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 		defer func() {
 			if err := recover(); err != nil {
 				app.Log.Printf("ERROR: panic: %v", err)
@@ -308,6 +313,9 @@ func (app *App) RecoverPanic(next http.Handler) http.Handler {
 				json.NewEncoder(w).Encode(ErrorResponse{Message: errInternal.Error()})
 			}
 		}()
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 		next.ServeHTTP(w, r)
 	})
 }

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/lib/pq"
@@ -31,12 +32,15 @@ func (db *PostgresDB) SetupDatabase() error {
 	createTableSQL := `
 		DROP TABLE IF EXISTS currencies;
 		CREATE TABLE currencies (
-			code text PRIMARY KEY,
+			code varchar(3) PRIMARY KEY,
 			name text NOT NULL UNIQUE,
 			name_plural text NOT NULL UNIQUE,
 			symbol text NOT NULL UNIQUE,
-			symbol_native text NOT NULL
+			symbol_native text NOT NULL,
+			created_at TIMESTAMP default CURRENT_TIMESTAMP,
+			updated_at TIMESTAMP default CURRENT_TIMESTAMP
 		);
+		create index on currencies(updated_at);
 		DROP TABLE IF EXISTS api_keys;
 		CREATE TABLE api_keys (
 			key text PRIMARY KEY
@@ -56,7 +60,7 @@ func (db *PostgresDB) InsertCurrencies(currencies map[string]Currency) error {
 	`
 	for name, currency := range currencies {
 		_, err := db.Exec(insertSQL,
-			currency.Code,
+			strings.ToUpper(currency.Code),
 			currency.Name,
 			currency.NamePlural,
 			currency.Symbol,
@@ -80,7 +84,7 @@ func (db *PostgresDB) GetCurrencies() ([]Currency, error) {
 
 func (db *PostgresDB) InsertCurrency(c Currency) (Currency, error) {
 	row := db.QueryRow("Insert into currencies values($1, $2, $3, $4, $5) returning *",
-		c.Code, c.Name, c.NamePlural, c.Symbol, c.SymbolNative)
+		strings.ToUpper(c.Code), c.Name, c.NamePlural, c.Symbol, c.SymbolNative)
 	c, err := db.extractCurrency(row)
 	var pgErr *pq.Error
 	if errors.As(err, &pgErr) {
@@ -103,7 +107,7 @@ func (db *PostgresDB) GetCurrencyCount() (int, error) {
 }
 
 func (db *PostgresDB) GetCurrencyByCode(code string) (Currency, error) {
-	row := db.QueryRow("SELECT * FROM currencies where code = $1", code)
+	row := db.QueryRow("SELECT * FROM currencies where code = $1", strings.ToUpper(code))
 	c, err := db.extractCurrency(row)
 	if err == sql.ErrNoRows {
 		return c, errNotFound
@@ -114,7 +118,7 @@ func (db *PostgresDB) GetCurrencyByCode(code string) (Currency, error) {
 func (db *PostgresDB) extractCurrency(row *sql.Row) (Currency, error) {
 	currency := Currency{}
 	err := row.Scan(&currency.Code, &currency.Name, &currency.NamePlural,
-		&currency.Symbol, &currency.SymbolNative)
+		&currency.Symbol, &currency.SymbolNative, &currency.CreatedAt, &currency.UpdatedAt)
 	return currency, err
 }
 
@@ -124,7 +128,7 @@ func (db *PostgresDB) extractCurrencies(rows *sql.Rows) ([]Currency, error) {
 	for rows.Next() {
 		currency := Currency{}
 		err := rows.Scan(&currency.Code, &currency.Name, &currency.NamePlural,
-			&currency.Symbol, &currency.SymbolNative)
+			&currency.Symbol, &currency.SymbolNative, &currency.CreatedAt, &currency.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -151,6 +155,9 @@ func (db *PostgresDB) AddAPIKey(APIKey string) error {
 	return err
 }
 
-func (db *PostgresDB) UpdatedAt() time.Time {
-	return db.lastUpdate
+func (db *PostgresDB) UpdatedAt() (time.Time, error) {
+	row := db.QueryRow("SELECT updated_at FROM currencies order by updated_at desc limit 1")
+	var updatedAt time.Time
+	err := row.Scan(&updatedAt)
+	return updatedAt, err
 }
