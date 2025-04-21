@@ -1,0 +1,236 @@
+basePath: /
+definitions:
+  main.APIKeyResponse:
+    description: Response with a new API key
+    properties:
+      api_key:
+        type: string
+    type: object
+  main.CountResponse:
+    description: Response with the number of currencies
+    properties:
+      currencies_count:
+        type: integer
+    type: object
+  main.Currency:
+    description: Currency data with timestamps
+    properties:
+      code:
+        type: string
+      created_at:
+        type: string
+      name:
+        type: string
+      name_plural:
+        type: string
+      symbol:
+        type: string
+      symbol_native:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  main.CurrencyD:
+    description: Currency data
+    properties:
+      code:
+        type: string
+      name:
+        type: string
+      name_plural:
+        type: string
+      symbol:
+        type: string
+      symbol_native:
+        type: string
+    type: object
+  main.ErrorResponse:
+    description: Error response with a message
+    properties:
+      message:
+        type: string
+    type: object
+  main.UpdatedAtResponse:
+    description: Response with the last update timestamp
+    properties:
+      updated_at:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: A RESTful API for managing currency data, supporting API key authentication
+    and CRUD operations.
+  title: Currency API
+  version: "1.0"
+paths:
+  /api_key:
+    get:
+      description: Creates and returns a new API key for authentication
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.APIKeyResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+      summary: Generate a new API key
+      tags:
+      - Authentication
+  /currencies:
+    get:
+      description: Retrieves a list of all currency entities
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.Currency'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all currencies
+      tags:
+      - Currencies
+    post:
+      consumes:
+      - application/json
+      description: Adds a new currency entity to the dataset
+      parameters:
+      - description: Currency object to add
+        in: body
+        name: currency
+        required: true
+        schema:
+          $ref: '#/definitions/main.CurrencyD'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.Currency'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Add a new currency
+      tags:
+      - Currencies
+  /currencies/{code}:
+    get:
+      description: Retrieves a currency entity by its unique code
+      parameters:
+      - description: The currency code (e.g., USD, EUR)
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Currency'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get a currency by code
+      tags:
+      - Currencies
+  /currencies/count:
+    get:
+      description: Returns the total count of currency entities
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.CountResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get the number of currencies
+      tags:
+      - Currencies
+  /currencies/updated_at:
+    get:
+      description: Returns the date and time when the currency dataset was last updated
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.UpdatedAtResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get the last update timestamp
+      tags:
+      - Currencies
+securityDefinitions:
+  ApiKeyAuth:
+    in: query
+    name: api_key
+    type: apiKey
+swagger: "2.0"
