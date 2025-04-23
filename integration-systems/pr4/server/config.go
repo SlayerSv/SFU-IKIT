@@ -1,4 +1,4 @@
-package server
+package main
 
 import (
 	"encoding/json"
@@ -11,10 +11,12 @@ type Config struct {
 	APIKey      string `json:"api_key"`
 	DBConn      string `json:"db_conn"`
 	LogFilePath string `json:"log_file_path"`
+	KafkaAddr   string `json:"kafka_addr"`
+	KafkaTopic  string `json:"kafka_topic"`
 }
 
 func NewConfig() (*Config, error) {
-	file, err := os.Open("config.json")
+	file, err := os.Open("server/config.json")
 	if err != nil {
 		return nil, fmt.Errorf("open config.json file: %w", err)
 	}

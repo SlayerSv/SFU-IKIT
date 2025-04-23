@@ -1,4 +1,4 @@
-package server
+package main
 
 import (
 	"crypto/rand"
@@ -9,6 +9,8 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"integration/pr4/broker"
 )
 
 var errNotFound = errors.New("not found")
@@ -19,6 +21,7 @@ type App struct {
 	Config *Config
 	DB     DB
 	Log    *log.Logger
+	Broker broker.Writer
 }
 
 type DB interface {
@@ -33,11 +36,12 @@ type DB interface {
 	UpdatedAt() (time.Time, error)
 }
 
-func NewApp(cfg *Config, db DB, log *log.Logger) *App {
+func NewApp(cfg *Config, db DB, log *log.Logger, broker broker.Writer) *App {
 	return &App{
 		Config: cfg,
 		DB:     db,
 		Log:    log,
+		Broker: broker,
 	}
 }
 
@@ -202,6 +206,10 @@ func (app *App) AddCurrency(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	e.Encode(newCur)
 	app.Log.Printf("INFO: Added new currency %s", newCur.Code)
+	err = app.Broker.Send(broker.Message{Value: newCur.Code, Time: time.Now()})
+	if err != nil {
+		app.Log.Printf("ERROR: Send broker message: %v", err)
+	}
 }
 
 // @Summary Get the last update timestamp

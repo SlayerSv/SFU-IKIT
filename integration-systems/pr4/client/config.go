@@ -1,4 +1,4 @@
-package client
+package main
 
 import (
 	"encoding/json"
@@ -6,8 +6,9 @@ import (
 )
 
 type Config struct {
-	BrokerAddress string
-	Topic         string
+	ServerAddr string `json:"server_addr"`
+	KafkaAddr  string `json:"kafka_addr"`
+	KafkaTopic string `json:"kafka_topic"`
 }
 
 func NewConfig() (Config, error) {

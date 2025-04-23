@@ -1,8 +1,10 @@
-package server
+package main
 
 import (
 	"log"
 	"net/http"
+
+	"integration/pr4/broker/kafka"
 )
 
 // @title Currency API
@@ -27,7 +29,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("ERROR: Create database: %v", err)
 	}
-	app := NewApp(cfg, db, logger)
+	kafka := kafka.NewWriter(cfg.KafkaAddr, cfg.KafkaTopic)
+	app := NewApp(cfg, db, logger, kafka)
 	app.Log.Println("INFO: Started Currency App")
 
 	currencies, err := app.GetCurrenciesFromAPI()

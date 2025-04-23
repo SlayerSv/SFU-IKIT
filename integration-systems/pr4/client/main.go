@@ -1,10 +1,13 @@
-package client
+package main
 
 import (
+	"fmt"
+	"io"
+	"log"
+	"net/http"
+
 	"integration/pr4/broker"
 	"integration/pr4/broker/kafka"
-
-	"log"
 )
 
 func main() {
@@ -12,11 +15,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("ERROR: Read config: %v", err)
 	}
-	kr := kafka.NewReader(cfg.BrokerAddress, cfg.Topic)
-	ListenAndRead(kr)
+	kr := kafka.NewReader(cfg.KafkaAddr, cfg.KafkaTopic)
+	ListenAndRead(cfg.KafkaAddr, kr)
 }
 
-func ListenAndRead(br broker.Reader) {
+func ListenAndRead(serverAddr string, br broker.Reader) {
 	for {
 		msg, err := br.Read()
 		if err != nil {
@@ -24,5 +27,21 @@ func ListenAndRead(br broker.Reader) {
 			continue
 		}
 		log.Printf("INFO: Received broker message %s topic %s", msg, br.GetTopic())
+		GetCurrency(serverAddr, msg.Value)
 	}
+}
+
+func GetCurrency(serverAddr, code string) {
+	url := fmt.Sprintf("%s/currencies/%s", serverAddr, code)
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Printf("ERROR: Get currency from server: %v", err)
+		return
+	}
+	msg, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("ERROR: Read response body from server: %v", err)
+		return
+	}
+	log.Printf("INFO: Received currency from server:\n%s", string(msg))
 }
