@@ -230,7 +230,7 @@ paths:
       - Currencies
 securityDefinitions:
   ApiKeyAuth:
-    in: query
-    name: api_key
+    in: header
+    name: Authorization
     type: apiKey
 swagger: "2.0"

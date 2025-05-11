@@ -287,10 +287,10 @@ func (app *App) Auth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		app.Log.Printf("INFO: Incoming request %s", r.URL)
-		key := r.URL.Query().Get("api_key")
+		key := r.Header.Get("Authorization")
 		e := json.NewEncoder(w)
 		if key == "" {
-			app.Log.Printf("INFO: Missing api key in request %s", r.URL)
+			app.Log.Printf("INFO: Missing api key in request header %s", r.URL)
 			w.WriteHeader(http.StatusUnauthorized)
 			e.Encode(ErrorResponse{Message: "missing API key"})
 			return
@@ -312,7 +312,7 @@ func (app *App) Auth(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func (app *App) RecoverPanic(next http.Handler) http.Handler {
+func (app *App) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {

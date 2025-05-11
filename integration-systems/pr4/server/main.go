@@ -14,8 +14,8 @@ import (
 // @host localhost:8080
 // @BasePath /
 // @securityDefinitions.apikey ApiKeyAuth
-// @in query
-// @name api_key
+// @in header
+// @name Authorization
 func main() {
 	cfg, err := NewConfig()
 	if err != nil {
