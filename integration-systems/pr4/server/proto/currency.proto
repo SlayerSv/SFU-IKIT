@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option go_package = "github.com/SlayerSv/SFU-IKIT/integration/pr4/server/proto";
+
+package currency;
+
+service CurrencyService {
+rpc GetCurrency(GetCurrencyRequest) returns (GetCurrencyResponse) {}
+}
+
+message GetCurrencyRequest {
+string code = 1;
+}
+
+message GetCurrencyResponse {
+string code = 1;
+string name = 2;
+string name_plural = 3;
+string symbol = 4;
+string symbol_native = 5;
+string created_at = 6;
+string updated_at = 7;
+}

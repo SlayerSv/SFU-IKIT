@@ -1,14 +1,16 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-	"io"
+	"context"
 	"log"
-	"net/http"
+	"time"
 
-	"integration/pr4/broker"
-	"integration/pr4/broker/kafka"
+	"github.com/SlayerSv/SFU-IKIT/integration/pr4/broker"
+	"github.com/SlayerSv/SFU-IKIT/integration/pr4/broker/kafka"
+	pb "github.com/SlayerSv/SFU-IKIT/integration/pr4/server/proto"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 var NewCurrencies []broker.Message
@@ -18,12 +20,19 @@ func main() {
 	if err != nil {
 		log.Fatalf("ERROR: Read config: %v", err)
 	}
-	cfg.ServerAPIKey = GetApiKey(cfg.ServerAddr)
 	kr := kafka.NewReader(cfg.KafkaAddr, cfg.KafkaTopic)
-	ListenAndRead(cfg.ServerAddr, cfg.ServerAPIKey, kr)
+	log.Println("INFO: Starting client")
+	ListenAndRead(cfg.ServerAddr, kr)
 }
 
-func ListenAndRead(serverAddr, server_api_key string, br broker.Reader) {
+func ListenAndRead(serverAddr string, br broker.Reader) {
+	conn, err := grpc.NewClient(serverAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("failed to connect: %v", err)
+	}
+	defer conn.Close()
+	client := pb.NewCurrencyServiceClient(conn)
+	log.Println("INFO: listening for kafka messages")
 	for {
 		msg, err := br.Read()
 		if err != nil {
@@ -32,48 +41,18 @@ func ListenAndRead(serverAddr, server_api_key string, br broker.Reader) {
 		}
 		log.Printf("INFO: Received broker message %s topic %s", msg, br.GetTopic())
 		NewCurrencies = append(NewCurrencies, msg)
-		GetCurrency(serverAddr, server_api_key, msg.Value)
+		go GetCurrency(client, msg.Value)
 	}
 }
 
-func GetCurrency(serverAddr, serserver_api_key, code string) {
-	url := fmt.Sprintf("http://%s/currencies/%s?api_key=%s", serverAddr, code, serserver_api_key)
-	resp, err := http.Get(url)
+func GetCurrency(client pb.CurrencyServiceClient, code string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+	defer cancel()
+	req := &pb.GetCurrencyRequest{Code: code}
+	resp, err := client.GetCurrency(ctx, req)
 	if err != nil {
-		log.Printf("ERROR: Get currency from server: %v", err)
+		log.Printf("ERROR: Failed to get currency %s: %v", code, err)
 		return
 	}
-	msg, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Printf("ERROR: Read response body from server: %v", err)
-		return
-	}
-	if resp.StatusCode != 200 {
-		log.Printf("ERROR: Get currency from server code: %d body: %s", resp.StatusCode, string(msg))
-		return
-	}
-	log.Printf("INFO: Received currency from server:\n%s", string(msg))
-}
-
-func GetApiKey(serverAddr string) string {
-	url := fmt.Sprintf("http://%s/api_key", serverAddr)
-	resp, err := http.Get(url)
-	if err != nil {
-		log.Printf("ERROR: Get api key from server: %v", err)
-		return ""
-	}
-	decoder := json.NewDecoder(resp.Body)
-	var APIKey struct {
-		APIKey string `json:"api_key"`
-	}
-	err = decoder.Decode(&APIKey)
-	if err != nil {
-		log.Printf("ERROR: decode api key: %v", err)
-		return ""
-	}
-	if resp.StatusCode != 201 {
-		log.Printf("ERROR: Get api key from server code: %d", resp.StatusCode)
-		return ""
-	}
-	return APIKey.APIKey
+	log.Printf("INFO: Received currency from server through gRPC: %v", resp)
 }

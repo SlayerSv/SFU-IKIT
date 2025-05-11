@@ -2,7 +2,8 @@ package kafka
 
 import (
 	"context"
-	"integration/pr4/broker"
+
+	"github.com/SlayerSv/SFU-IKIT/integration/pr4/broker"
 
 	"github.com/segmentio/kafka-go"
 )

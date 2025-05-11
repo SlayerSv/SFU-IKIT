@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"time"
 
-	"integration/pr4/broker"
+	"github.com/SlayerSv/SFU-IKIT/integration/pr4/broker"
 )
 
 var errNotFound = errors.New("not found")
