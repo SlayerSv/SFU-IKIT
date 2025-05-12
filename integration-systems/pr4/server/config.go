@@ -10,6 +10,7 @@ type Config struct {
 	APIURL      string `json:"api_url"`
 	APIKey      string `json:"api_key"`
 	DBConn      string `json:"db_conn"`
+	ServerAddr  string `json:"server_addr"`
 	LogFilePath string `json:"log_file_path"`
 	KafkaAddr   string `json:"kafka_addr"`
 	KafkaTopic  string `json:"kafka_topic"`

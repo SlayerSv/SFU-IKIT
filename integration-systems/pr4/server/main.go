@@ -36,7 +36,7 @@ func main() {
 	app := NewApp(cfg, db, logger, kafka)
 
 	// starting gRPC server in separate goroutine
-	lis, err := net.Listen("tcp", "localhost:50051")
+	lis, err := net.Listen("tcp", cfg.ServerAddr)
 	if err != nil {
 		app.Log.Fatalf("ERROR: Listening to tcp: %v", err)
 	}
