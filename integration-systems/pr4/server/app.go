@@ -11,7 +11,15 @@ import (
 	"time"
 
 	"github.com/SlayerSv/SFU-IKIT/integration/pr4/broker"
+	"github.com/SlayerSv/SFU-IKIT/integration/pr4/models"
 )
+
+type Currency = models.Currency
+type ErrorResponse = models.ErrorResponse
+type UpdatedAtResponse = models.UpdatedAtResponse
+type Response = models.Response
+type CountResponse = models.CountResponse
+type APIKeyResponse = models.APIKeyResponse
 
 var errNotFound = errors.New("not found")
 var errAlreadyExists = errors.New("already exists")

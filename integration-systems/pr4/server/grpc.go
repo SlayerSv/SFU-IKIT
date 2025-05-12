@@ -2,10 +2,14 @@ package main
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	pb "github.com/SlayerSv/SFU-IKIT/integration/pr4/server/proto"
+
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type gRPC struct {
@@ -14,10 +18,13 @@ type gRPC struct {
 }
 
 func (g *gRPC) GetCurrency(ctx context.Context, in *pb.GetCurrencyRequest) (*pb.GetCurrencyResponse, error) {
-	code := in.GetCode()
-	currency, err := g.DB.GetCurrencyByCode(code)
+	currencyCode := in.GetCode()
+	currency, err := g.DB.GetCurrencyByCode(currencyCode)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, errNotFound) {
+			return nil, status.Errorf(codes.NotFound, "currency %s not found", currencyCode)
+		}
+		return nil, status.Error(codes.Internal, errInternal.Error())
 	}
 	return &pb.GetCurrencyResponse{
 		Code:         currency.Code,
