@@ -28,11 +28,11 @@ type CurrencyD struct {
 }
 
 func (c CurrencyD) String() string {
-	return fmt.Sprintf("%s\n%s\n%s\n%s\n%s\n", c.Code, c.Name, c.NamePlural, c.Symbol, c.SymbolNative)
+	return fmt.Sprintf("Code: %s\nName: %s\nNamePlural: %s\nSymbol: %s\nSymbol native:%s\n", c.Code, c.Name, c.NamePlural, c.Symbol, c.SymbolNative)
 }
 
 func (c Currency) String() string {
-	return fmt.Sprintf("%s%s\n%s\n", c.CurrencyD.String(), c.CreatedAt, c.UpdatedAt)
+	return fmt.Sprintf("%sCreated at: %s\nUpdated at: %s\n", c.CurrencyD.String(), c.CreatedAt, c.UpdatedAt)
 }
 
 // ErrorResponse represents an error message

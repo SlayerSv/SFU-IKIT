@@ -28,7 +28,6 @@ func NewPostgres() (*PostgresDB, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(conn)
 	p := &PostgresDB{db, time.Time{}}
 	return p, nil
 }

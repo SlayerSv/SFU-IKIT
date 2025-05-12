@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"log"
 	"time"
 
 	pb "github.com/SlayerSv/SFU-IKIT/integration/pr4/server/proto"
@@ -14,13 +15,16 @@ import (
 
 type gRPC struct {
 	pb.UnimplementedCurrencyServiceServer
-	DB *PostgresDB
+	DB  *PostgresDB
+	Log *log.Logger
 }
 
 func (g *gRPC) GetCurrency(ctx context.Context, in *pb.GetCurrencyRequest) (*pb.GetCurrencyResponse, error) {
+	g.Log.Printf("INFO: Received new gRPC request: %s", in.String())
 	currencyCode := in.GetCode()
 	currency, err := g.DB.GetCurrencyByCode(currencyCode)
 	if err != nil {
+		g.Log.Printf("ERROR: fetching currency %s from database: %s", in.GetCode(), err.Error())
 		if errors.Is(err, errNotFound) {
 			return nil, status.Errorf(codes.NotFound, "currency %s not found", currencyCode)
 		}
@@ -37,8 +41,8 @@ func (g *gRPC) GetCurrency(ctx context.Context, in *pb.GetCurrencyRequest) (*pb.
 	}, nil
 }
 
-func NewGRPCServer(db *PostgresDB) (*grpc.Server, error) {
+func NewGRPCServer(db *PostgresDB, logger *log.Logger) (*grpc.Server, error) {
 	g := grpc.NewServer()
-	pb.RegisterCurrencyServiceServer(g, &gRPC{DB: db})
+	pb.RegisterCurrencyServiceServer(g, &gRPC{DB: db, Log: logger})
 	return g, nil
 }

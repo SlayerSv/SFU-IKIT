@@ -9,10 +9,13 @@ services:
             - POSTGRES_PORT=5432
             - POSTGRES_USER=postgres
             - POSTGRES_PASSWORD=postgres
+            - POSTGRES_DB=currencies
             - PORT=:8080
             - GRPC_PORT=:50051
             - KAFKA_ADDR=kafka:9092
             - KAFKA_TOPIC=new_currencies
+            - API_URL=https://api.freecurrencyapi.com/v1/currencies
+            - API_KEY=fca_live_gmNQ1PBiuSgM1I4JHNRFnzxVkdaBFYEgeX8vBqFY
         depends_on:
             - kafka
             - postgres

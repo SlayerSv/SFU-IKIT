@@ -35,7 +35,7 @@ func main() {
 	if err != nil {
 		app.Log.Fatalf("ERROR: Listening to tcp: %v", err)
 	}
-	g, err := NewGRPCServer(db)
+	g, err := NewGRPCServer(db, logger)
 	if err != nil {
 		app.Log.Fatalf("ERROR: Creating gRPC server: %v", err)
 	}

@@ -14,7 +14,7 @@ RUN --mount=type=cache,target=/go/pkg/mod/ \
     CGO_ENABLED=0 GOOS=linux go build -o /tmp/server ./server
 
 # Final stage
-FROM scratch
+FROM alpine
 WORKDIR /
 COPY --from=builder /tmp/server .
 EXPOSE 8080
