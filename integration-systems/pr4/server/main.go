@@ -1,9 +1,11 @@
 package main
 
 import (
+	"errors"
 	"log"
 	"net"
 	"net/http"
+	"os"
 
 	"github.com/SlayerSv/SFU-IKIT/integration/pr4/broker/kafka"
 )
@@ -19,24 +21,17 @@ import (
 // @name Authorization
 func main() {
 	// setup
-	cfg, err := NewConfig()
-	if err != nil {
-		log.Fatalf("ERROR: Create config: %v", err)
-	}
-	logger, err := NewFileLogger(cfg.LogFilePath)
-	if err != nil {
-		log.Fatalf("ERROR: Create logger: %v", err)
-	}
-	db, err := NewPostgres(cfg.DBConn)
+	logger := log.New(os.Stdout, "", log.Flags())
+	db, err := NewPostgres()
 	if err != nil {
 		log.Fatalf("ERROR: Create database: %v", err)
 	}
-	kafka := kafka.NewWriter(cfg.KafkaAddr, cfg.KafkaTopic)
+	kafka := kafka.NewWriter(os.Getenv("KAFKA_ADDR"), os.Getenv("KAFKA_TOPIC"))
 
-	app := NewApp(cfg, db, logger, kafka)
+	app := NewApp(db, logger, kafka)
 
 	// starting gRPC server in separate goroutine
-	lis, err := net.Listen("tcp", cfg.ServerAddr)
+	lis, err := net.Listen("tcp", os.Getenv("GRPC_PORT"))
 	if err != nil {
 		app.Log.Fatalf("ERROR: Listening to tcp: %v", err)
 	}
@@ -48,18 +43,20 @@ func main() {
 
 	// getting currencies from outside api
 	app.Log.Println("INFO: Started Currency App")
-	currencies, err := app.GetCurrenciesFromAPI()
-	if err != nil {
-		logger.Fatalf("ERROR: Download JSON: %v", err)
+	if _, err := app.DB.GetCurrencyByCode("USD"); err != nil && errors.Is(err, errNotFound) {
+		currencies, err := app.GetCurrenciesFromAPI()
+		if err != nil {
+			logger.Fatalf("ERROR: Download JSON: %v", err)
+		}
+		err = app.DB.InsertCurrencies(currencies)
+		if err != nil {
+			logger.Fatalf("ERROR: Insert currencies to database: %v", err)
+		}
+		app.Log.Println("INFO: Inserted currencies to database")
 	}
-	err = app.DB.InsertCurrencies(currencies)
-	if err != nil {
-		logger.Fatalf("ERROR: Insert currencies to database: %v", err)
-	}
-	app.Log.Println("INFO: Inserted currencies to database")
 
 	// starting REST server
-	err = http.ListenAndServe("localhost:8080", app.NewRouter())
+	err = http.ListenAndServe(os.Getenv("PORT"), app.NewRouter())
 	if err != nil {
 		logger.Fatalf("ERROR: Starting server: %v", err)
 	}

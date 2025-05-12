@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"os"
 	"runtime"
 	"time"
 
@@ -18,16 +19,12 @@ import (
 var MessageHistory []broker.Message
 
 func main() {
-	cfg, err := NewConfig()
-	if err != nil {
-		log.Fatalf("ERROR: Read config: %v", err)
-	}
-	kr := kafka.NewReader(cfg.KafkaAddr, cfg.KafkaTopic)
+	kr := kafka.NewReader(os.Getenv("KAFKA_ADDR"), os.Getenv("KAFKA_TOPIC"))
 	workers := runtime.NumCPU()
 	messages := make(chan broker.Message)
 	currencies := make(chan models.Currency)
 
-	conn, err := grpc.NewClient(cfg.ServerAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(os.Getenv("SERVER_GRPC_ADDR"), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("failed to connect: %v", err)
 	}
@@ -44,10 +41,10 @@ func main() {
 	}()
 
 	log.Println("INFO: Starting client")
-	ListenAndRead(cfg.ServerAddr, kr, messages)
+	ListenAndRead(kr, messages)
 }
 
-func ListenAndRead(serverAddr string, br broker.Reader, messages chan<- broker.Message) {
+func ListenAndRead(br broker.Reader, messages chan<- broker.Message) {
 	log.Println("INFO: listening for kafka messages")
 	for {
 		msg, err := br.Read()

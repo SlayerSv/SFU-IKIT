@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -15,42 +16,21 @@ type PostgresDB struct {
 	lastUpdate time.Time
 }
 
-func NewPostgres(conn string) (*PostgresDB, error) {
+func NewPostgres() (*PostgresDB, error) {
+	host := os.Getenv("POSTGRES_HOST")
+	port := os.Getenv("POSTGRES_PORT")
+	user := os.Getenv("POSTGRES_USER")
+	pass := os.Getenv("POSTGRES_PASSWORD")
+	dbname := os.Getenv("POSTGRES_DB")
+	conn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		host, port, user, pass, dbname)
 	db, err := sql.Open("postgres", conn)
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(conn)
 	p := &PostgresDB{db, time.Time{}}
-	err = p.SetupDatabase()
-	if err != nil {
-		return nil, err
-	}
 	return p, nil
-}
-
-func (db *PostgresDB) SetupDatabase() error {
-	createTableSQL := `
-		DROP TABLE IF EXISTS currencies;
-		CREATE TABLE currencies (
-			code varchar(3) PRIMARY KEY,
-			name text NOT NULL UNIQUE,
-			name_plural text NOT NULL UNIQUE,
-			symbol text NOT NULL UNIQUE,
-			symbol_native text NOT NULL,
-			created_at TIMESTAMP default CURRENT_TIMESTAMP,
-			updated_at TIMESTAMP default CURRENT_TIMESTAMP
-		);
-		create index on currencies(updated_at);
-		DROP TABLE IF EXISTS api_keys;
-		CREATE TABLE api_keys (
-			key text PRIMARY KEY
-		);
-	`
-	_, err := db.Exec(createTableSQL)
-	if err != nil {
-		return fmt.Errorf("create currencies table: %w", err)
-	}
-	return nil
 }
 
 func (db *PostgresDB) InsertCurrencies(currencies map[string]Currency) error {

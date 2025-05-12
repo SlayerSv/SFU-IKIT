@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/SlayerSv/SFU-IKIT/integration/pr4/broker"
@@ -26,14 +27,12 @@ var errAlreadyExists = errors.New("already exists")
 var errInternal = errors.New("internal server error")
 
 type App struct {
-	Config *Config
 	DB     DB
 	Log    *log.Logger
 	Broker broker.Writer
 }
 
 type DB interface {
-	SetupDatabase() error
 	InsertCurrencies(currencies map[string]Currency) error
 	GetCurrencies() ([]Currency, error)
 	GetCurrencyByCode(code string) (Currency, error)
@@ -44,9 +43,8 @@ type DB interface {
 	UpdatedAt() (time.Time, error)
 }
 
-func NewApp(cfg *Config, db DB, log *log.Logger, broker broker.Writer) *App {
+func NewApp(db DB, log *log.Logger, broker broker.Writer) *App {
 	return &App{
-		Config: cfg,
 		DB:     db,
 		Log:    log,
 		Broker: broker,
@@ -55,7 +53,7 @@ func NewApp(cfg *Config, db DB, log *log.Logger, broker broker.Writer) *App {
 
 // GetCurrenciesFromAPI fetches currencies from an external API
 func (app *App) GetCurrenciesFromAPI() (map[string]Currency, error) {
-	url := fmt.Sprintf("%s?apikey=%s", app.Config.APIURL, app.Config.APIKey)
+	url := fmt.Sprintf("%s?apikey=%s", os.Getenv("API_URL"), os.Getenv("API_KEY"))
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -65,7 +63,7 @@ func (app *App) GetCurrenciesFromAPI() (map[string]Currency, error) {
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
-	app.Log.Printf("INFO: Downloaded json currencies from %s", app.Config.APIURL)
+	app.Log.Printf("INFO: Downloaded json currencies from %s", url)
 	var response Response
 	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
@@ -268,7 +266,6 @@ func (app *App) GetAPIKey(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	apikey := base64.URLEncoding.EncodeToString(b)
-	w.WriteHeader(http.StatusCreated)
 	err = e.Encode(APIKeyResponse{APIKey: apikey})
 	if err != nil {
 		app.Log.Printf("ERROR: Encode API key: %v", err)
@@ -283,6 +280,7 @@ func (app *App) GetAPIKey(w http.ResponseWriter, r *http.Request) {
 		e.Encode(ErrorResponse{Message: errInternal.Error()})
 		return
 	}
+	w.WriteHeader(http.StatusCreated)
 	app.Log.Printf("INFO: Created and served new API key %s", apikey)
 }
 
