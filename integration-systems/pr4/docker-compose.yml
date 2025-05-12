@@ -13,7 +13,7 @@ services:
             - PORT=:8080
             - GRPC_PORT=:50051
             - KAFKA_ADDR=kafka:9092
-            - KAFKA_TOPIC=new_currencies
+            - KAFKA_TOPIC=currencies
             - API_URL=https://api.freecurrencyapi.com/v1/currencies
             - API_KEY=fca_live_gmNQ1PBiuSgM1I4JHNRFnzxVkdaBFYEgeX8vBqFY
         depends_on:
@@ -28,7 +28,7 @@ services:
         environment:
             - SERVER_GRPC_ADDR=server:50051
             - KAFKA_ADDR=kafka:9092
-            - KAFKA_TOPIC=new_currencies
+            - KAFKA_TOPIC=currencies
         depends_on:
             - server
             - kafka
