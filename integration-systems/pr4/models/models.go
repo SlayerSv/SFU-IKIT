@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -24,6 +25,14 @@ type CurrencyD struct {
 	NamePlural   string `json:"name_plural"`
 	Symbol       string `json:"symbol"`
 	SymbolNative string `json:"symbol_native"`
+}
+
+func (c CurrencyD) String() string {
+	return fmt.Sprintf("%s\n%s\n%s\n%s\n%s\n", c.Code, c.Name, c.NamePlural, c.Symbol, c.SymbolNative)
+}
+
+func (c Currency) String() string {
+	return fmt.Sprintf("%s%s\n%s\n", c.CurrencyD.String(), c.CreatedAt, c.UpdatedAt)
 }
 
 // ErrorResponse represents an error message
