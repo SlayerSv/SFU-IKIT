@@ -1,4 +1,4 @@
-package main
+package db
 
 import (
 	"database/sql"
@@ -6,21 +6,23 @@ import (
 	"os"
 	"time"
 
+	"pr6/models"
+
 	_ "github.com/lib/pq"
 )
 
 var db *sql.DB
 
-func getUsers(offset, limit int) ([]User, error) {
+func GetUsers(offset, limit int) ([]models.User, error) {
 	rows, err := db.Query("SELECT * FROM users ORDER BY id OFFSET $1 LIMIT $2",
 		offset, limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	users := []User{}
+	users := []models.User{}
 	for rows.Next() {
-		user := User{}
+		user := models.User{}
 		err := rows.Scan(&user.ID, &user.Name, &user.Created_at)
 		if err != nil {
 			return nil, err
@@ -33,17 +35,17 @@ func getUsers(offset, limit int) ([]User, error) {
 	return users, nil
 }
 
-func getUserByID(id int) (User, error) {
+func GetUserByID(id int) (models.User, error) {
 	row := db.QueryRow("select * from users where id = $1", id)
-	user := User{}
+	user := models.User{}
 	err := row.Scan(&user.ID, &user.Name, &user.Created_at)
 	return user, err
 }
 
-func addUser(user User) (User, error) {
+func AddUser(user models.User) (models.User, error) {
 	row := db.QueryRow("Insert into users(name, created_at) values ($1, $2)  returning *",
 		user.Name, time.Now().Format("2006-01-02 15:04:05"))
-	newUser := User{}
+	newUser := models.User{}
 	err := row.Scan(&newUser.ID, &newUser.Name, &newUser.Created_at)
 	if err != nil {
 		return newUser, err
@@ -51,10 +53,10 @@ func addUser(user User) (User, error) {
 	return newUser, nil
 }
 
-func editUser(user User) (User, error) {
+func EditUser(user models.User) (models.User, error) {
 	row := db.QueryRow("Update users set name = $1 where id = $2 returning *",
 		user.Name, user.ID)
-	editedUser := User{}
+	editedUser := models.User{}
 	err := row.Scan(&editedUser.ID, &editedUser.Name, &editedUser.Created_at)
 	if err != nil {
 		return editedUser, err
@@ -62,9 +64,9 @@ func editUser(user User) (User, error) {
 	return editedUser, nil
 }
 
-func deleteUser(id int) (User, error) {
+func DeleteUser(id int) (models.User, error) {
 	row := db.QueryRow("Delete from users where id = $1 returning *", id)
-	deletedUser := User{}
+	deletedUser := models.User{}
 	err := row.Scan(&deletedUser.ID, &deletedUser.Name, &deletedUser.Created_at)
 	if err != nil {
 		return deletedUser, err

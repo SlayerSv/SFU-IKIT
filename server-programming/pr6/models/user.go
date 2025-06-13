@@ -1,4 +1,4 @@
-package main
+package models
 
 import (
 	"fmt"
@@ -6,8 +6,9 @@ import (
 )
 
 type User struct {
-	ID         int       `json:"id"`
-	Name       string    `json:"name"`
+	ID         int    `json:"id"`
+	Name       string `json:"name"`
+	Password   string
 	Created_at time.Time `json:"created_at"`
 }
 

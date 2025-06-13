@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"cmp"
@@ -8,13 +8,16 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+
+	"pr6/db"
+	"pr6/models"
 )
 
 var errNotfound = errors.New("not found")
 var errInternal = errors.New("internal server error")
 var errBadRequest = errors.New("bad request")
 
-func get(w http.ResponseWriter, r *http.Request) {
+func Get(w http.ResponseWriter, r *http.Request) {
 	offsetStr := cmp.Or(r.URL.Query().Get("offset"), "0")
 	offset, err := strconv.Atoi(offsetStr)
 	if err != nil {
@@ -29,7 +32,7 @@ func get(w http.ResponseWriter, r *http.Request) {
 			errBadRequest, err))
 		return
 	}
-	users, err := getUsers(offset, limit)
+	users, err := db.GetUsers(offset, limit)
 	if err != nil {
 		errorJSON(w, r, errors.Join(errInternal, err))
 		return
@@ -41,14 +44,14 @@ func get(w http.ResponseWriter, r *http.Request) {
 	encode(w, r, users)
 }
 
-func getByID(w http.ResponseWriter, r *http.Request) {
+func GetByID(w http.ResponseWriter, r *http.Request) {
 	stringId := r.PathValue("id")
 	id, err := strconv.Atoi(stringId)
 	if err != nil || id < 1 {
 		errorJSON(w, r, fmt.Errorf("%w\nincorrect id value\n%w", errBadRequest, err))
 		return
 	}
-	users, err := getUserByID(id)
+	users, err := db.GetUserByID(id)
 	if err != nil {
 		errorJSON(w, r, errors.Join(errInternal, err))
 		return
@@ -56,15 +59,15 @@ func getByID(w http.ResponseWriter, r *http.Request) {
 	encode(w, r, users)
 }
 
-func add(w http.ResponseWriter, r *http.Request) {
+func Add(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
-	user := User{}
+	user := models.User{}
 	err := decoder.Decode(&user)
 	if err != nil {
 		errorJSON(w, r, errors.Join(errBadRequest, err))
 		return
 	}
-	addedUser, err := addUser(user)
+	addedUser, err := db.AddUser(user)
 	if err != nil {
 		errorJSON(w, r, errors.Join(errInternal, err))
 		return
@@ -74,15 +77,15 @@ func add(w http.ResponseWriter, r *http.Request) {
 	encode(w, r, addedUser)
 }
 
-func edit(w http.ResponseWriter, r *http.Request) {
+func Edit(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
-	user := User{}
+	user := models.User{}
 	err := decoder.Decode(&user)
 	if err != nil {
 		errorJSON(w, r, errors.Join(errBadRequest, err))
 		return
 	}
-	editedUser, err := editUser(user)
+	editedUser, err := db.EditUser(user)
 	if err != nil {
 		errorJSON(w, r, errors.Join(errInternal, err))
 		return
@@ -90,14 +93,14 @@ func edit(w http.ResponseWriter, r *http.Request) {
 	encode(w, r, editedUser)
 }
 
-func delete(w http.ResponseWriter, r *http.Request) {
+func Delete(w http.ResponseWriter, r *http.Request) {
 	stringId := r.PathValue("id")
 	id, err := strconv.Atoi(stringId)
 	if err != nil || id < 1 {
 		errorJSON(w, r, fmt.Errorf("%w\nincorrect id value\n%w", errBadRequest, err))
 		return
 	}
-	deletededUser, err := deleteUser(id)
+	deletededUser, err := db.DeleteUser(id)
 	if err != nil {
 		errorJSON(w, r, errors.Join(errInternal, err))
 		return
