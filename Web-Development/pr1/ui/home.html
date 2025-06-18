@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang='en'>
+    <head>
+        <meta charset='utf-8'>
+        <title>Metrics</title>
+        <style>
+            * {
+                font-size: 30px;
+            }
+            .metrics {
+                display: flex;
+                flex-direction: column;
+                margin-top: 100px;
+                align-items: center;
+                height: 100vh;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <div class="metrics">
+                <h1>Metrics</h1>
+                <div class="metrics-list">
+                    <div class="metrics-row">
+                        <span>Ram: <span id="ram">0</span> mb</span>
+                    </div>
+                    <div class="metrics-row">
+                        <span>Goroutines: </span><span id="goroutines">1</span>
+                    </div>
+                    <div class="metrics-row">
+                        <span>Requests per sec: </span><span id="requests">0</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const socket = new WebSocket('ws://' + window.location.host + '/ws')
+                socket.onopen = function(e) {
+                    console.log('WebSocket connection established')
+                }
+                socket.onmessage = function(e) {
+                    const metrics = JSON.parse(e.data)
+                    const ram = document.getElementById("ram")
+                    ram.innerHTML = metrics.ram / 1000000
+                    const g = document.getElementById("goroutines")
+                    g.innerHTML = metrics.goroutines
+                    const r = document.getElementById("requests")
+                    r.innerHTML = metrics.requests
+                }
+            })
+        </script>
+    </body>
+</html>
