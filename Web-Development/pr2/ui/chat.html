@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang='en'>
+    <head>
+        <meta charset='utf-8'>
+        <title>Chat</title>
+        <style>
+            * {
+                font-size: 20px;
+                margin: 0;
+                padding: 0;
+            }
+            .container {
+                margin : auto;
+                max-width: 1200px;
+                width: 100vw;
+                height: 100vh;
+            }
+            .chat {
+                display: flex;
+                height: 80%;
+                width: 100%;
+            }
+            .chat-room {
+                flex: 3;
+                height: 100%;
+                width: 100%;
+                background-color: aqua;
+            }
+            .users-list {
+                flex: 1;
+                height: 100%;
+                width: 100%;
+                background-color: aquamarine;
+            }
+            .message-form {
+                height: 15vh;
+                width: 100%;
+                background-color: beige;
+            }
+            h1 {
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <div class="container">
+                <div class="chat">
+                    <div class="chat-room">
+                        <h1>Chat</h1>
+                        
+                    </div>
+                    <div class="users-list">
+                        <h1>Users</h1>
+                    </div>
+                </div>
+                <div class="message-form">
+
+                </div>
+            </div>
+        </main>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const socket = new WebSocket('ws://' + window.location.host + '/ws')
+                socket.onopen = function(e) {
+                    console.log('WebSocket connection established')
+                }
+                socket.onmessage = function(e) {
+                    
+                }
+            })
+        </script>
+    </body>
+</html>
