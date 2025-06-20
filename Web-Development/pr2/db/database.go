@@ -24,7 +24,7 @@ func GetUsers(offset, limit int) ([]models.User, error) {
 	users := []models.User{}
 	for rows.Next() {
 		user := models.User{}
-		err := rows.Scan(&user.ID, &user.Name, &user.Created_at)
+		err := rows.Scan(&user.ID, &user.Name, &user.Password, &user.Created_at)
 		if err != nil {
 			return nil, err
 		}
@@ -104,12 +104,16 @@ func DeleteUser(id int) (models.User, error) {
 	return deletedUser, nil
 }
 
-func resetSequence(tableName string) {
-	_, err := db.Exec("SELECT setval(pg_get_serial_sequence($1, 'id'), coalesce(max(id),0) + 1, false) FROM users;",
-		tableName)
-	if err != nil {
-		fmt.Printf("error resetting sequence %s: %v\n", tableName, err)
-	}
+func initDB() error {
+	_, err := db.Exec(`
+drop table if exists users cascade;
+create table users (
+    id serial primary key,
+    name text not null unique,
+    password text not null,
+    created_at timestamp with time zone default current_timestamp
+);`)
+	return err
 }
 
 func init() {
@@ -122,5 +126,14 @@ func init() {
 	if err != nil {
 		fmt.Printf("Error opening connecton to database: %s", err.Error())
 		os.Exit(1)
+	}
+	_, err = GetUsers(0, 1)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		fmt.Println(err)
+		err = initDB()
+		if err != nil {
+			fmt.Printf("Error initializing database: %v", err)
+			os.Exit(1)
+		}
 	}
 }

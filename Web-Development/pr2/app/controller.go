@@ -8,8 +8,10 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 
 	"pr2/db"
 	"pr2/models"
@@ -20,12 +22,22 @@ var errInternal = errors.New("internal server error")
 var errBadRequest = errors.New("bad request")
 
 func Chat(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("chat-user-name")
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+	name, err := url.QueryUnescape(cookie.Value)
+	if err != nil {
+		errorJSON(w, r, err)
+		return
+	}
 	ts, err := template.ParseFiles("./ui/chat.html")
 	if err != nil {
 		errorJSON(w, r, err)
 		return
 	}
-	err = ts.Execute(w, nil)
+	err = ts.Execute(w, map[string]string{"name": name})
 	if err != nil {
 		errorJSON(w, r, err)
 		return
@@ -90,6 +102,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+	encodedName := url.QueryEscape(name)
+	http.SetCookie(w, &http.Cookie{
+		Name:     "chat-user-name",
+		Value:    encodedName,
+		HttpOnly: true,
+	})
 	http.Redirect(w, r, "/chat", http.StatusSeeOther)
 }
 
@@ -115,12 +133,17 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 	}
 	name := r.PostForm.Get("name")
 	password := r.PostForm.Get("password")
+	name = strings.TrimSpace(name)
+	password = strings.TrimSpace(password)
 	fieldErrors["name"] = name
-	if strings.TrimSpace(name) == "" {
+	if name == "" {
 		fieldErrors["nameErr"] = "name cannot be empty"
 	}
-	if strings.TrimSpace(password) == "" {
+	if password == "" {
 		fieldErrors["passwordErr"] = "password cannot be empty"
+	}
+	if utf8.RuneCount([]byte(name)) > 20 {
+		fieldErrors["nameErr"] = "name length cannot be greater than 20"
 	}
 	_, err = db.GetUserByName(name)
 	if err == nil {
@@ -144,11 +167,24 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		errorJSON(w, r, err)
 		return
 	}
+	encodedName := url.QueryEscape(name)
+	http.SetCookie(w, &http.Cookie{
+		Name:     "chat-user-name",
+		Value:    encodedName,
+		HttpOnly: true,
+		MaxAge:   3600,
+	})
 	http.Redirect(w, r, "/chat", http.StatusSeeOther)
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
-
+	http.SetCookie(w, &http.Cookie{
+		Name:     "chat-user-name",
+		Value:    "",
+		HttpOnly: true,
+		MaxAge:   -1,
+	})
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
 func Get(w http.ResponseWriter, r *http.Request) {

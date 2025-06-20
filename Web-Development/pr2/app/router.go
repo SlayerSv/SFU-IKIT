@@ -10,7 +10,7 @@ func NewRouter() *http.ServeMux {
 	mux.HandleFunc("POST /login", Login)
 	mux.HandleFunc("GET /signup", SignupForm)
 	mux.HandleFunc("POST /signup", Signup)
-	mux.HandleFunc("POST /logout", Logout)
+	mux.HandleFunc("GET /logout", Logout)
 	mux.HandleFunc("GET /chat", Chat)
 	mux.HandleFunc("GET /users/{user_id}", GetByID)
 	mux.HandleFunc("POST /users", Add)

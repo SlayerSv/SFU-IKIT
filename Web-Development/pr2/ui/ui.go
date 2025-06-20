@@ -4,5 +4,5 @@ import (
 	"embed"
 )
 
-//go:embed "home.html"
+//go:embed "chat.html"
 var Files embed.FS
