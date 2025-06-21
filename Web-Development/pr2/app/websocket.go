@@ -30,6 +30,17 @@ func WSConnections(w http.ResponseWriter, r *http.Request) {
 		errorJSON(w, r, errors.New("unauthorized"))
 		return
 	}
+	name, err := url.QueryUnescape(cookie.Value)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	_, ok := clients[name]
+	if ok {
+		log.Printf("user %s already logged in", name)
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
@@ -37,11 +48,6 @@ func WSConnections(w http.ResponseWriter, r *http.Request) {
 	}
 	defer ws.Close()
 
-	name, err := url.QueryUnescape(cookie.Value)
-	if err != nil {
-		log.Println(err)
-		return
-	}
 	addClient(name, ws)
 	for {
 		_, m, err := ws.ReadMessage()

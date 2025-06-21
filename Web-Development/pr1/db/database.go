@@ -73,16 +73,20 @@ func DeleteUser(id int) (models.User, error) {
 	return deletedUser, nil
 }
 
-func resetSequence(tableName string) {
-	_, err := db.Exec("SELECT setval(pg_get_serial_sequence($1, 'id'), coalesce(max(id),0) + 1, false) FROM users;",
-		tableName)
-	if err != nil {
-		fmt.Printf("error resetting sequence %s: %v\n", tableName, err)
-	}
+func initDB() error {
+	_, err := db.Exec(`
+drop table if exists users cascade;
+create table users (
+    id serial primary key,
+    name text not null unique,
+    password text not null,
+    created_at timestamp with time zone default current_timestamp
+);`)
+	return err
 }
 
 func init() {
-	conn, err := os.ReadFile("DBConnectionString.txt")
+	conn, err := os.ReadFile("postgres.txt")
 	if err != nil {
 		fmt.Printf("Error opening connecton string file: %s", err.Error())
 		os.Exit(1)
@@ -90,6 +94,11 @@ func init() {
 	db, err = sql.Open("postgres", string(conn))
 	if err != nil {
 		fmt.Printf("Error opening connecton to database: %s", err.Error())
+		os.Exit(1)
+	}
+	err = initDB()
+	if err != nil {
+		fmt.Printf("Error initializing database: %s", err.Error())
 		os.Exit(1)
 	}
 }

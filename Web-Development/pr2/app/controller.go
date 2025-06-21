@@ -104,9 +104,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 	encodedName := url.QueryEscape(name)
 	http.SetCookie(w, &http.Cookie{
-		Name:     "chat-user-name",
-		Value:    encodedName,
-		HttpOnly: true,
+		Name:  "chat-user-name",
+		Value: encodedName,
+		Path:  "/",
 	})
 	http.Redirect(w, r, "/chat", http.StatusSeeOther)
 }
@@ -169,20 +169,19 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 	}
 	encodedName := url.QueryEscape(name)
 	http.SetCookie(w, &http.Cookie{
-		Name:     "chat-user-name",
-		Value:    encodedName,
-		HttpOnly: true,
-		MaxAge:   3600,
+		Name:  "chat-user-name",
+		Value: encodedName,
+		Path:  "/",
 	})
 	http.Redirect(w, r, "/chat", http.StatusSeeOther)
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
-		Name:     "chat-user-name",
-		Value:    "",
-		HttpOnly: true,
-		MaxAge:   -1,
+		Name:   "chat-user-name",
+		Value:  "",
+		Path:   "/",
+		MaxAge: -1,
 	})
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
