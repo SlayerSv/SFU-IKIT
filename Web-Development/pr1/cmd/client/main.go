@@ -22,9 +22,8 @@ func main() {
 	time.Sleep(time.Second * time.Duration(*times))
 }
 
-var client = http.Client{}
-
 func worker() {
+	var client = http.Client{}
 	for {
 		user := models.User{Name: "user", Password: "password"}
 		body, err := json.Marshal(user)
