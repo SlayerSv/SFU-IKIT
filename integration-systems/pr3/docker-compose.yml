@@ -15,7 +15,7 @@ services:
             - KAFKA_ADDR=kafka:9092
             - KAFKA_TOPIC=currencies
             - API_URL=https://api.freecurrencyapi.com/v1/currencies
-            - API_KEY=fca_live_gmNQ1PBiuSgM1I4JHNRFnzxVkdaBFYEgeX8vBqFY
+            - API_KEY=
         depends_on:
             - kafka
             - postgres
