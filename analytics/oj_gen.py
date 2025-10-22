@@ -29,7 +29,7 @@ languages = (
     [0.6, 0.15, 0.1, 0.07, 0.03, 0.05]
 )
 users = [(x, fake.name(), random.choices(countries[0], countries[2], k=1)[0]) for x in range(1, NUM_OF_USERS+1)]
-problems: list[tuple[int,str, int]] = []
+problems: list[tuple[int, str, int]] = []
 problems_categories: list[tuple[int, int]] = []
 for i in range(1, NUM_OF_PROBLEMS+1):
     category_count = random.randint(1, 4)
