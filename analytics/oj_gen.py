@@ -1,17 +1,19 @@
 import pandas as pd
 from faker import Faker
+from unidecode import unidecode
 import random
 import datetime
 
 fake = Faker('ru_RU')
-NUM_OF_USERS = 10
-NUM_OF_PROBLEMS = 10
-NUM_OF_SUBMISSIONS = 10
+NUM_OF_USERS = 100
+NUM_OF_PROBLEMS = 1000
+NUM_OF_SUBMISSIONS = 10000
 
 countries = (
     [1, 2, 3, 4, 5, 6],
     ['Russia', 'China', 'USA', 'India', 'Japan', 'South Korea'],
-    [0.15, 0.3, 0.25, 0.2, 0.04, 0.06]
+    [0.15, 0.3, 0.25, 0.2, 0.04, 0.06],
+    ['ru_RU', 'zh_CN', 'en_US', 'en_IN', 'ja_JP', 'ko_KR']
 )
 statuses = (
     [1, 2, 3, 4, 5, 6],
@@ -28,7 +30,13 @@ languages = (
     ['C++', 'Python', 'Java', 'Go', 'Rust', 'Node.js'],
     [0.6, 0.15, 0.1, 0.07, 0.03, 0.05]
 )
-users = [(x, fake.name(), random.choices(countries[0], countries[2], k=1)[0]) for x in range(1, NUM_OF_USERS+1)]
+users = []
+for x in range(1, NUM_OF_USERS+1):
+    country_id = random.choices(countries[0], countries[2], k=1)[0]
+    f = Faker(countries[3][country_id-1])
+    name = unidecode(f.name())
+    users.append((x, name, country_id))
+
 problems: list[tuple[int, str, int]] = []
 problems_categories: list[tuple[int, int]] = []
 for i in range(1, NUM_OF_PROBLEMS+1):
