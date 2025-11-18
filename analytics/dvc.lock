@@ -14,15 +14,15 @@ stages:
     params:
       params.yaml:
         train:
-          model: nb
+          model: xgb
           n_estimators: 100
           max_features: 5000
     outs:
     - path: model.pkl
       hash: md5
-      md5: 7c4df591c59dfd2e4be793c3dfbef3e0
-      size: 640761
+      md5: 78e0841eb6f7cf22ec40c8648838d544
+      size: 889589
     - path: results.json
       hash: md5
-      md5: c1f4d54e1465c93e36d9e8a6364b4261
-      size: 22
+      md5: 880ca586af837569e08170da21fa3b05
+      size: 32
