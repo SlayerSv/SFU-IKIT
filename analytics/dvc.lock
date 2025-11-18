@@ -9,20 +9,22 @@ stages:
       size: 290192
     - path: train.py
       hash: md5
-      md5: 881774825763c3cce9fb091a0a720e3b
-      size: 2755
+      md5: e036dbfc82e7d4f88d12170847058477
+      size: 4537
     params:
       params.yaml:
         train:
-          model: xgb
+          model: nb
           n_estimators: 100
           max_features: 5000
+          lemmatize: true
+          augment: true
     outs:
     - path: model.pkl
       hash: md5
-      md5: 1a6aff610f43e6ba35f53fd8c4e5e04a
-      size: 810600
+      md5: c0dbfc768905d3598538d54c71378421
+      size: 493177
     - path: results.json
       hash: md5
-      md5: d6870c2bdd383558512baeca69e95076
-      size: 32
+      md5: 3363f41fe29e3fad11027ebfb54d0666
+      size: 22

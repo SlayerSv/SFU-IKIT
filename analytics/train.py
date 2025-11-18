@@ -18,15 +18,17 @@ morph = pymorphy3.MorphAnalyzer()
 
 # --- ФУНКЦИИ ---
 
-def random_swap(text, n=2):
-    """Аугментация: случайная перестановка слов"""
+def random_deletion(text, p=0.15):
+    """Аугментация: удаляет 15% слов"""
     if not isinstance(text, str): return str(text)
     words = text.split()
-    if len(words) < 2: return text
-    for _ in range(n):
-        idx1, idx2 = random.sample(range(len(words)), 2)
-        words[idx1], words[idx2] = words[idx2], words[idx1]
-    return ' '.join(words)
+    if len(words) < 3: return text # Короткие не трогаем
+    
+    new_words = [w for w in words if random.random() > p]
+    
+    # Если удалили все, вернем оригинал
+    if not new_words: return text 
+    return ' '.join(new_words)
 
 def lemmatize_text(text):
     """Лемматизация: приведение к начальной форме"""
@@ -79,11 +81,11 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 # 6. АУГМЕНТАЦИЯ (Только на Train)
 if use_augmentation:
-    print("Аугментация ВКЛЮЧЕНА (Random Swap на Train)")
+    print("Аугментация ВКЛЮЧЕНА (Random Deletion)")
     print(f"Размер Train до: {len(X_train)}")
     
     # Аугментируем
-    X_train_aug = X_train.apply(lambda x: random_swap(x))
+    X_train_aug = X_train.apply(lambda x: random_deletion(x))
     y_train_aug = y_train.copy()
     
     # Объединяем

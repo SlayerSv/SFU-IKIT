@@ -2,5 +2,6 @@ train:
   model: xgb # 'xgb', 'rf', 'nb'
   n_estimators: 100
   max_features: 5000
-  lemmatize: false
-  augment: false
+  lemmatize: true
+  augment: true
+  
