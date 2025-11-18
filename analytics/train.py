@@ -2,7 +2,7 @@ import pandas as pd
 import yaml
 import re
 import random
-import pymorphy3 as pymorphy2
+import pymorphy3
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from xgboost import XGBClassifier
@@ -13,7 +13,7 @@ from sklearn.preprocessing import LabelEncoder
 import pickle
 
 # --- НАСТРОЙКИ И ИНИЦИАЛИЗАЦИЯ ---
-morph = pymorphy2.MorphAnalyzer()
+morph = pymorphy3.MorphAnalyzer()
 
 # --- ФУНКЦИИ ---
 
@@ -112,9 +112,9 @@ model.fit(X_train_vec, y_train)
 # 9. Оценка
 y_pred = model.predict(X_test_vec)
 accuracy = accuracy_score(y_test, y_pred)
-print(f"Честная точность: {accuracy}")
+print(f"Точность: {accuracy}")
 
-with open("metrics.txt", "w") as f:
-    f.write(f"Accuracy: {accuracy}")
+with open("results.json", "w") as f:
+    json.dump(metrics, f)
 
 pickle.dump(model, open("model.pkl", "wb"))
