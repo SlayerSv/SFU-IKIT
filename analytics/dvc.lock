@@ -1,0 +1,28 @@
+schema: '2.0'
+stages:
+  train:
+    cmd: python train.py
+    deps:
+    - path: anecdotes.csv
+      hash: md5
+      md5: 1707a54648dab05354dbec1ca51e9d29
+      size: 290192
+    - path: train.py
+      hash: md5
+      md5: 0da873e283c31257f25d79d04f51ea74
+      size: 2237
+    params:
+      params.yaml:
+        train:
+          model: nb
+          n_estimators: 100
+          max_features: 5000
+    outs:
+    - path: metrics.txt
+      hash: md5
+      md5: fc1bdaab70c84bbdaa11a263b8c0ba1f
+      size: 18
+    - path: model.pkl
+      hash: md5
+      md5: 7c4df591c59dfd2e4be793c3dfbef3e0
+      size: 640761
