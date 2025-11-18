@@ -114,7 +114,7 @@ model.fit(X_train_vec, y_train)
 y_pred = model.predict(X_test_vec)
 accuracy = accuracy_score(y_test, y_pred)
 print(f"Точность: {accuracy}")
-
+metrics = {'accuracy': accuracy}
 with open("results.json", "w") as f:
     json.dump(metrics, f)
 
