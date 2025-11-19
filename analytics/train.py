@@ -2,7 +2,6 @@ import pandas as pd
 import json
 import yaml
 import re
-import random
 import pymorphy3
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -12,23 +11,33 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import LabelEncoder
 import pickle
+import nltk
+try:
+    nltk.data.find('corpora/stopwords')
+except LookupError:
+    nltk.download('stopwords')
+from nltk.corpus import stopwords
 
+# Список русских стоп-слов
+ru_stopwords = set(stopwords.words('russian'))
+
+# --- Функция аугментации ---
+def remove_stopwords_aug(text):
+    """Оставляет только значимые слова"""
+    if not isinstance(text, str): return str(text)
+    
+    words = text.split()
+    # Оставляем слова, которых НЕТ в списке стоп-слов
+    filtered = [w for w in words if w.lower() not in ru_stopwords]
+    
+    # Если вдруг удалили вообще всё (бывает в коротких фразах), вернем оригинал
+    if len(filtered) == 0:
+        return text
+        
+    return ' '.join(filtered)
+    
 # --- НАСТРОЙКИ И ИНИЦИАЛИЗАЦИЯ ---
 morph = pymorphy3.MorphAnalyzer()
-
-# --- ФУНКЦИИ ---
-
-def random_deletion(text, p=0.15):
-    """Аугментация: удаляет 15% слов"""
-    if not isinstance(text, str): return str(text)
-    words = text.split()
-    if len(words) < 3: return text # Короткие не трогаем
-    
-    new_words = [w for w in words if random.random() > p]
-    
-    # Если удалили все, вернем оригинал
-    if not new_words: return text 
-    return ' '.join(new_words)
 
 def lemmatize_text(text):
     """Лемматизация: приведение к начальной форме"""
@@ -46,7 +55,6 @@ def simple_clean(text):
     # Это нужно, чтобы Tfidf не сходил с ума от знаков препинания
     words = re.findall(r'[а-яА-ЯёЁ]+', str(text))
     return ' '.join(words).lower()
-
 
 # --- ОСНОВНОЙ ПАЙПЛАЙН ---
 
@@ -85,7 +93,7 @@ if use_augmentation:
     print(f"Размер Train до: {len(X_train)}")
     
     # Аугментируем
-    X_train_aug = X_train.apply(lambda x: random_deletion(x))
+    X_train_aug = X_train.apply(lambda x: remove_stopwords_aug(x))
     y_train_aug = y_train.copy()
     
     # Объединяем
